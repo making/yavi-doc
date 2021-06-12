@@ -26,7 +26,7 @@ Checks whether the target value is not `null` nor empty
 [source,java]
 ----
 Validator<Email> validator = ValidatorBuilder.<Email> of()
-        .constraints(Email::getValue, "email", c -> c.notNull())
+        .constraints(Email::getValue, "email", c -> c.notEmpty())
         .build();
 
 ConstraintViolations violations = validator.validate(new Email("yavi@example.com")); // Valid
@@ -40,7 +40,7 @@ Checks that the target value is not `null`, and the trimmed length is greater th
 [source,java]
 ----
 Validator<Email> validator = ValidatorBuilder.<Email> of()
-        .constraints(Email::getValue, "email", c -> c.notNull())
+        .constraints(Email::getValue, "email", c -> c.notBlank())
         .build();
 
 ConstraintViolations violations = validator.validate(new Email("yavi@example.com")); // Valid
