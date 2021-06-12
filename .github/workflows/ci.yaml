@@ -46,7 +46,11 @@ jobs:
         git config --global user.name "${GIT_NAME}"
         git clone git@github.com:making/yavi.git -b ${BRANCH}
         cd yavi
-        find . | egrep -v '.git|CNAME' | xargs rm -rf
+        mv .git /tmp/
+        mv CNAME /tmp/
+        rm -rf .
+        mv /tmp/.git ./
+        mv /tmp/CNAME ./
         COMMIT_MESSAGE="Update document"
         cp -r ../docs/* ./
         git diff
