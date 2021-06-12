@@ -1,5 +1,3 @@
-:revnumber: {project-version}
-:example-caption!:
 :doctype: book
 :idprefix:
 :idseparator: -
@@ -10,7 +8,6 @@
 :sectanchors:
 :sectnums:
 :icons: font
-:hide-uri-scheme:
 :docinfo: shared,private
 
 :sc-ext: java

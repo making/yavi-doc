@@ -1,2 +1,202 @@
 [[built-in-constraints]]
 == Built-in Constraints
+
+YAVI includes many commonly used built-in constraints for various types.
+
+=== String
+
+==== `notNull()`
+
+Checks that the target value is not `null`
+
+[source,java]
+----
+Validator<Email> validator = ValidatorBuilder.<Email> of()
+        .constraints(Email::getValue, "email", c -> c.notNull())
+        .build();
+
+ConstraintViolations violations = validator.validate(new Email("yavi@example.com")); // Valid
+ConstraintViolations violations = validator.validate(new Email(null)); // Invalid ("email" must not be null")
+----
+
+==== `notEmpty()`
+
+Checks whether the target value is not `null` nor empty
+
+[source,java]
+----
+Validator<Email> validator = ValidatorBuilder.<Email> of()
+        .constraints(Email::getValue, "email", c -> c.notNull())
+        .build();
+
+ConstraintViolations violations = validator.validate(new Email("yavi@example.com")); // Valid
+ConstraintViolations violations = validator.validate(new Email("")); // Invalid ("email" must not be empty")
+----
+
+==== `notBlank()`
+
+Checks that the target value is not `null`, and the trimmed length is greater than `0`. The difference to `notEmpty()` is that trailing white-spaces are ignored.
+
+[source,java]
+----
+Validator<Email> validator = ValidatorBuilder.<Email> of()
+        .constraints(Email::getValue, "email", c -> c.notNull())
+        .build();
+
+ConstraintViolations violations = validator.validate(new Email("yavi@example.com")); // Valid
+ConstraintViolations violations = validator.validate(new Email(" ")); // Invalid ("email" must not be blank")
+----
+
+==== `fixedSize(int)`
+
+Checks if the target value's size is the specified size
+
+[source,java]
+----
+Validator<ZipCode> validator = ValidatorBuilder.<ZipCode> of()
+        .constraints(ZipCode::getValue, "zipCode", c -> c.fixedSize(7))
+        .build();
+
+ConstraintViolations violations = validator.validate(new ZipCode("1234567")); // Valid
+ConstraintViolations violations = validator.validate(new ZipCode("123-4567")); // Invalid (The size of "zipCode" must be 7. The given size is 8")
+----
+
+==== `greaterThan(int)`
+
+Checks if the target value's size is greater than the specified size
+
+[source,java]
+----
+Validator<Country> validator = ValidatorBuilder.<Country> of()
+        .constraints(Country::getValue, "country", c -> c.greaterThan(2))
+        .build();
+
+ConstraintViolations violations = validator.validate(new Country("Japan")); // Valid
+ConstraintViolations violations = validator.validate(new Country("J")); // Invalid (The size of "country" must be greater than 2. The given size is 1")
+----
+
+==== `greaterThanOrEqual(int)`
+
+Checks if the target value's size is greater than or equals to the specified size
+
+[source,java]
+----
+Validator<Country> validator = ValidatorBuilder.<Country> of()
+        .constraints(Country::getValue, "country", c -> c.greaterThanOrEqual(2))
+        .build();
+
+ConstraintViolations violations = validator.validate(new Country("Japan")); // Valid
+ConstraintViolations violations = validator.validate(new Country("J")); // Invalid (The size of "country" must be greater than or equal to 2. The given size is 1")
+----
+
+==== `lessThan(int)`
+
+Checks if the target value's size is less than the specified size
+
+[source,java]
+----
+Validator<Country> validator = ValidatorBuilder.<Country> of()
+        .constraints(Country::getValue, "country", c -> c.lessThan(4))
+        .build();
+
+ConstraintViolations violations = validator.validate(new Country("JP")); // Valid
+ConstraintViolations violations = validator.validate(new Country("Japan")); // Invalid (The size of "country" must be less than 4. The given size is 5")
+----
+
+==== `lessThanOrEqual(int)`
+
+Checks if the target value's size is less than or equals to the specified size
+
+[source,java]
+----
+Validator<Country> validator = ValidatorBuilder.<Country> of()
+        .constraints(Country::getValue, "country", c -> c.lessThanOrEqual(4))
+        .build();
+
+ConstraintViolations violations = validator.validate(new Country("JP")); // Valid
+ConstraintViolations violations = validator.validate(new Country("Japan")); // Invalid (The size of "country" must be less than or equal to to 4. The given size is 5")
+----
+
+==== `contains(CharSequence)`
+
+Checks if the target value contains the specified sequence of char values
+
+==== `pattern(String)`
+
+Checks if the target value matches the specified regular expression
+
+==== `email()`
+
+Checks if the target value is a valid email address
+
+==== `password(...)`
+
+Check if the target value meets the specified password policy
+
+==== `ipv4()`
+
+Check if the target value is a valid IPv4 address
+
+==== `ipv6()`
+
+Check if the target value is a valid IPv6 address
+
+==== `url()`
+
+Check if the target value is a valid URL
+
+==== `luhn()`
+
+Checks if the digits within the target value pass the Luhn checksum algorithm (see also http://en.wikipedia.org/wiki/Luhn_algorithm[Luhn algorithm]).
+
+==== `isByte()`
+
+Check if the target value can be parsed as a `Byte` value
+
+==== `isShort()`
+
+Check if the target value can be parsed as a `Short` value
+
+==== `isInteger()`
+
+Check if the target value can be parsed as an `Integer` value
+
+==== `isLong()`
+
+Check if the target value can be parsed as a `Long` value
+
+==== `isFloat()`
+
+Check if the target value can be parsed as a `Float` value
+
+==== `isDouble()`
+
+Check if the target value can be parsed as a `Double` value
+
+==== `isBigInteger()`
+
+Check if the target value can be parsed as a `BigInteger` value
+
+==== `isBigDecimal()`
+
+Check if the target value can be parsed as a `BigDecimal` value
+
+==== `codePoints(...)`
+
+==== `normalizer(Normalizer.Form)`
+
+==== `variant(...)`
+
+==== `asByteArray()`
+
+==== `emoji()`
+
+=== Integer/Short/Long/Charactor/Byte/Float/Long
+
+=== BigInteger/BigDecimal
+
+=== Boolean
+
+=== Object
+
+=== List/Array/Map
