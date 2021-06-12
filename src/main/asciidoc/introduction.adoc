@@ -1,0 +1,14 @@
+[[introduction]]
+== Introduction
+YAVI sounds as same as a Japanese slang "YABAI" that means awesome or awful depending on the context.
+
+The concepts are
+
+* No reflection!
+* No (runtime) annotation!
+* No Java Beans!
+* Zero dependency!
+
+If you are not a fan of https://beanvalidation.org/[Bean Validation], YAVI will be an awesome alternative.
+
+For the migration from Bean Validation, refer https://github.com/making/yavi/blob/develop/docs/FromBeanValidationToYAVI.md[the guide].

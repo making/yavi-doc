@@ -1,0 +1,18 @@
+= YAVI (__Y__et __A__nother __V__al__I__dation) Documentation
+include::_attributes.adoc[]
+
+image::https://user-images.githubusercontent.com/106908/120071055-66770380-c0c8-11eb-83f1-d7eff04bad54.png[YAVI Logo]
+
+YAVI (pronounced jɑ-vάɪ)  is a lambda based type safe validation for Java.
+
+link:https://github.com/making/yavi[View project on GitHub, window="_blank"]
+
+include::introduction.adoc[]
+
+include::getting-started.adoc[]
+
+include::built-in-constraints.adoc[]
+
+include::core-features.adoc[]
+
+include::integrations.adoc[]
