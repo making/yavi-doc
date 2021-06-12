@@ -16,7 +16,7 @@ Validator<Email> validator = ValidatorBuilder.<Email> of()
         .build();
 
 ConstraintViolations violations = validator.validate(new Email("yavi@example.com")); // Valid
-ConstraintViolations violations = validator.validate(new Email(null)); // Invalid ("email" must not be null")
+ConstraintViolations violations = validator.validate(new Email(null)); // Invalid ("email" must not be null)
 ----
 
 ==== `notEmpty()`
@@ -30,7 +30,7 @@ Validator<Email> validator = ValidatorBuilder.<Email> of()
         .build();
 
 ConstraintViolations violations = validator.validate(new Email("yavi@example.com")); // Valid
-ConstraintViolations violations = validator.validate(new Email("")); // Invalid ("email" must not be empty")
+ConstraintViolations violations = validator.validate(new Email("")); // Invalid ("email" must not be empty)
 ----
 
 ==== `notBlank()`
@@ -44,7 +44,7 @@ Validator<Email> validator = ValidatorBuilder.<Email> of()
         .build();
 
 ConstraintViolations violations = validator.validate(new Email("yavi@example.com")); // Valid
-ConstraintViolations violations = validator.validate(new Email(" ")); // Invalid ("email" must not be blank")
+ConstraintViolations violations = validator.validate(new Email(" ")); // Invalid ("email" must not be blank)
 ----
 
 ==== `fixedSize(int)`
@@ -58,7 +58,7 @@ Validator<ZipCode> validator = ValidatorBuilder.<ZipCode> of()
         .build();
 
 ConstraintViolations violations = validator.validate(new ZipCode("1234567")); // Valid
-ConstraintViolations violations = validator.validate(new ZipCode("123-4567")); // Invalid (The size of "zipCode" must be 7. The given size is 8")
+ConstraintViolations violations = validator.validate(new ZipCode("123-4567")); // Invalid (The size of "zipCode" must be 7. The given size is 8)
 ----
 
 ==== `greaterThan(int)`
@@ -72,7 +72,7 @@ Validator<Country> validator = ValidatorBuilder.<Country> of()
         .build();
 
 ConstraintViolations violations = validator.validate(new Country("Japan")); // Valid
-ConstraintViolations violations = validator.validate(new Country("J")); // Invalid (The size of "country" must be greater than 2. The given size is 1")
+ConstraintViolations violations = validator.validate(new Country("J")); // Invalid (The size of "country" must be greater than 2. The given size is 1)
 ----
 
 ==== `greaterThanOrEqual(int)`
@@ -86,7 +86,7 @@ Validator<Country> validator = ValidatorBuilder.<Country> of()
         .build();
 
 ConstraintViolations violations = validator.validate(new Country("Japan")); // Valid
-ConstraintViolations violations = validator.validate(new Country("J")); // Invalid (The size of "country" must be greater than or equal to 2. The given size is 1")
+ConstraintViolations violations = validator.validate(new Country("J")); // Invalid (The size of "country" must be greater than or equal to 2. The given size is 1)
 ----
 
 ==== `lessThan(int)`
@@ -100,7 +100,7 @@ Validator<Country> validator = ValidatorBuilder.<Country> of()
         .build();
 
 ConstraintViolations violations = validator.validate(new Country("JP")); // Valid
-ConstraintViolations violations = validator.validate(new Country("Japan")); // Invalid (The size of "country" must be less than 4. The given size is 5")
+ConstraintViolations violations = validator.validate(new Country("Japan")); // Invalid (The size of "country" must be less than 4. The given size is 5)
 ----
 
 ==== `lessThanOrEqual(int)`
@@ -114,20 +114,50 @@ Validator<Country> validator = ValidatorBuilder.<Country> of()
         .build();
 
 ConstraintViolations violations = validator.validate(new Country("JP")); // Valid
-ConstraintViolations violations = validator.validate(new Country("Japan")); // Invalid (The size of "country" must be less than or equal to to 4. The given size is 5")
+ConstraintViolations violations = validator.validate(new Country("Japan")); // Invalid (The size of "country" must be less than or equal to to 4. The given size is 5)
 ----
 
 ==== `contains(CharSequence)`
 
 Checks if the target value contains the specified sequence of char values
 
+[source,java]
+----
+Validator<ZipCode> validator = ValidatorBuilder.<ZipCode> of()
+        .constraints(ZipCode::getValue, "zipCode", c -> c.contains("-"))
+        .build();
+
+ConstraintViolations violations = validator.validate(new ZipCode("123-4567")); // Valid
+ConstraintViolations violations = validator.validate(new ZipCode("1234567")); // Invalid ("zipCode" must contain -)
+----
+
 ==== `pattern(String)`
 
 Checks if the target value matches the specified regular expression
 
+[source,java]
+----
+Validator<ZipCode> validator = ValidatorBuilder.<ZipCode> of()
+        .constraints(ZipCode::getValue, "zipCode", c -> c.pattern("[0-9]+-[0-9]+"))
+        .build();
+
+ConstraintViolations violations = validator.validate(new ZipCode("123-4567")); // Valid
+ConstraintViolations violations = validator.validate(new ZipCode("1234567")); // Invalid ("zipCode" must match [0-9]+-[0-9]+)
+----
+
 ==== `email()`
 
 Checks if the target value is a valid email address
+
+[source,java]
+----
+Validator<Email> validator = ValidatorBuilder.<Email> of()
+        .constraints(Email::getValue, "email", c -> c.email())
+        .build();
+
+ConstraintViolations violations = validator.validate(new Email("yavi@example.com")); // Valid
+ConstraintViolations violations = validator.validate(new Email("example.com)); // Invalid ("email" must not be a valid email address)
+----
 
 ==== `password(...)`
 

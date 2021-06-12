@@ -1,3 +1,4 @@
+:revnumber: {project-version}
 :doctype: book
 :idprefix:
 :idseparator: -
