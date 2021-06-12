@@ -48,7 +48,7 @@ jobs:
         cd yavi
         mv .git /tmp/
         mv CNAME /tmp/
-        rm -rf .
+        rm -rf ./*
         mv /tmp/.git ./
         mv /tmp/CNAME ./
         COMMIT_MESSAGE="Update document"
