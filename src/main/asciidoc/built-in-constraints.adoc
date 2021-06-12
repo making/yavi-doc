@@ -156,7 +156,7 @@ Validator<Email> validator = ValidatorBuilder.<Email> of()
         .build();
 
 ConstraintViolations violations = validator.validate(new Email("yavi@example.com")); // Valid
-ConstraintViolations violations = validator.validate(new Email("example.com)); // Invalid ("email" must not be a valid email address)
+ConstraintViolations violations = validator.validate(new Email("example.com")); // Invalid ("email" must not be a valid email address)
 ----
 
 ==== `password(...)`
