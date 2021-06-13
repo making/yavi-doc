@@ -970,7 +970,7 @@ Validator<TargetClass> validator = ValidatorBuilder.<TargetClass> of()
         .build();
 ----
 
-To avoid ambiguous type inferences, you can use explicit `_string` instead of `constraints` as follows:
+To avoid ambiguous type inferences, you can use explicit `_integer` instead of `constraints` as follows:
 
 [source,java]
 ----
