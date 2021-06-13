@@ -7,11 +7,13 @@ Welcome to YAVI.
 
 The following paragraphs will guide you through the initial steps required to integrate YAVI into your application.
 
+[[gs-prerequisites]]
 === Prerequisites
 
 * http://www.oracle.com/technetwork/java/index.html[Java Runtime] >= 8
 * http://maven.apache.org/[Apache Maven]
 
+[[gs-project-setup]]
 === Project set up
 
 In order to use YAVI within a Maven project, simply add the following dependency to your `pom.xml`:
@@ -46,6 +48,7 @@ Add the following dependencies as needed:
 </dependency>
 ----
 
+[[gs-applying-constraints]]
 === Applying constraints
 
 Let's dive into an example to see how to apply constraints:
@@ -101,6 +104,7 @@ The `ValidatorBuilder.constraint` is used to declare the constraints which shoul
 
 TIP: You can find https://github.com/making/gs-yavi[the complete source code] on GitHub.
 
+[[gs-validating-constraints]]
 === Validating constraints
 
 To perform a validation of these constraints, you use a `Validator` instance.
@@ -172,6 +176,7 @@ The first three test methods show some expected constraint violations:
 If the object validates successfully, `validate()` returns an empty `ConstraintViolations` as you can see in `carIsValid()`.
 You can also check if the validation was successful with the `ConstraintViolations.isValid` method.
 
+[[gs-where-to-go-next]]
 === Where to go next?
 
 That concludes the 5 minutes tour through the world of YAVI.

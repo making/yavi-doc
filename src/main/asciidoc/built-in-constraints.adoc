@@ -19,6 +19,16 @@ ConstraintViolations violations = validator.validate(new Email("yavi@example.com
 ConstraintViolations violations = validator.validate(new Email(null)); // Invalid ("email" must not be null)
 ----
 
+|===
+|Message Key |Default Message Format |Args
+
+|`object.notNull`
+|`"{0}" must not be null`
+a|
+* `{0}` ... field name
+* `{1}` ... the given value
+|===
+
 ==== `notEmpty()`
 
 Checks whether the target value is not `null` nor empty
@@ -30,12 +40,24 @@ Validator<Email> validator = ValidatorBuilder.<Email> of()
         .build();
 
 ConstraintViolations violations = validator.validate(new Email("yavi@example.com")); // Valid
+ConstraintViolations violations = validator.validate(new Email(null)); // Invalid ("email" must not be empty)
 ConstraintViolations violations = validator.validate(new Email("")); // Invalid ("email" must not be empty)
 ----
 
+|===
+|Message Key |Default Message Format |Args
+
+|`container.notEmpty`
+|`"{0}" must not be empty`
+a|
+* `{0}` ... field name
+* `{1}` ... the given value
+|===
+
 ==== `notBlank()`
 
-Checks that the target value is not `null`, and the trimmed length is greater than `0`. The difference to `notEmpty()` is that trailing white-spaces are ignored.
+Checks that the target value is not `null`, and the trimmed length is greater than `0`.
+The difference to `notEmpty()` is that trailing white-spaces are ignored.
 
 [source,java]
 ----
@@ -44,8 +66,19 @@ Validator<Email> validator = ValidatorBuilder.<Email> of()
         .build();
 
 ConstraintViolations violations = validator.validate(new Email("yavi@example.com")); // Valid
+ConstraintViolations violations = validator.validate(new Email(null)); // Invalid ("email" must not be blank)
 ConstraintViolations violations = validator.validate(new Email(" ")); // Invalid ("email" must not be blank)
 ----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`charSequence.notBlank`
+|`"{0}" must not be blank`
+a|
+* `{0}` ... field name
+* `{1}` ... the given value
+|===
 
 ==== `fixedSize(int)`
 
@@ -58,8 +91,21 @@ Validator<ZipCode> validator = ValidatorBuilder.<ZipCode> of()
         .build();
 
 ConstraintViolations violations = validator.validate(new ZipCode("1234567")); // Valid
+ConstraintViolations violations = validator.validate(new ZipCode(null)); // Valid
 ConstraintViolations violations = validator.validate(new ZipCode("123-4567")); // Invalid (The size of "zipCode" must be 7. The given size is 8)
 ----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`container.fixedSize`
+|`The size of "{0}" must be {1}. The given size is {2}`
+a|
+* `{0}` ... field name
+* `{1}` ... the specified size
+* `{2}` ... the given size
+* `{3}` ... the given value
+|===
 
 ==== `greaterThan(int)`
 
@@ -72,8 +118,21 @@ Validator<Country> validator = ValidatorBuilder.<Country> of()
         .build();
 
 ConstraintViolations violations = validator.validate(new Country("Japan")); // Valid
+ConstraintViolations violations = validator.validate(new Country(null)); // Valid
 ConstraintViolations violations = validator.validate(new Country("J")); // Invalid (The size of "country" must be greater than 2. The given size is 1)
 ----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`container.greaterThan`
+|`The size of "{0}" must be greater than {1}. The given size is {2}`
+a|
+* `{0}` ... field name
+* `{1}` ... the specified size
+* `{2}` ... the given size
+* `{3}` ... the given value
+|===
 
 ==== `greaterThanOrEqual(int)`
 
@@ -86,8 +145,21 @@ Validator<Country> validator = ValidatorBuilder.<Country> of()
         .build();
 
 ConstraintViolations violations = validator.validate(new Country("Japan")); // Valid
+ConstraintViolations violations = validator.validate(new Country(null)); // Valid
 ConstraintViolations violations = validator.validate(new Country("J")); // Invalid (The size of "country" must be greater than or equal to 2. The given size is 1)
 ----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`container.greaterThanOrEqual`
+|`The size of "{0}" must be greater than or equal to {1}. The given size is {2}`
+a|
+* `{0}` ... field name
+* `{1}` ... the specified size
+* `{2}` ... the given size
+* `{3}` ... the given value
+|===
 
 ==== `lessThan(int)`
 
@@ -100,8 +172,21 @@ Validator<Country> validator = ValidatorBuilder.<Country> of()
         .build();
 
 ConstraintViolations violations = validator.validate(new Country("JP")); // Valid
+ConstraintViolations violations = validator.validate(new Country(null)); // Valid
 ConstraintViolations violations = validator.validate(new Country("Japan")); // Invalid (The size of "country" must be less than 4. The given size is 5)
 ----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`container.lessThan`
+|`The size of "{0}" must be less than {1}. The given size is {2}`
+a|
+* `{0}` ... field name
+* `{1}` ... the specified size
+* `{2}` ... the given size
+* `{3}` ... the given value
+|===
 
 ==== `lessThanOrEqual(int)`
 
@@ -114,8 +199,21 @@ Validator<Country> validator = ValidatorBuilder.<Country> of()
         .build();
 
 ConstraintViolations violations = validator.validate(new Country("JP")); // Valid
+ConstraintViolations violations = validator.validate(new Country(null)); // Valid
 ConstraintViolations violations = validator.validate(new Country("Japan")); // Invalid (The size of "country" must be less than or equal to to 4. The given size is 5)
 ----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`container.lessThanOrEqual`
+|`The size of "{0}" must be less than or equal to {1}. The given size is {2}`
+a|
+* `{0}` ... field name
+* `{1}` ... the specified size
+* `{2}` ... the given size
+* `{3}` ... the given value
+|===
 
 ==== `contains(CharSequence)`
 
@@ -128,8 +226,20 @@ Validator<ZipCode> validator = ValidatorBuilder.<ZipCode> of()
         .build();
 
 ConstraintViolations violations = validator.validate(new ZipCode("123-4567")); // Valid
+ConstraintViolations violations = validator.validate(new ZipCode(null)); // Valid
 ConstraintViolations violations = validator.validate(new ZipCode("1234567")); // Invalid ("zipCode" must contain -)
 ----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`charSequence.contains`
+|`"{0}" must contain {1}`
+a|
+* `{0}` ... field name
+* `{1}` ... the specified char sequence
+* `{2}` ... the given value
+|===
 
 ==== `pattern(String)`
 
@@ -138,12 +248,24 @@ Checks if the target value matches the specified regular expression
 [source,java]
 ----
 Validator<ZipCode> validator = ValidatorBuilder.<ZipCode> of()
-        .constraints(ZipCode::getValue, "zipCode", c -> c.pattern("[0-9]+-[0-9]+"))
+        .constraints(ZipCode::getValue, "zipCode", c -> c.pattern("[0-9]{3}-[0-9]{4}"))
         .build();
 
 ConstraintViolations violations = validator.validate(new ZipCode("123-4567")); // Valid
-ConstraintViolations violations = validator.validate(new ZipCode("1234567")); // Invalid ("zipCode" must match [0-9]+-[0-9]+)
+ConstraintViolations violations = validator.validate(new ZipCode(null)); // Valid
+ConstraintViolations violations = validator.validate(new ZipCode("1234567")); // Invalid ("zipCode" must match [0-9]{3}-[0-9]{4})
 ----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`charSequence.pattern`
+|`"{0}" must match {1}`
+a|
+* `{0}` ... field name
+* `{1}` ... the specified regular expression
+* `{2}` ... the given value
+|===
 
 ==== `email()`
 
@@ -156,12 +278,85 @@ Validator<Email> validator = ValidatorBuilder.<Email> of()
         .build();
 
 ConstraintViolations violations = validator.validate(new Email("yavi@example.com")); // Valid
+ConstraintViolations violations = validator.validate(new Email(null)); // Valid
 ConstraintViolations violations = validator.validate(new Email("example.com")); // Invalid ("email" must not be a valid email address)
 ----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`charSequence.pattern`
+|`"{0}" must match {1}`
+a|
+* `{0}` ... field name
+* `{1}` ... the specified regular expression
+* `{2}` ... the given value
+|===
 
 ==== `password(...)`
 
 Check if the target value meets the specified password policy
+
+[source,java]
+----
+Validator<Password> validator = ValidatorBuilder.<Password>of()
+		.constraint(Password::getValue, "password", c -> c.password(policy -> policy
+				.uppercase()
+				.lowercase()
+				// or .required(PasswordPolicy.UPPERCASE, PasswordPolicy.LOWERCASE)
+				.optional(1, PasswordPolicy.NUMBERS, PasswordPolicy.SYMBOLS)
+				.build()))
+		.build();
+
+ConstraintViolations violations = validator.validate(new Password("Yavi123")); // Valid
+ConstraintViolations violations = validator.validate(new Password(null)); // Valid
+ConstraintViolations violations = validator.validate(new Password("yavi123")); // Invalid ("password" must contain Uppercase policy)
+ConstraintViolations violations = validator.validate(new Password("yavi")); // Invalid ("password" must contain Uppercase policy, "password" must contain at least 1 policies from [Numbers, Symbols])
+ConstraintViolations violations = validator.validate(new Password("")); // Invalid ("password" must contain Uppercase policy, "password" must contain Lowercase policy, "password" must contain at least 1 policies from [Numbers, Symbols])
+----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`charSequence.passwordRequired`
+|`"{0}" must contain {1} policy`
+a|
+* `{0}` ... field name
+* `{1}` ... the specified policy name
+* `{2}` ... the given value
+|`charSequence.passwordOptional`
+|`"{0}" must contain at least {1} policies from {2}`
+a|
+* `{0}` ... field name
+* `{1}` ... minimum requirement
+* `{2}` ... the specified policy names
+* `{3}` ... the given value
+|===
+
+You can define a custom password policy as follows:
+
+[source,java]
+----
+PasswordPolicy<String> passwordPolicy = new PasswordPolicy<>() {
+	@Override
+	public String name() {
+		return "DoNotIncludePassword";
+	}
+
+	@Override
+	public boolean test(String s) {
+		return !s.equalsIgnoreCase("password");
+	}
+};
+
+
+Validator<Password> validator = ValidatorBuilder.<Password>of()
+		.constraint(Password::getValue, "password", c -> c.password(policy -> policy
+				.required(passwordPolicy)
+				// ...
+				.build()))
+		.build();
+----
 
 ==== `ipv4()`
 
