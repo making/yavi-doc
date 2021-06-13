@@ -12,7 +12,7 @@ Checks that the target value is not `null`
 [source,java]
 ----
 Validator<Email> validator = ValidatorBuilder.<Email> of()
-        .constraints(Email::getValue, "email", c -> c.notNull())
+        .constraints(Email::value, "email", c -> c.notNull())
         .build();
 
 ConstraintViolations violations = validator.validate(new Email("yavi@example.com")); // Valid
@@ -36,7 +36,7 @@ Checks whether the target value is not `null` nor empty
 [source,java]
 ----
 Validator<Email> validator = ValidatorBuilder.<Email> of()
-        .constraints(Email::getValue, "email", c -> c.notEmpty())
+        .constraints(Email::value, "email", c -> c.notEmpty())
         .build();
 
 ConstraintViolations violations = validator.validate(new Email("yavi@example.com")); // Valid
@@ -62,7 +62,7 @@ The difference to `notEmpty()` is that trailing white-spaces are ignored.
 [source,java]
 ----
 Validator<Email> validator = ValidatorBuilder.<Email> of()
-        .constraints(Email::getValue, "email", c -> c.notBlank())
+        .constraints(Email::value, "email", c -> c.notBlank())
         .build();
 
 ConstraintViolations violations = validator.validate(new Email("yavi@example.com")); // Valid
@@ -87,7 +87,7 @@ Checks if the target value's size is the specified size
 [source,java]
 ----
 Validator<ZipCode> validator = ValidatorBuilder.<ZipCode> of()
-        .constraints(ZipCode::getValue, "zipCode", c -> c.fixedSize(7))
+        .constraints(ZipCode::value, "zipCode", c -> c.fixedSize(7))
         .build();
 
 ConstraintViolations violations = validator.validate(new ZipCode("1234567")); // Valid
@@ -114,7 +114,7 @@ Checks if the target value's size is greater than the specified size
 [source,java]
 ----
 Validator<Country> validator = ValidatorBuilder.<Country> of()
-        .constraints(Country::getValue, "country", c -> c.greaterThan(2))
+        .constraints(Country::value, "country", c -> c.greaterThan(2))
         .build();
 
 ConstraintViolations violations = validator.validate(new Country("Japan")); // Valid
@@ -141,7 +141,7 @@ Checks if the target value's size is greater than or equals to the specified siz
 [source,java]
 ----
 Validator<Country> validator = ValidatorBuilder.<Country> of()
-        .constraints(Country::getValue, "country", c -> c.greaterThanOrEqual(2))
+        .constraints(Country::value, "country", c -> c.greaterThanOrEqual(2))
         .build();
 
 ConstraintViolations violations = validator.validate(new Country("Japan")); // Valid
@@ -168,7 +168,7 @@ Checks if the target value's size is less than the specified size
 [source,java]
 ----
 Validator<Country> validator = ValidatorBuilder.<Country> of()
-        .constraints(Country::getValue, "country", c -> c.lessThan(4))
+        .constraints(Country::value, "country", c -> c.lessThan(4))
         .build();
 
 ConstraintViolations violations = validator.validate(new Country("JP")); // Valid
@@ -195,7 +195,7 @@ Checks if the target value's size is less than or equals to the specified size
 [source,java]
 ----
 Validator<Country> validator = ValidatorBuilder.<Country> of()
-        .constraints(Country::getValue, "country", c -> c.lessThanOrEqual(4))
+        .constraints(Country::value, "country", c -> c.lessThanOrEqual(4))
         .build();
 
 ConstraintViolations violations = validator.validate(new Country("JP")); // Valid
@@ -222,7 +222,7 @@ Checks if the target value contains the specified sequence of char values
 [source,java]
 ----
 Validator<ZipCode> validator = ValidatorBuilder.<ZipCode> of()
-        .constraints(ZipCode::getValue, "zipCode", c -> c.contains("-"))
+        .constraints(ZipCode::value, "zipCode", c -> c.contains("-"))
         .build();
 
 ConstraintViolations violations = validator.validate(new ZipCode("123-4567")); // Valid
@@ -248,7 +248,7 @@ Checks if the target value matches the specified regular expression
 [source,java]
 ----
 Validator<ZipCode> validator = ValidatorBuilder.<ZipCode> of()
-        .constraints(ZipCode::getValue, "zipCode", c -> c.pattern("[0-9]{3}-[0-9]{4}"))
+        .constraints(ZipCode::value, "zipCode", c -> c.pattern("[0-9]{3}-[0-9]{4}"))
         .build();
 
 ConstraintViolations violations = validator.validate(new ZipCode("123-4567")); // Valid
@@ -274,7 +274,7 @@ Checks if the target value is a valid email address
 [source,java]
 ----
 Validator<Email> validator = ValidatorBuilder.<Email> of()
-        .constraints(Email::getValue, "email", c -> c.email())
+        .constraints(Email::value, "email", c -> c.email())
         .build();
 
 ConstraintViolations violations = validator.validate(new Email("yavi@example.com")); // Valid
@@ -285,12 +285,11 @@ ConstraintViolations violations = validator.validate(new Email("example.com")); 
 |===
 |Message Key |Default Message Format |Args
 
-|`charSequence.pattern`
+|`charSequence.email`
 |`"{0}" must match {1}`
 a|
 * `{0}` ... field name
-* `{1}` ... the specified regular expression
-* `{2}` ... the given value
+* `{1}` ... the given value
 |===
 
 ==== `password(...)`
@@ -300,7 +299,7 @@ Check if the target value meets the specified password policy
 [source,java]
 ----
 Validator<Password> validator = ValidatorBuilder.<Password>of()
-		.constraint(Password::getValue, "password", c -> c.password(policy -> policy
+		.constraint(Password::value, "password", c -> c.password(policy -> policy
 				.uppercase()
 				.lowercase()
 				// or .required(PasswordPolicy.UPPERCASE, PasswordPolicy.LOWERCASE)
@@ -333,7 +332,14 @@ a|
 * `{3}` ... the given value
 |===
 
-You can define a custom password policy as follows:
+Buit-in password policies are following:
+
+* `am.ik.yavi.constraint.password.PasswordPolicy#UPPERCASE`
+* `am.ik.yavi.constraint.password.PasswordPolicy#LOWERCASE`
+* `am.ik.yavi.constraint.password.PasswordPolicy#NUMBERS`
+* `am.ik.yavi.constraint.password.PasswordPolicy#SYMBOLS`
+
+You can define a custom password policy as bellow:
 
 [source,java]
 ----
@@ -351,7 +357,7 @@ PasswordPolicy<String> passwordPolicy = new PasswordPolicy<>() {
 
 
 Validator<Password> validator = ValidatorBuilder.<Password>of()
-		.constraint(Password::getValue, "password", c -> c.password(policy -> policy
+		.constraint(Password::value, "password", c -> c.password(policy -> policy
 				.required(passwordPolicy)
 				// ...
 				.build()))
@@ -362,9 +368,51 @@ Validator<Password> validator = ValidatorBuilder.<Password>of()
 
 Check if the target value is a valid IPv4 address
 
+[source,java]
+----
+Validator<IpAddress> validator = ValidatorBuilder.<IpAddress> of()
+        .constraints(IpAddress::value, "ipAddress", c -> c.ipv4())
+        .build();
+
+ConstraintViolations violations = validator.validate(new IpAddress("192.0.2.1")); // Valid
+ConstraintViolations violations = validator.validate(new IpAddress(null)); // Valid
+ConstraintViolations violations = validator.validate(new IpAddress("example.com")); // Invalid ("ipAddress" must not be a valid IPv4)
+----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`charSequence.ipv4`
+|`"{0}" must be a valid IPv4`
+a|
+* `{0}` ... field name
+* `{1}` ... the given value
+|===
+
 ==== `ipv6()`
 
 Check if the target value is a valid IPv6 address
+
+[source,java]
+----
+Validator<IpAddress> validator = ValidatorBuilder.<IpAddress> of()
+        .constraints(IpAddress::value, "ipAddress", c -> c.ipv6())
+        .build();
+
+ConstraintViolations violations = validator.validate(new IpAddress("2001:0db8:bd05:01d2:288a:1fc0:0001:10ee")); // Valid
+ConstraintViolations violations = validator.validate(new IpAddress(null)); // Valid
+ConstraintViolations violations = validator.validate(new IpAddress("192.0.2.1")); // Invalid ("ipAddress" must not be a valid IPv4)
+----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`charSequence.ipv6`
+|`"{0}" must be a valid IPv6`
+a|
+* `{0}` ... field name
+* `{1}` ... the given value
+|===
 
 ==== `url()`
 
