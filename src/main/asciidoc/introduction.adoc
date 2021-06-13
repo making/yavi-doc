@@ -11,4 +11,15 @@ The concepts are
 
 If you are not a fan of https://beanvalidation.org/[Bean Validation], YAVI will be an awesome alternative.
 
+YAVI has the following features:
+
+* Type-safe constraints, unsupported constraints cannot be applied to the wrong type
+* Fluent and intuitive API
+* Constraints on any object. Java Beans, https://openjdk.java.net/jeps/395[Records], https://developers.google.com/protocol-buffers[Protocol Buffers], https://immutables.github.io/[Immutables] and anything else.
+* Lots of useful built-in constraints
+* Easy custom constraints
+* Validation for groups, conditional validation
+* Validation for arguments before creating an object
+* Support for API and composition of validation results and validators that incorporate the concept of functional programming
+
 For the migration from Bean Validation, refer https://github.com/making/yavi/blob/develop/docs/FromBeanValidationToYAVI.md[the guide].
