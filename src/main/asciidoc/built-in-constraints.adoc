@@ -418,9 +418,51 @@ a|
 
 Check if the target value is a valid URL
 
+[source,java]
+----
+Validator<Url> validator = ValidatorBuilder.<Url> of()
+        .constraints(Url::value, "url", c -> c.url())
+        .build();
+
+ConstraintViolations violations = validator.validate(new Url("https://yavi.ik.am")); // Valid
+ConstraintViolations violations = validator.validate(new Url(null)); // Valid
+ConstraintViolations violations = validator.validate(new Url("yavi.ik.am")); // Invalid ("url" must be a valid URL)
+----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`charSequence.url`
+|`"{0}" must be a valid URL`
+a|
+* `{0}` ... field name
+* `{1}` ... the given value
+|===
+
 ==== `luhn()`
 
 Checks if the digits within the target value pass the Luhn checksum algorithm (see also http://en.wikipedia.org/wiki/Luhn_algorithm[Luhn algorithm]).
+
+[source,java]
+----
+Validator<CreditCard> validator = ValidatorBuilder.<CreditCard> of()
+        .constraints(CreditCard::number, "creditCardNumber", c -> c.luhn())
+        .build();
+
+ConstraintViolations violations = validator.validate(new Url("4111111111111111")); // Valid
+ConstraintViolations violations = validator.validate(new Url(null)); // Valid
+ConstraintViolations violations = validator.validate(new Url("4111111111111112")); // Invalid (the check digit for "creditCardNumber" is invalid, Luhn checksum failed)
+----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`charSequence.luhn`
+|`the check digit for "{0}" is invalid, Luhn checksum failed`
+a|
+* `{0}` ... field name
+* `{1}` ... the given value
+|===
 
 ==== `isByte()`
 
