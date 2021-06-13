@@ -959,7 +959,155 @@ a|
 * `{3}` ... the given value
 |===
 
-=== Integer/Short/Long/Charactor/Byte/Float/Long
+=== Integer/Short/Long/Character/Byte/Float/Long
+
+Apply the constraints on the `Integer` as follows:
+
+[source,java]
+----
+Validator<TargetClass> validator = ValidatorBuilder.<TargetClass> of()
+        .constraints(/* Function from TargetClass to Integer  */, /* Field Name */, /* Constraints */)
+        .build();
+----
+
+To avoid ambiguous type inferences, you can use explicit `_string` instead of `constraints` as follows:
+
+[source,java]
+----
+Validator<TargetClass> validator = ValidatorBuilder.<TargetClass> of()
+        ._integer(/* Function from TargetClass to Integer  */, /* Field Name */, /* Constraints */)
+        .build();
+----
+
+The same goes for `Short`/`Long`/`Character`/`Byte`/`Float`/`Long`.
+
+==== `notNull()`
+
+Checks that the target value is not `null`
+
+[source,java]
+----
+Validator<Age> validator = ValidatorBuilder.<Age> of()
+        .constraints(Age::value, "age", c -> c.notNull())
+        .build();
+
+ConstraintViolations violations = validator.validate(new Age(30)); // Valid
+ConstraintViolations violations = validator.validate(new Age(null)); // Invalid ("age" must not be null)
+----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`object.notNull`
+|`"{0}" must not be null`
+a|
+* `{0}` ... field name
+* `{1}` ... the given value
+|===
+
+==== `greaterThan(int)`
+
+Checks if the target value is greater than the specified value
+
+[source,java]
+----
+Validator<Age> validator = ValidatorBuilder.<Age> of()
+        .constraints(Age::value, "age", c -> c.greaterThan(20))
+        .build();
+
+ConstraintViolations violations = validator.validate(new Age(21)); // Valid
+ConstraintViolations violations = validator.validate(new Age(null)); // Valid
+ConstraintViolations violations = validator.validate(new Age(20)); // Invalid ("age" must be greater than 20
+----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`numeric.greaterThan`
+|`"{0}" must be greater than {1}`
+a|
+* `{0}` ... field name
+* `{1}` ... the specified size
+* `{2}` ... the given value
+|===
+
+==== `greaterThanOrEqual(int)`
+
+Checks if the target value is greater than or equals to the specified value
+
+[source,java]
+----
+Validator<Age> validator = ValidatorBuilder.<Age> of()
+        .constraints(Age::value, "age", c -> c.greaterThanOrEqual(20))
+        .build();
+
+ConstraintViolations violations = validator.validate(new Age(20)); // Valid
+ConstraintViolations violations = validator.validate(new Age(null)); // Valid
+ConstraintViolations violations = validator.validate(new Age(19)); // Invalid ("age" must be greater than or equal to 10
+----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`numeric.greaterThan`
+|`"{0}" must be greater than or equal to {1}`
+a|
+* `{0}` ... field name
+* `{1}` ... the specified size
+* `{2}` ... the given value
+|===
+
+==== `lessThan(int)`
+
+Checks if the target value is less than the specified value
+
+[source,java]
+----
+Validator<Age> validator = ValidatorBuilder.<Age> of()
+        .constraints(Age::value, "age", c -> c.lessThan(20))
+        .build();
+
+ConstraintViolations violations = validator.validate(new Age(19)); // Valid
+ConstraintViolations violations = validator.validate(new Age(null)); // Valid
+ConstraintViolations violations = validator.validate(new Age(20)); // Invalid ("age" must be less than 20
+----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`numeric.lessThan`
+|`"{0}" must be less than {1}`
+a|
+* `{0}` ... field name
+* `{1}` ... the specified size
+* `{2}` ... the given value
+|===
+
+==== `lessThanOrEqual(int)`
+
+Checks if the target value is less than or equals to the specified value
+
+[source,java]
+----
+Validator<Age> validator = ValidatorBuilder.<Age> of()
+        .constraints(Age::value, "age", c -> c.lessThanOrEqual(20))
+        .build();
+
+ConstraintViolations violations = validator.validate(new Age(19)); // Valid
+ConstraintViolations violations = validator.validate(new Age(null)); // Valid
+ConstraintViolations violations = validator.validate(new Age(21)); // Invalid ("age" must be less than or equal to 10
+----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`numeric.lessThan`
+|`"{0}" must be less than or equal to {1}`
+a|
+* `{0}` ... field name
+* `{1}` ... the specified size
+* `{2}` ... the given value
+|===
 
 === BigInteger/BigDecimal
 
