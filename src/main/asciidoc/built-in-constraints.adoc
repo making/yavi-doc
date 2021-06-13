@@ -787,7 +787,7 @@ YAVI will perform a constraint check on surrogate pairs and combining characters
 
 Let's look at a typical example.
 
-==== Surrogate pair
+===== Surrogate pair
 
 `𠮷野屋` is an example of a surrogate pair. It looks like 3 characters, but the result of `length` method is 4 (`\uD842\uDFB7野屋`).
 
@@ -800,14 +800,14 @@ Since YAVI treats the character length as the code point length, this character 
 
 [source,java]
 ----
-Validator<Message> validator = ValidatorBuilder.<Message>of()
+Validator<Message> validator = ValidatorBuilder.<Message> of()
         .constraint(Message::getText, "text", c -> c.lessThanOrEqual(3))
         .build();
 
 validator.validate(new Message("𠮷野屋")); // Valid
 ----
 
-==== Combining character
+===== Combining character
 
 `モジ` is an example of a combining character. Although it looks like 2 characters, `シ` and dakuten(`゙`) are combined, and the result of `length()` is 3 (`モシ\u3099`).
 
@@ -820,7 +820,7 @@ YAVI considers this string to be 2 characters by default.
 
 [source,java]
 ----
-Validator<Message> validator = ValidatorBuilder.<Message>of()
+Validator<Message> validator = ValidatorBuilder.<Message> of()
         .constraint(Message::getText, "text", c -> c.lessThanOrEqual(2))
         .build();
 
@@ -831,13 +831,13 @@ YAVI uses `java.text.Normalizer` and normalizes with `java.text.Normalizer.Form#
 
 [source,java]
 ----
-Validator<Message> validator = ValidatorBuilder.<Message>of()
+Validator<Message> validator = ValidatorBuilder.<Message> of()
         .constraint(Message::getText, "text", c -> c.normalizer(normalizerForm)
 				.lessThanOrEqual(2))
         .build();
 ----
 
-==== Variation Selector
+===== Variation Selector
 
 `𠮟󠄀` is an example of an Ideographic Variation Sequence. Variant selectors cannot be normalized with `Normalizer`.
 It looks like 1 character, but when expressed in UTF-16, it is "D842 DF9F DB40 DD00", so the result of `length()` is 4.
@@ -851,7 +851,7 @@ YAVI does *not* consider this character as a single character by default to prev
 
 [source,java]
 ----
-Validator<Message> validator = ValidatorBuilder.<Message>of()
+Validator<Message> validator = ValidatorBuilder.<Message> of()
 		.constraint(Message::getText, "text", c -> c.lessThanOrEqual(1))
 		.build();
 validator.validate(new Message("𠮟󠄀")); // Invalid (The size of "text" must be less than or equal to 1. The given size is 2)
@@ -862,7 +862,7 @@ This way you can regard this string as just a surrogate pair.
 
 [source,java]
 ----
-Validator<Message> validator = ValidatorBuilder.<Message>of()
+Validator<Message> validator = ValidatorBuilder.<Message> of()
 		.constraint(Message::getText, "text", c -> c.variant(opts -> opts.ivs(IdeographicVariationSequence.IGNORE))
 				.lessThanOrEqual(1))
 		.build();
@@ -871,10 +871,10 @@ validator.validate(new Message("𠮟󠄀")); // Valid
 
 SVS and FVS can be handled in the same way.
 
-==== Emoji
+===== Emoji
 
 
-===== `asByteArray()`
+==== `asByteArray()`
 
 === Integer/Short/Long/Charactor/Byte/Float/Long
 
