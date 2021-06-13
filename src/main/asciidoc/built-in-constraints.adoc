@@ -1005,7 +1005,7 @@ a|
 * `{1}` ... the given value
 |===
 
-==== `greaterThan(int)`
+==== `greaterThan(...)`
 
 Checks if the target value is greater than the specified value
 
@@ -1031,7 +1031,7 @@ a|
 * `{2}` ... the given value
 |===
 
-==== `greaterThanOrEqual(int)`
+==== `greaterThanOrEqual(...)`
 
 Checks if the target value is greater than or equals to the specified value
 
@@ -1057,7 +1057,7 @@ a|
 * `{2}` ... the given value
 |===
 
-==== `lessThan(int)`
+==== `lessThan(...)`
 
 Checks if the target value is less than the specified value
 
@@ -1083,7 +1083,7 @@ a|
 * `{2}` ... the given value
 |===
 
-==== `lessThanOrEqual(int)`
+==== `lessThanOrEqual(...)`
 
 Checks if the target value is less than or equals to the specified value
 
