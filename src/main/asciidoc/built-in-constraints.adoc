@@ -696,7 +696,7 @@ a|
 Checks if the target value is in the specified set of code points.
 Code points can be specified as allowed characters (whitelist) or prohibited characters (blacklist).
 
-A set of code points is represented by `am.ik.yavi.constraint.charsequence.CodePoints` interface, and there is `CodePointsSet` interface that represents the set using `java.util.Set` and `CodePointsRanges` interface that represents a list of code point ranges.
+A set of code points is represented by `am.ik.yavi.constraint.charsequence.CodePoints` interface, and there is `am.ik.yavi.constraint.charsequence.CodePoints.CodePointsSet` interface that represents the set using `java.util.Set` and `am.ik.yavi.constraint.charsequence.CodePoints.CodePointsRanges` interface that represents a list of code point ranges.
 
 For example, a code point set consisting of "A, B, C, D, a, b, c, d" is expressed as follows:
 
@@ -769,13 +769,112 @@ The following is a set of built-in code points.
 
 You can also represent the union of multiple code point sets with `am.ik.yavi.constraint.charsequence.codepoints.CompositeCodePoints` class.
 
-==== `normalizer(Normalizer.Form)`
+==== Advanced character length check
 
-==== `variant(...)`
+YAVI counts the entered characters as the number of characters as it looks in the constraints on the number of characters. Recently, as a result of defining various characters on Unicode, the apparent size and the return value of `String#length` method are quite different.
 
-==== `asByteArray()`
+YAVI supports the following character types:
 
-==== `emoji()`
+* Surrogate pair
+* Combining character
+* Variation Selector
+** IVS (Ideographic Variation Sequence)
+** SVS (Standardized Variation Sequence)
+** FVS (Mongolian Free Variation Selector)
+* Emoji
+
+YAVI will perform a constraint check on surrogate pairs and combining characters with the number of characters as they look. (For Emoji, IVS, SVS and FVS, the size is not checked as it looks by default due to the performance.)
+
+Let's look at a typical example.
+
+==== Surrogate pair
+
+`𠮷野屋` is an example of a surrogate pair. It looks like 3 characters, but the result of `length` method is 4 (`\uD842\uDFB7野屋`).
+
+[source,java]
+----
+System.out.println("𠮷野屋".length()); // 4 (\uD842\uDFB7野屋)
+----
+
+Since YAVI treats the character length as the code point length, this character string is regarded as 3 characters.
+
+[source,java]
+----
+Validator<Message> validator = ValidatorBuilder.<Message>of()
+        .constraint(Message::getText, "text", c -> c.lessThanOrEqual(3))
+        .build();
+
+validator.validate(new Message("𠮷野屋")); // Valid
+----
+
+==== Combining character
+
+`モジ` is an example of a combining character. Although it looks like 2 characters, `シ` and dakuten(`゙`) are combined, and the result of `length()` is 3 (`モシ\u3099`).
+
+[source,java]
+----
+System.out.println("モジ".length()); // 3 (モシ\u3099)
+----
+
+YAVI considers this string to be 2 characters by default.
+
+[source,java]
+----
+Validator<Message> validator = ValidatorBuilder.<Message>of()
+        .constraint(Message::getText, "text", c -> c.lessThanOrEqual(2))
+        .build();
+
+validator.validate(new Message("モジ")); // Valid
+----
+
+YAVI uses `java.text.Normalizer` and normalizes with `java.text.Normalizer.Form#NFC` by default. This behavior can be changed as follows: (If `null` is set, it will not be normalized)
+
+[source,java]
+----
+Validator<Message> validator = ValidatorBuilder.<Message>of()
+        .constraint(Message::getText, "text", c -> c.normalizer(normalizerForm)
+				.lessThanOrEqual(2))
+        .build();
+----
+
+==== Variation Selector
+
+`𠮟󠄀` is an example of an Ideographic Variation Sequence. Variant selectors cannot be normalized with `Normalizer`.
+It looks like 1 character, but when expressed in UTF-16, it is "D842 DF9F DB40 DD00", so the result of `length()` is 4.
+
+[source,java]
+----
+System.out.println("𠮟󠄀".length()); // 4 (\uD842\uDF9F\uDB40\uDD00󠄀)
+----
+
+YAVI does *not* consider this character as a single character by default to prevent performance degradation.
+
+[source,java]
+----
+Validator<Message> validator = ValidatorBuilder.<Message>of()
+		.constraint(Message::getText, "text", c -> c.lessThanOrEqual(1))
+		.build();
+validator.validate(new Message("𠮟󠄀")); // Invalid (The size of "text" must be less than or equal to 1. The given size is 2)
+----
+
+You can ignore (delete) the code point of `0xE0100`-`0xE01EF`, which is the range of IVS from the target string, as follows.
+This way you can regard this string as just a surrogate pair.
+
+[source,java]
+----
+Validator<Message> validator = ValidatorBuilder.<Message>of()
+		.constraint(Message::getText, "text", c -> c.variant(opts -> opts.ivs(IdeographicVariationSequence.IGNORE))
+				.lessThanOrEqual(1))
+		.build();
+validator.validate(new Message("𠮟󠄀")); // Valid
+----
+
+SVS and FVS can be handled in the same way.
+
+==== Emoji
+
+
+===== `asByteArray()`
 
 === Integer/Short/Long/Charactor/Byte/Float/Long
 
