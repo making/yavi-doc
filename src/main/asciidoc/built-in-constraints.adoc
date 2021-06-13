@@ -476,9 +476,9 @@ Validator<CreditCard> validator = ValidatorBuilder.<CreditCard> of()
         .constraints(CreditCard::number, "creditCardNumber", c -> c.luhn())
         .build();
 
-ConstraintViolations violations = validator.validate(new Url("4111111111111111")); // Valid
-ConstraintViolations violations = validator.validate(new Url(null)); // Valid
-ConstraintViolations violations = validator.validate(new Url("4111111111111112")); // Invalid (the check digit for "creditCardNumber" is invalid, Luhn checksum failed)
+ConstraintViolations violations = validator.validate(new CreditCard("4111111111111111")); // Valid
+ConstraintViolations violations = validator.validate(new CreditCard(null)); // Valid
+ConstraintViolations violations = validator.validate(new CreditCard("4111111111111112")); // Invalid (the check digit for "creditCardNumber" is invalid, Luhn checksum failed)
 ----
 
 |===
@@ -692,6 +692,82 @@ a|
 |===
 
 ==== `codePoints(...)`
+
+Checks if the target value is in the specified set of code points.
+Code points can be specified as allowed characters (whitelist) or prohibited characters (blacklist).
+
+A set of code points is represented by `am.ik.yavi.constraint.charsequence.CodePoints` interface, and there is `CodePointsSet` interface that represents the set using `java.util.Set` and `CodePointsRanges` interface that represents a list of code point ranges.
+
+For example, a code point set consisting of "A, B, C, D, a, b, c, d" is expressed as follows:
+
+[source,java]
+----
+CodePointsSet<String> codePoints = () -> new HashSet<>(
+        Arrays.asList(0x0041 /* A */, 0x0042 /* B */, 0x0043 /* C */, 0x0044 /* D */,
+                0x0061 /* a */, 0x0062 /* b */, 0x0063 /* c */, 0x0064 /* d */));
+----
+
+Or:
+
+[source,java]
+----
+CodePointsRanges<String> codePoints = () -> Arrays.asList(
+        Range.of(0x0041/* A */, 0x0044 /* D */),
+        Range.of(0x0061/* a */, 0x0064 /* d */));
+----
+
+For consecutive code points, the latter is overwhelmingly more memory efficient.
+
+If you want to regard the code point set as a white list (allowed characters), specify as follows:
+
+[source,java]
+----
+Validator<Message> validator = ValidatorBuilder.<Message> of()
+        .constraint(Message::getText, "text", c -> c.codePoints(codePoints).asWhiteList())
+        .build();
+
+ConstraintViolations violations = validator.validate(new Message("aBCd")); // Valid
+ConstraintViolations violations = validator.validate(new Message(null)); // Valid
+ConstraintViolations violations = validator.validate(new Message("aBCe")); // Invalid ("[e]" is/are not allowed for "text")
+----
+
+If you want to regard the code point set as a blacklist (prohibited characters), specify as follows:
+
+[source,java]
+----
+Validator<Message> validator = ValidatorBuilder.<Message> of()
+        .constraint(Message::getText, "text", c -> c.codePoints(codePoints).asBlackList())
+        .build();
+
+ConstraintViolations violations = validator.validate(new Message("hello")); // Valid
+ConstraintViolations violations = validator.validate(new Message(null)); // Valid
+ConstraintViolations violations = validator.validate(new Message("hallo")); // Invalid ("[a]" is/are not allowed for "text")
+----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`codePoints.asWhiteList`
+|`"{1}" is/are not allowed for "{0}"`
+a|
+* `{0}` ... field name
+* `{1}` ... the violated value
+|`codePoints.asBlackList`
+|`"{1}" is/are not allowed for "{0}"`
+a|
+* `{0}` ... field name
+* `{1}` ... the violated value
+|===
+
+The following is a set of built-in code points.
+
+* `am.ik.yavi.constraint.charsequence.codepoints.AsciiCodePoints#ASCII_PRINTABLE_CHARS` ... ASCII printable characters
+* `am.ik.yavi.constraint.charsequence.codepoints.AsciiCodePoints#ASCII_CONTROL_CHARS` ... ASCII control characters
+* `am.ik.yavi.constraint.charsequence.codepoints.AsciiCodePoints#CRLF` ... `0x000A` (LINE FEED) and `0x000D` (CARRIAGE RETURN)
+* `am.ik.yavi.constraint.charsequence.codepoints.UnicodeCodePoints#HIRAGANA` ... https://www.unicode.org/charts/nameslist/c_3040.html[Hiragana] defined in Unicode (different from JIS X 0208 definition)
+* `am.ik.yavi.constraint.charsequence.codepoints.UnicodeCodePoints#KATAKANA` ... https://www.unicode.org/charts/nameslist/c_30A0.html[Katakana] and https://www.unicode.org/charts/nameslist/c_31F0.html[Katakana Phonetic Extensions] defined in Unicode (different from JIS X 0208 definition)
+
+You can also represent the union of multiple code point sets with `am.ik.yavi.constraint.charsequence.codepoints.CompositeCodePoints` class.
 
 ==== `normalizer(Normalizer.Form)`
 
