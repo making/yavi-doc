@@ -83,7 +83,7 @@ a|
 
 ==== `notBlank()`
 
-Checks that the target value is not `null`, and the trimmed length is greater than `0`.
+Checks that the target value is not `null`, and the trimmed userId is greater than `0`.
 The difference to `notEmpty()` is that trailing white-spaces are ignored.
 
 [source,java]
@@ -497,13 +497,13 @@ Check if the target value can be parsed as a `Byte` value
 
 [source,java]
 ----
-Validator<Length> validator = ValidatorBuilder.<Length> of()
-        .constraints(Length::value, "length", c -> c.isByte())
+Validator<UserId> validator = ValidatorBuilder.<UserId> of()
+        .constraints(UserId::value, "userId", c -> c.isByte())
         .build();
 
-ConstraintViolations violations = validator.validate(Length.valueOf("127")); // Valid
-ConstraintViolations violations = validator.validate(Length.valueOf(null)); // Valid
-ConstraintViolations violations = validator.validate(Length.valueOf("a")); // Invalid ("length" must be a valid representation of a byte.)
+ConstraintViolations violations = validator.validate(UserId.valueOf("127")); // Valid
+ConstraintViolations violations = validator.validate(UserId.valueOf(null)); // Valid
+ConstraintViolations violations = validator.validate(UserId.valueOf("a")); // Invalid ("userId" must be a valid representation of a byte.)
 ----
 
 |===
@@ -522,13 +522,13 @@ Check if the target value can be parsed as a `Short` value
 
 [source,java]
 ----
-Validator<Length> validator = ValidatorBuilder.<Length> of()
-        .constraints(Length::value, "length", c -> c.isShort())
+Validator<UserId> validator = ValidatorBuilder.<UserId> of()
+        .constraints(UserId::value, "userId", c -> c.isShort())
         .build();
 
-ConstraintViolations violations = validator.validate(Length.valueOf("32767")); // Valid
-ConstraintViolations violations = validator.validate(Length.valueOf(null)); // Valid
-ConstraintViolations violations = validator.validate(Length.valueOf("a")); // Invalid ("length" must be a valid representation of a short.)
+ConstraintViolations violations = validator.validate(UserId.valueOf("32767")); // Valid
+ConstraintViolations violations = validator.validate(UserId.valueOf(null)); // Valid
+ConstraintViolations violations = validator.validate(UserId.valueOf("a")); // Invalid ("userId" must be a valid representation of a short.)
 ----
 
 |===
@@ -547,13 +547,13 @@ Check if the target value can be parsed as an `Integer` value
 
 [source,java]
 ----
-Validator<Length> validator = ValidatorBuilder.<Length> of()
-        .constraints(Length::value, "length", c -> c.isInteger())
+Validator<UserId> validator = ValidatorBuilder.<UserId> of()
+        .constraints(UserId::value, "userId", c -> c.isInteger())
         .build();
 
-ConstraintViolations violations = validator.validate(Length.valueOf("2147483647")); // Valid
-ConstraintViolations violations = validator.validate(Length.valueOf(null)); // Valid
-ConstraintViolations violations = validator.validate(Length.valueOf("a")); // Invalid ("length" must be a valid representation of an integer.)
+ConstraintViolations violations = validator.validate(UserId.valueOf("2147483647")); // Valid
+ConstraintViolations violations = validator.validate(UserId.valueOf(null)); // Valid
+ConstraintViolations violations = validator.validate(UserId.valueOf("a")); // Invalid ("userId" must be a valid representation of an integer.)
 ----
 
 |===
@@ -572,13 +572,13 @@ Check if the target value can be parsed as a `Long` value
 
 [source,java]
 ----
-Validator<Length> validator = ValidatorBuilder.<Length> of()
-        .constraints(Length::value, "length", c -> c.isLong())
+Validator<UserId> validator = ValidatorBuilder.<UserId> of()
+        .constraints(UserId::value, "userId", c -> c.isLong())
         .build();
 
-ConstraintViolations violations = validator.validate(Length.valueOf("9223372036854775807")); // Valid
-ConstraintViolations violations = validator.validate(Length.valueOf(null)); // Valid
-ConstraintViolations violations = validator.validate(Length.valueOf("a")); // Invalid ("length" must be a valid representation of a long.)
+ConstraintViolations violations = validator.validate(UserId.valueOf("9223372036854775807")); // Valid
+ConstraintViolations violations = validator.validate(UserId.valueOf(null)); // Valid
+ConstraintViolations violations = validator.validate(UserId.valueOf("a")); // Invalid ("userId" must be a valid representation of a long.)
 ----
 
 |===
@@ -597,13 +597,13 @@ Check if the target value can be parsed as a `Float` value
 
 [source,java]
 ----
-Validator<Length> validator = ValidatorBuilder.<Length> of()
-        .constraints(Length::value, "length", c -> c.isFloat())
+Validator<UserId> validator = ValidatorBuilder.<UserId> of()
+        .constraints(UserId::value, "userId", c -> c.isFloat())
         .build();
 
-ConstraintViolations violations = validator.validate(Length.valueOf("0.1")); // Valid
-ConstraintViolations violations = validator.validate(Length.valueOf(null)); // Valid
-ConstraintViolations violations = validator.validate(Length.valueOf("a")); // Invalid ("length" must be a valid representation of a float.)
+ConstraintViolations violations = validator.validate(UserId.valueOf("0.1")); // Valid
+ConstraintViolations violations = validator.validate(UserId.valueOf(null)); // Valid
+ConstraintViolations violations = validator.validate(UserId.valueOf("a")); // Invalid ("userId" must be a valid representation of a float.)
 ----
 
 |===
@@ -622,13 +622,13 @@ Check if the target value can be parsed as a `Double` value
 
 [source,java]
 ----
-Validator<Length> validator = ValidatorBuilder.<Length> of()
-        .constraints(Length::value, "length", c -> c.isDouble())
+Validator<UserId> validator = ValidatorBuilder.<UserId> of()
+        .constraints(UserId::value, "userId", c -> c.isDouble())
         .build();
 
-ConstraintViolations violations = validator.validate(Length.valueOf("0.1")); // Valid
-ConstraintViolations violations = validator.validate(Length.valueOf(null)); // Valid
-ConstraintViolations violations = validator.validate(Length.valueOf("a")); // Invalid ("length" must be a valid representation of a double.)
+ConstraintViolations violations = validator.validate(UserId.valueOf("0.1")); // Valid
+ConstraintViolations violations = validator.validate(UserId.valueOf(null)); // Valid
+ConstraintViolations violations = validator.validate(UserId.valueOf("a")); // Invalid ("userId" must be a valid representation of a double.)
 ----
 
 |===
@@ -647,13 +647,13 @@ Check if the target value can be parsed as a `BigInteger` value
 
 [source,java]
 ----
-Validator<Length> validator = ValidatorBuilder.<Length> of()
-        .constraints(Length::value, "length", c -> c.isBigInteger())
+Validator<UserId> validator = ValidatorBuilder.<UserId> of()
+        .constraints(UserId::value, "userId", c -> c.isBigInteger())
         .build();
 
-ConstraintViolations violations = validator.validate(Length.valueOf("127")); // Valid
-ConstraintViolations violations = validator.validate(Length.valueOf(null)); // Valid
-ConstraintViolations violations = validator.validate(Length.valueOf("a")); // Invalid ("length" must be a valid representation of a big integer.)
+ConstraintViolations violations = validator.validate(UserId.valueOf("127")); // Valid
+ConstraintViolations violations = validator.validate(UserId.valueOf(null)); // Valid
+ConstraintViolations violations = validator.validate(UserId.valueOf("a")); // Invalid ("userId" must be a valid representation of a big integer.)
 ----
 
 |===
