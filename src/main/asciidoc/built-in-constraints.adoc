@@ -5,6 +5,33 @@ YAVI includes many commonly used built-in constraints for various types.
 
 === String
 
+Apply the constraints on the `String` as follows:
+
+[source,java]
+----
+Validator<TargetClass> validator = ValidatorBuilder.<TargetClass> of()
+        .constraints(/* Function from TargetClass to String  */, /* Field Name */, /* Constraints */)
+        .build();
+----
+
+To avoid ambiguous type inferences, you can use explicit `_string` instead of `constraints` as follows:
+
+[source,java]
+----
+Validator<TargetClass> validator = ValidatorBuilder.<TargetClass> of()
+        ._string(/* Function from TargetClass to String  */, /* Field Name */, /* Constraints */)
+        .build();
+----
+
+If you want to apply constraints to the more generic `CharSequence`, use `_charSequence` method.
+
+[source,java]
+----
+Validator<TargetClass> validator = ValidatorBuilder.<TargetClass> of()
+        ._charSequence(/* Function from TargetClass to CharSequence  */, /* Field Name */, /* Constraints */)
+        .build();
+----
+
 ==== `notNull()`
 
 Checks that the target value is not `null`
@@ -401,7 +428,7 @@ Validator<IpAddress> validator = ValidatorBuilder.<IpAddress> of()
 
 ConstraintViolations violations = validator.validate(new IpAddress("2001:0db8:bd05:01d2:288a:1fc0:0001:10ee")); // Valid
 ConstraintViolations violations = validator.validate(new IpAddress(null)); // Valid
-ConstraintViolations violations = validator.validate(new IpAddress("192.0.2.1")); // Invalid ("ipAddress" must not be a valid IPv4)
+ConstraintViolations violations = validator.validate(new IpAddress("192.0.2.1")); // Invalid ("ipAddress" must not be a valid IPv6)
 ----
 
 |===
@@ -468,33 +495,201 @@ a|
 
 Check if the target value can be parsed as a `Byte` value
 
+[source,java]
+----
+Validator<Length> validator = ValidatorBuilder.<Length> of()
+        .constraints(Length::value, "length", c -> c.isByte())
+        .build();
+
+ConstraintViolations violations = validator.validate(Length.valueOf("127")); // Valid
+ConstraintViolations violations = validator.validate(Length.valueOf(null)); // Valid
+ConstraintViolations violations = validator.validate(Length.valueOf("a")); // Invalid ("length" must be a valid representation of a byte.)
+----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`charSequence.byte`
+|`"{0}" must be a valid representation of a byte.`
+a|
+* `{0}` ... field name
+* `{1}` ... the given value
+|===
+
 ==== `isShort()`
 
 Check if the target value can be parsed as a `Short` value
+
+[source,java]
+----
+Validator<Length> validator = ValidatorBuilder.<Length> of()
+        .constraints(Length::value, "length", c -> c.isShort())
+        .build();
+
+ConstraintViolations violations = validator.validate(Length.valueOf("32767")); // Valid
+ConstraintViolations violations = validator.validate(Length.valueOf(null)); // Valid
+ConstraintViolations violations = validator.validate(Length.valueOf("a")); // Invalid ("length" must be a valid representation of a short.)
+----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`charSequence.short`
+|`"{0}" must be a valid representation of a short.`
+a|
+* `{0}` ... field name
+* `{1}` ... the given value
+|===
 
 ==== `isInteger()`
 
 Check if the target value can be parsed as an `Integer` value
 
+[source,java]
+----
+Validator<Length> validator = ValidatorBuilder.<Length> of()
+        .constraints(Length::value, "length", c -> c.isInteger())
+        .build();
+
+ConstraintViolations violations = validator.validate(Length.valueOf("2147483647")); // Valid
+ConstraintViolations violations = validator.validate(Length.valueOf(null)); // Valid
+ConstraintViolations violations = validator.validate(Length.valueOf("a")); // Invalid ("length" must be a valid representation of an integer.)
+----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`charSequence.integer`
+|`"{0}" must be a valid representation of an integer.`
+a|
+* `{0}` ... field name
+* `{1}` ... the given value
+|===
+
 ==== `isLong()`
 
 Check if the target value can be parsed as a `Long` value
+
+[source,java]
+----
+Validator<Length> validator = ValidatorBuilder.<Length> of()
+        .constraints(Length::value, "length", c -> c.isLong())
+        .build();
+
+ConstraintViolations violations = validator.validate(Length.valueOf("9223372036854775807")); // Valid
+ConstraintViolations violations = validator.validate(Length.valueOf(null)); // Valid
+ConstraintViolations violations = validator.validate(Length.valueOf("a")); // Invalid ("length" must be a valid representation of a long.)
+----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`charSequence.long`
+|`"{0}" must be a valid representation of a long.`
+a|
+* `{0}` ... field name
+* `{1}` ... the given value
+|===
 
 ==== `isFloat()`
 
 Check if the target value can be parsed as a `Float` value
 
+[source,java]
+----
+Validator<Length> validator = ValidatorBuilder.<Length> of()
+        .constraints(Length::value, "length", c -> c.isFloat())
+        .build();
+
+ConstraintViolations violations = validator.validate(Length.valueOf("0.1")); // Valid
+ConstraintViolations violations = validator.validate(Length.valueOf(null)); // Valid
+ConstraintViolations violations = validator.validate(Length.valueOf("a")); // Invalid ("length" must be a valid representation of a float.)
+----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`charSequence.float`
+|`"{0}" must be a valid representation of a float.`
+a|
+* `{0}` ... field name
+* `{1}` ... the given value
+|===
+
 ==== `isDouble()`
 
 Check if the target value can be parsed as a `Double` value
+
+[source,java]
+----
+Validator<Length> validator = ValidatorBuilder.<Length> of()
+        .constraints(Length::value, "length", c -> c.isDouble())
+        .build();
+
+ConstraintViolations violations = validator.validate(Length.valueOf("0.1")); // Valid
+ConstraintViolations violations = validator.validate(Length.valueOf(null)); // Valid
+ConstraintViolations violations = validator.validate(Length.valueOf("a")); // Invalid ("length" must be a valid representation of a double.)
+----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`charSequence.double`
+|`"{0}" must be a valid representation of a double.`
+a|
+* `{0}` ... field name
+* `{1}` ... the given value
+|===
 
 ==== `isBigInteger()`
 
 Check if the target value can be parsed as a `BigInteger` value
 
+[source,java]
+----
+Validator<Length> validator = ValidatorBuilder.<Length> of()
+        .constraints(Length::value, "length", c -> c.isBigInteger())
+        .build();
+
+ConstraintViolations violations = validator.validate(Length.valueOf("127")); // Valid
+ConstraintViolations violations = validator.validate(Length.valueOf(null)); // Valid
+ConstraintViolations violations = validator.validate(Length.valueOf("a")); // Invalid ("length" must be a valid representation of a big integer.)
+----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`charSequence.bigInteger`
+|`"{0}" must be a valid representation of a big integer.`
+a|
+* `{0}` ... field name
+* `{1}` ... the given value
+|===
+
 ==== `isBigDecimal()`
 
 Check if the target value can be parsed as a `BigDecimal` value
+
+[source,java]
+----
+Validator<Money> validator = ValidatorBuilder.<Money> of()
+        .constraints(Money::value, "money", c -> c.isBigDecimal())
+        .build();
+
+ConstraintViolations violations = validator.validate(Money.valueOf("50.0")); // Valid
+ConstraintViolations violations = validator.validate(Money.valueOf(null)); // Valid
+ConstraintViolations violations = validator.validate(Money.valueOf("a")); // Invalid ("money" must be a valid representation of a big decimal.)
+----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`charSequence.bigDecimal`
+|`"{0}" must be a valid representation of a big decimal.`
+a|
+* `{0}` ... field name
+* `{1}` ... the given value
+|===
 
 ==== `codePoints(...)`
 
