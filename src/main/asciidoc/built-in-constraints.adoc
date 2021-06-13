@@ -771,7 +771,7 @@ You can also represent the union of multiple code point sets with `am.ik.yavi.co
 
 ==== Advanced character length check
 
-YAVI counts the entered characters as the number of characters as it looks in the constraints on the number of characters. Recently, as a result of defining various characters on Unicode, the apparent size and the return value of `String#length` method are quite different.
+YAVI counts the input characters as the number of characters as it looks in the constraints on the number of characters. Recently, as a result of defining various characters on Unicode, the apparent size and the return value of `String#length` method are quite different.
 
 YAVI supports the following character types:
 
