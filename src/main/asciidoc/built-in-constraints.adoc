@@ -503,14 +503,14 @@ Validator<UserId> validator = ValidatorBuilder.<UserId> of()
 
 ConstraintViolations violations = validator.validate(UserId.valueOf("127")); // Valid
 ConstraintViolations violations = validator.validate(UserId.valueOf(null)); // Valid
-ConstraintViolations violations = validator.validate(UserId.valueOf("a")); // Invalid ("userId" must be a valid representation of a byte.)
+ConstraintViolations violations = validator.validate(UserId.valueOf("a")); // Invalid ("userId" must be a valid representation of a byte)
 ----
 
 |===
 |Message Key |Default Message Format |Args
 
 |`charSequence.byte`
-|`"{0}" must be a valid representation of a byte.`
+|`"{0}" must be a valid representation of a byte`
 a|
 * `{0}` ... field name
 * `{1}` ... the given value
@@ -528,14 +528,14 @@ Validator<UserId> validator = ValidatorBuilder.<UserId> of()
 
 ConstraintViolations violations = validator.validate(UserId.valueOf("32767")); // Valid
 ConstraintViolations violations = validator.validate(UserId.valueOf(null)); // Valid
-ConstraintViolations violations = validator.validate(UserId.valueOf("a")); // Invalid ("userId" must be a valid representation of a short.)
+ConstraintViolations violations = validator.validate(UserId.valueOf("a")); // Invalid ("userId" must be a valid representation of a short)
 ----
 
 |===
 |Message Key |Default Message Format |Args
 
 |`charSequence.short`
-|`"{0}" must be a valid representation of a short.`
+|`"{0}" must be a valid representation of a short`
 a|
 * `{0}` ... field name
 * `{1}` ... the given value
@@ -553,14 +553,14 @@ Validator<UserId> validator = ValidatorBuilder.<UserId> of()
 
 ConstraintViolations violations = validator.validate(UserId.valueOf("2147483647")); // Valid
 ConstraintViolations violations = validator.validate(UserId.valueOf(null)); // Valid
-ConstraintViolations violations = validator.validate(UserId.valueOf("a")); // Invalid ("userId" must be a valid representation of an integer.)
+ConstraintViolations violations = validator.validate(UserId.valueOf("a")); // Invalid ("userId" must be a valid representation of an integer)
 ----
 
 |===
 |Message Key |Default Message Format |Args
 
 |`charSequence.integer`
-|`"{0}" must be a valid representation of an integer.`
+|`"{0}" must be a valid representation of an integer`
 a|
 * `{0}` ... field name
 * `{1}` ... the given value
@@ -578,14 +578,14 @@ Validator<UserId> validator = ValidatorBuilder.<UserId> of()
 
 ConstraintViolations violations = validator.validate(UserId.valueOf("9223372036854775807")); // Valid
 ConstraintViolations violations = validator.validate(UserId.valueOf(null)); // Valid
-ConstraintViolations violations = validator.validate(UserId.valueOf("a")); // Invalid ("userId" must be a valid representation of a long.)
+ConstraintViolations violations = validator.validate(UserId.valueOf("a")); // Invalid ("userId" must be a valid representation of a long)
 ----
 
 |===
 |Message Key |Default Message Format |Args
 
 |`charSequence.long`
-|`"{0}" must be a valid representation of a long.`
+|`"{0}" must be a valid representation of a long`
 a|
 * `{0}` ... field name
 * `{1}` ... the given value
@@ -603,7 +603,7 @@ Validator<Money> validator = ValidatorBuilder.<Money> of()
 
 ConstraintViolations violations = validator.validate(Money.valueOf("0.1")); // Valid
 ConstraintViolations violations = validator.validate(Money.valueOf(null)); // Valid
-ConstraintViolations violations = validator.validate(Money.valueOf("a")); // Invalid ("money" must be a valid representation of a float.)
+ConstraintViolations violations = validator.validate(Money.valueOf("a")); // Invalid ("money" must be a valid representation of a float)
 ----
 
 |===
@@ -628,14 +628,14 @@ Validator<Money> validator = ValidatorBuilder.<Money> of()
 
 ConstraintViolations violations = validator.validate(Money.valueOf("0.1")); // Valid
 ConstraintViolations violations = validator.validate(Money.valueOf(null)); // Valid
-ConstraintViolations violations = validator.validate(Money.valueOf("a")); // Invalid ("money" must be a valid representation of a double.)
+ConstraintViolations violations = validator.validate(Money.valueOf("a")); // Invalid ("money" must be a valid representation of a double)
 ----
 
 |===
 |Message Key |Default Message Format |Args
 
 |`charSequence.double`
-|`"{0}" must be a valid representation of a double.`
+|`"{0}" must be a valid representation of a double`
 a|
 * `{0}` ... field name
 * `{1}` ... the given value
@@ -653,14 +653,14 @@ Validator<UserId> validator = ValidatorBuilder.<UserId> of()
 
 ConstraintViolations violations = validator.validate(UserId.valueOf("127")); // Valid
 ConstraintViolations violations = validator.validate(UserId.valueOf(null)); // Valid
-ConstraintViolations violations = validator.validate(UserId.valueOf("a")); // Invalid ("userId" must be a valid representation of a big integer.)
+ConstraintViolations violations = validator.validate(UserId.valueOf("a")); // Invalid ("userId" must be a valid representation of a big integer)
 ----
 
 |===
 |Message Key |Default Message Format |Args
 
 |`charSequence.bigInteger`
-|`"{0}" must be a valid representation of a big integer.`
+|`"{0}" must be a valid representation of a big integer`
 a|
 * `{0}` ... field name
 * `{1}` ... the given value
@@ -678,14 +678,14 @@ Validator<Money> validator = ValidatorBuilder.<Money> of()
 
 ConstraintViolations violations = validator.validate(Money.valueOf("50.0")); // Valid
 ConstraintViolations violations = validator.validate(Money.valueOf(null)); // Valid
-ConstraintViolations violations = validator.validate(Money.valueOf("a")); // Invalid ("money" must be a valid representation of a big decimal.)
+ConstraintViolations violations = validator.validate(Money.valueOf("a")); // Invalid ("money" must be a valid representation of a big decimal)
 ----
 
 |===
 |Message Key |Default Message Format |Args
 
 |`charSequence.bigDecimal`
-|`"{0}" must be a valid representation of a big decimal.`
+|`"{0}" must be a valid representation of a big decimal`
 a|
 * `{0}` ... field name
 * `{1}` ... the given value
@@ -873,8 +873,91 @@ SVS and FVS can be handled in the same way.
 
 ===== Emoji
 
+Emoji is crazy. The apparent number of characters and the number of code points are far away.
+
+Let me give you examples.
+
+[source,java]
+----
+System.out.println("❤️".length()); // 2
+System.out.println("🤴🏻".length()); // 4
+System.out.println("👨‍👦".length()); // 5
+System.out.println("️👨‍👨‍👧‍👦".length()); // 12
+System.out.println("🏴󠁧󠁢󠁥󠁮󠁧󠁿".length()); // 14 (WTH!)
+----
+
+YAVI will do its best to regard these Emojis as one character. There is no guarantee, but all emojis defined in Emoji 12.0 have been tested.
+
+This process is expensive and is not enabled by default. Specify the `emoji()` method as follows:
+
+[source,java]
+----
+Validator<Message> validator = ValidatorBuilder.<Message> of()
+        .constraint(Message::getText, "text", c -> c.emoji().lessThanOrEqual(1))
+        .build();
+validator.validate(new Message("❤️")); // Valid
+validator.validate(new Message("🤴🏻")); // Valid
+validator.validate(new Message("👨‍👦")); // Valid
+validator.validate(new Message("️👨‍👨‍👧‍👦")); // Valid
+validator.validate(new Message("🏴󠁧󠁢󠁥󠁮󠁧󠁿")); // Valid
+----
+
 
 ==== `asByteArray()`
+
+If there is a discrepancy between the apparent character length and the actual code point length, the appearance restrictions are OK, but the size stored in the database may be exceeded. In YAVI, you can check the byte length in addition to the apparent size.
+
+
+[source,java]
+----
+Validator<Message> validator = ValidatorBuilder.<Message> of()
+        .constraint(Message::getText, "text", c -> c.emoji().lessThanOrEqual(3)
+                .asByteArray().lessThanOrEqual(16))
+        .build();
+
+validator.validate(new Message("I❤️☕️️")); // Valid
+validator.validate(new Message("❤️❤️❤️️️")); // Invalid (The byte size of "text" must be less than or equal to 16. The given size is 24)
+----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`byteSize.lessThan`
+|`The byte size of "{0}" must be less than {1}. The given size is {2}`
+a|
+* `{0}` ... field name
+* `{1}` ... the specified size
+* `{2}` ... the given size
+* `{3}` ... the given value
+|`byteSize.lessThanOrEqual`
+|`The byte size of "{0}" must be less than or equal to {1}. The given size is {2}"`
+a|
+* `{0}` ... field name
+* `{1}` ... the specified size
+* `{2}` ... the given size
+* `{3}` ... the given value
+|`byteSize.greaterThan`
+|`The byte size of "{0}" must be greater than {1}. The given size is {2}`
+a|
+* `{0}` ... field name
+* `{1}` ... the specified size
+* `{2}` ... the given size
+* `{3}` ... the given value
+|`byteSize.greaterThanOrEqual`
+|`The byte size of "{0}" must be greater than or equal to {1}. The given size is {2}"`
+a|
+* `{0}` ... field name
+* `{1}` ... the specified size
+* `{2}` ... the given size
+* `{3}` ... the given value
+|`byteSize.fixedSize`
+|`The byte size of "{0}" must be {1}. The given size is {2}"`
+a|
+* `{0}` ... field name
+* `{1}` ... the specified size
+* `{2}` ... the given size
+* `{3}` ... the given value
+|===
 
 === Integer/Short/Long/Charactor/Byte/Float/Long
 
