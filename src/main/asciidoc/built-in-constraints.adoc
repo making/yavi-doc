@@ -771,7 +771,7 @@ You can also represent the union of multiple code point sets with `am.ik.yavi.co
 
 ==== Advanced character length check
 
-YAVI counts the input characters as the number of characters as it looks in the constraints on the number of characters. Recently, as a result of defining various characters on Unicode, the apparent size and the return value of `String#length` method are quite different.
+YAVI counts the input characters as the number of characters as it looks in the constraints on the number of characters. Recently, as a result of defining various characters on Unicode, the visual size and the return value of `String#length` method are quite different.
 
 YAVI supports the following character types:
 
@@ -888,7 +888,7 @@ System.out.println("🏴󠁧󠁢󠁥󠁮󠁧󠁿".length()); // 14 (WTH!)
 
 YAVI can try to count these Emojis as one character as much as possible. There is no guarantee, but all emojis defined in Emoji 12.0 have been tested.
 
-This process is expensive and is not enabled by default. Specify the `emoji()` method as follows:
+This process is expensive and is *not* enabled by default. To enable this feature, specify the `emoji()` method as follows:
 
 [source,java]
 ----
@@ -905,7 +905,7 @@ validator.validate(new Message("🏴󠁧󠁢󠁥󠁮󠁧󠁿")); // Valid
 
 ==== `asByteArray()`
 
-If there is a discrepancy between the apparent character length and the actual code point length, the appearance restrictions are OK, but the size stored in the database may be exceeded. In YAVI, you can check the byte length in addition to the apparent size.
+If there is a discrepancy between the apparent character length and the actual code point length, the appearance restrictions are OK, but the size stored in the database may be exceeded. In YAVI, you can check the byte length in addition to the visual size.
 
 
 [source,java]
