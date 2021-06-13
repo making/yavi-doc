@@ -886,7 +886,7 @@ System.out.println("️👨‍👨‍👧‍👦".length()); // 12
 System.out.println("🏴󠁧󠁢󠁥󠁮󠁧󠁿".length()); // 14 (WTH!)
 ----
 
-YAVI will do its best to regard these Emojis as one character. There is no guarantee, but all emojis defined in Emoji 12.0 have been tested.
+YAVI can try to count these Emojis as one character as much as possible. There is no guarantee, but all emojis defined in Emoji 12.0 have been tested.
 
 This process is expensive and is not enabled by default. Specify the `emoji()` method as follows:
 
