@@ -9,20 +9,59 @@ Here is an example:
 [source,java]
 ----
 Validator<User> validator = ValidatorBuilder.<User> of() // or ValidatorBuilder.of(User.class)
-    .constraint(User::getName, "name", c -> c.notNull()
-        .lessThanOrEqual(20))
-    .constraint(User::getEmail, "email", c -> c.notNull()
-        .greaterThanOrEqual(5)
-        .lessThanOrEqual(50)
-        .email())
-    .constraint(User::getAge, "age", c -> c.notNull()
-        .greaterThanOrEqual(0)
-        .lessThanOrEqual(200))
+    .constraint(User::getName, "name", c -> c.notNull().lessThanOrEqual(20))
+    .constraint(User::getEmail, "email", c -> c.notNull().greaterThanOrEqual(5).lessThanOrEqual(50).email())
+    .constraint(User::getAge, "age", c -> c.notNull().greaterThanOrEqual(0).lessThanOrEqual(200))
     .build();
 
 ConstraintViolations violations = validator.validate(user);
 violations.isValid(); // true or false
 violations.forEach(x -> System.out.println(x.message()));
+----
+
+In order to avoid ambiguous type inferences, you can use explicit `_<type>` method per type instead of constraint as follows:
+
+[source,java]
+----
+Validator<User> validator = ValidatorBuilder.<User> of()
+    ._string(User::getName, "name", c -> c.notNull().lessThanOrEqual(20))
+    ._string(User::getEmail, "email", c -> c.notNull().greaterThanOrEqual(5).lessThanOrEqual(50).email())
+    ._integer(User::getAge, "age", c -> c.notNull().greaterThanOrEqual(0).lessThanOrEqual(200))
+    .build();
+----
+
+The first argument of the `constraint` method does not have to be a "Getter" as long as it is a `java.util.function.Function`.
+
+For example,　If you want to create a `Validator` for https://openjdk.java.net/jeps/395[Records], you can implement it straightforwardly like bellow:
+
+[source,java]
+----
+public record User(String name, String email, int age) {
+}
+
+Validator<User> validator = ValidatorBuilder.<User> of() // or ValidatorBuilder.of(User.class)
+    .constraint(User::name, "name", c -> c.notNull().lessThanOrEqual(20))
+    // ...
+    .build();
+----
+
+Or if you don't want your method to expose the target field, you can define it like follwing:
+
+[source,java]
+----
+public class User {
+	private final String name;
+
+	public final Validator<User> validator = ValidatorBuilder.<User>of()
+			._string(x -> x.name, "name", c -> c.notNull().lessThanOrEqual(20))
+			.build();
+
+	public User(String name) {
+		this.name = name;
+	}
+
+	// Omits others
+}
 ----
 
 See <<built-in-constraints>> for other constraint rules.
