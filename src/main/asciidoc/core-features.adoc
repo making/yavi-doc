@@ -25,6 +25,44 @@ violations.isValid(); // true or false
 violations.forEach(x -> System.out.println(x.message()));
 ----
 
+=== Constraints on nested objects
+
+You can use `nested` method to apply constraints to the nested fields.
+You can delegate to the `Validator` for the nested field, or you can also define a set of constraints on the nested field inside.
+
+[source,java]
+----
+public class Address {
+    private Country country;
+    private City city;
+    // Omits other fields and getters
+}
+
+Validator<Country> countryValidator = ValidatorBuilder.<Country> of()
+    .nest(Country::getName, "name", c -> c.notBlank().lessThanOrEqual(20))
+    .build();
+Validator<City> cityValidator = ValidatorBuilder.<City> of()
+    .nest(City::getName, "name", c -> c.notBlank().lessThanOrEqual(100))
+    .build();
+
+Validator<Address> validator = ValidatorBuilder.<Address> of()
+    .nest(Address::getCountry, "country", countryValidator)
+    .nest(Address::getCity, "city", cityValidator)
+    .build();
+----
+
+Or:
+
+[source,java]
+----
+Validator<Address> validator = ValidatorBuilder.<Address> of()
+      .nest(Address::getCountry, "country",
+            b -> b.constraint(Country::getName, "name", c -> c.notBlank().lessThanOrEqual(20)))
+      .nest(Address::getCity, "city",
+            b -> b.constraint(City::getName, "name", c -> c.notBlank().lessThanOrEqual(100)))
+      .build();
+----
+
 === Kotlin Support
 
 If you are using Kotlin, you can define a `Validator` a bit shorter than Java using `konstraint` method instead of `constraint` as follows:
