@@ -1311,6 +1311,23 @@ a|
 |===
 
 === Collection
+Apply the constraints on the `Collection` as follows:
+
+[source,java]
+----
+Validator<TargetClass> validator = ValidatorBuilder.<TargetClass> of()
+        .constraint(/* Function from TargetClass to Collection  */, /* Field Name */, /* Constraints */)
+        .build();
+----
+
+To avoid ambiguous type inferences, you can use explicit `_collection` instead of `constraint` as follows:
+
+[source,java]
+----
+Validator<TargetClass> validator = ValidatorBuilder.<TargetClass> of()
+        ._collection(/* Function from TargetClass to Collection  */, /* Field Name */, /* Constraints */)
+        .build();
+----
 
 ==== `notNull()`
 
@@ -1494,6 +1511,32 @@ a|
 * `{1}` ... the specified size
 * `{2}` ... the given size
 * `{3}` ... the given value
+|===
+
+==== `contains(...)`
+
+Checks if the target value contains the specified value
+
+[source,java]
+----
+Validator<Histories> validator = ValidatorBuilder.<Histories> of()
+		.constraint(Histories::asList, "histories", c -> c.contains(new History(2)))
+		.build();
+
+ConstraintViolations violations = validator.validate(new Histories(List.of(new History(1), new History(2)))); // Valid
+ConstraintViolations violations = validator.validate(new Histories(null)); // Valid
+ConstraintViolations violations = validator.validate(new Histories(List.of(new History(3), new History(4), new History(5)))); // Invalid ("histories" must contain History{revision=2})
+----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`collection.contains`
+|`"{0}" must contain {1}`
+a|
+* `{0}` ... field name
+* `{1}` ... the specified value
+* `{2}` ... the given value
 |===
 
 === Map
