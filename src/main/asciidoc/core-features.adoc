@@ -45,7 +45,7 @@ Validator<User> validator = ValidatorBuilder.<User> of() // or ValidatorBuilder.
     .build();
 ----
 
-Or if you don't want your method to expose the target field, you can define it like follwing:
+Or if you don't want your method to expose the target field, you can define the contraint like follwing:
 
 [source,java]
 ----
