@@ -32,7 +32,7 @@ Validator<User> validator = ValidatorBuilder.<User> of()
 
 The first argument of the `constraint` method does not have to be a "Getter" as long as it is a `java.util.function.Function`.
 
-For example,　If you want to create a `Validator` for https://openjdk.java.net/jeps/395[Records], you can implement it straightforwardly like bellow:
+For example, If you want to create a `Validator` for https://openjdk.java.net/jeps/395[Records], you can implement it straightforwardly like bellow:
 
 [source,java]
 ----
@@ -41,7 +41,7 @@ public record User(String name, String email, int age) {
 
 Validator<User> validator = ValidatorBuilder.<User> of() // or ValidatorBuilder.of(User.class)
     .constraint(User::name, "name", c -> c.notNull().lessThanOrEqual(20))
-    // ...
+    // Omits others
     .build();
 ----
 
@@ -59,7 +59,6 @@ public class User {
     public User(String name) {
         this.name = name;
     }
-
     // Omits others
 }
 ----
