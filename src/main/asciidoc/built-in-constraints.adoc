@@ -702,9 +702,9 @@ For example, a code point set consisting of "A, B, C, D, a, b, c, d" is expresse
 
 [source,java]
 ----
-CodePointsSet<String> codePoints = () -> new HashSet<>(
-        List.of(0x0041 /* A */, 0x0042 /* B */, 0x0043 /* C */, 0x0044 /* D */,
-                0x0061 /* a */, 0x0062 /* b */, 0x0063 /* c */, 0x0064 /* d */));
+CodePointsSet<String> codePoints = () -> Set.of(
+		0x0041 /* A */, 0x0042 /* B */, 0x0043 /* C */, 0x0044 /* D */,
+        0x0061 /* a */, 0x0062 /* b */, 0x0063 /* c */, 0x0064 /* d */);
 ----
 
 Or:
