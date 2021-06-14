@@ -65,6 +65,21 @@ Validator<Address> validator = ValidatorBuilder.<Address> of()
       .build();
 ----
 
+=== Overriding violation messages
+
+The default violation message for each constraint is defined in <<built-in-constraints>>.
+
+If you want to customize the violation message, add `message` method on the target constraint as follows:
+
+[source,java]
+----
+Validator<User> validator = ValidatorBuilder.<User> of()
+    .constraint(User::getName, "name", c -> c.notNull().message("name is required!")
+        .greaterThanOrEqual(1).message("name is too small!")
+        .lessThanOrEqual(20).message("name is too large!"))
+    .build()
+----
+
 === Kotlin Support
 
 If you are using Kotlin, you can define a `Validator` a bit shorter than Java using `konstraint` method instead of `constraint` as follows:
