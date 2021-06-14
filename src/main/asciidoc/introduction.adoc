@@ -20,6 +20,6 @@ YAVI has the following features:
 * Easy custom constraints
 * Validation for groups, conditional validation
 * Validation for arguments before creating an object
-* Support for API and composition of validation results and validators that incorporate the concept of functional programming
+* Support for API and combination of validation results and validators that incorporate the concept of functional programming
 
 For the migration from Bean Validation, refer https://github.com/making/yavi/blob/develop/docs/FromBeanValidationToYAVI.md[the guide].
