@@ -9,8 +9,8 @@ include::introduction.adoc[]
 
 include::getting-started.adoc[]
 
-include::built-in-constraints.adoc[]
-
 include::core-features.adoc[]
+
+include::built-in-constraints.adoc[]
 
 include::integrations.adoc[]

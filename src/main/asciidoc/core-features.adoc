@@ -1,2 +1,51 @@
 [[core-features]]
 == Core Features
+
+=== Define and obtain a core `Validator` instance
+
+The core validator `am.ik.yavi.core.Validator` can be defined and obtained via `am.ik.yavi.builder.ValidatorBuilder`.
+Here is an example:
+
+[source,java]
+----
+Validator<User> validator = ValidatorBuilder.<User> of() // or ValidatorBuilder.of(User.class)
+    .constraint(User::getName, "name", c -> c.notNull()
+        .lessThanOrEqual(20))
+    .constraint(User::getEmail, "email", c -> c.notNull()
+        .greaterThanOrEqual(5)
+        .lessThanOrEqual(50)
+        .email())
+    .constraint(User::getAge, "age", c -> c.notNull()
+        .greaterThanOrEqual(0)
+        .lessThanOrEqual(200))
+    .build();
+
+ConstraintViolations violations = validator.validate(user);
+violations.isValid(); // true or false
+violations.forEach(x -> System.out.println(x.message()));
+----
+
+==== Kotlin Support
+
+If you are using Kotlin, you can define a `Validator` a bit shorter than Java using `konstraint` method instead of `constraint` as follows:
+
+[source,kotlin]
+----
+val validator: Validator<User> = ValidatorBuilder.of<User>()
+    .konstraint(User::name) {
+        notNull()
+            .lessThanOrEqual(20)
+    }
+    .konstraint(User::email) {
+        notNull()
+            .greaterThanOrEqual(5)
+            .lessThanOrEqual(50)
+            .email()
+    }
+    .konstraint(User::age) {
+        notNull()
+            .greaterThanOrEqual(0)
+            .lessThanOrEqual(200)
+    }
+    .build()
+----
