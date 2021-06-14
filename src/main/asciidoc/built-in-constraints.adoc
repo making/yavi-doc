@@ -1458,7 +1458,7 @@ Checks that the target value is not `null`
 
 [source,java]
 ----
-Validator<CodeMap> validator = ValidatorBuilder.<CodeMap>of()
+Validator<CodeMap> validator = ValidatorBuilder.<CodeMap> of()
 		.constraint(CodeMap::asMap, "codeMap", c -> c.notNull())
 		.build();
 
@@ -1482,7 +1482,7 @@ Checks that the target value is not empty
 
 [source,java]
 ----
-Validator<CodeMap> validator = ValidatorBuilder.<CodeMap>of()
+Validator<CodeMap> validator = ValidatorBuilder.<CodeMap> of()
 		.constraint(CodeMap::asMap, "codeMap", c -> c.notNull())
 		.build();
 
@@ -1507,7 +1507,7 @@ Checks if the target value's size is the specified size
 
 [source,java]
 ----
-Validator<CodeMap> validator = ValidatorBuilder.<CodeMap>of()
+Validator<CodeMap> validator = ValidatorBuilder.<CodeMap> of()
 		.constraint(CodeMap::asMap, "codeMap", c -> c.fixedSize(2))
 		.build();
 
@@ -1533,7 +1533,7 @@ Checks if the target value's size is greater than the specified size
 
 [source,java]
 ----
-Validator<CodeMap> validator = ValidatorBuilder.<CodeMap>of()
+Validator<CodeMap> validator = ValidatorBuilder.<CodeMap> of()
 		.constraint(CodeMap::asMap, "codeMap", c -> c.greaterThan(1))
 		.build();
 
@@ -1559,7 +1559,7 @@ Checks if the target value's size is greater than or equals to the specified siz
 
 [source,java]
 ----
-Validator<CodeMap> validator = ValidatorBuilder.<CodeMap>of()
+Validator<CodeMap> validator = ValidatorBuilder.<CodeMap> of()
 		.constraint(CodeMap::asMap, "codeMap", c -> c.greaterThanOrEqual(2))
 		.build();
 
@@ -1585,7 +1585,7 @@ Checks if the target value's size is less than the specified size
 
 [source,java]
 ----
-Validator<CodeMap> validator = ValidatorBuilder.<CodeMap>of()
+Validator<CodeMap> validator = ValidatorBuilder.<CodeMap> of()
 		.constraint(CodeMap::asMap, "codeMap", c -> c.lessThan(3))
 		.build();
 
@@ -1611,7 +1611,7 @@ Checks if the target value's size is less than or equals to the specified size
 
 [source,java]
 ----
-Validator<CodeMap> validator = ValidatorBuilder.<CodeMap>of()
+Validator<CodeMap> validator = ValidatorBuilder.<CodeMap> of()
 		.constraint(CodeMap::asMap, "codeMap", c -> c.lessThanOrEqual(2))
 		.build();
 
@@ -1637,7 +1637,7 @@ Checks if the target value contains the specified key
 
 [source,java]
 ----
-Validator<CodeMap> validator = ValidatorBuilder.<CodeMap>of()
+Validator<CodeMap> validator = ValidatorBuilder.<CodeMap> of()
 		.constraint(CodeMap::asMap, "codeMap", c -> c.containsKey("b"))
 		.build();
 
@@ -1662,7 +1662,7 @@ Checks if the target value contains the specified value
 
 [source,java]
 ----
-Validator<CodeMap> validator = ValidatorBuilder.<CodeMap>of()
+Validator<CodeMap> validator = ValidatorBuilder.<CodeMap> of()
 		.constraint(CodeMap::asMap, "codeMap", c -> c.containsValue("B"))
 		.build();
 
