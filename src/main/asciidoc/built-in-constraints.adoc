@@ -959,7 +959,7 @@ a|
 * `{3}` ... the given value
 |===
 
-=== Integer/Short/Long/Character/Byte/Float/Long
+=== Integer/Short/Long/Character/Byte/Float/Long/BigInteger/BigDecimal
 
 Apply the constraints on the `Integer` as follows:
 
@@ -979,7 +979,7 @@ Validator<TargetClass> validator = ValidatorBuilder.<TargetClass> of()
         .build();
 ----
 
-The same goes for `Short`/`Long`/`Character`/`Byte`/`Float`/`Long`.
+The same goes for `Short`/`Long`/`Character`/`Byte`/`Float`/`Long` / `BigInteger` / `BigDecimal`.
 
 ==== `notNull()`
 
@@ -1108,8 +1108,6 @@ a|
 * `{1}` ... the specified size
 * `{2}` ... the given value
 |===
-
-=== BigInteger/BigDecimal
 
 === Boolean
 
