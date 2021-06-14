@@ -1111,6 +1111,99 @@ a|
 
 === Boolean
 
+Apply the constraints on the `Boolean` as follows:
+
+[source,java]
+----
+Validator<TargetClass> validator = ValidatorBuilder.<TargetClass> of()
+        .constraints(/* Function from TargetClass to Boolean  */, /* Field Name */, /* Constraints */)
+        .build();
+----
+
+To avoid ambiguous type inferences, you can use explicit `_boolean` instead of `constraints` as follows:
+
+[source,java]
+----
+Validator<TargetClass> validator = ValidatorBuilder.<TargetClass> of()
+        ._boolean(/* Function from TargetClass to Boolean  */, /* Field Name */, /* Constraints */)
+        .build();
+----
+
 === Object
+
+==== `notNull()`
+
+Checks that the target value is not `null`
+
+[source,java]
+----
+Validator<Confirmation> validator = ValidatorBuilder.<Confirmation> of()
+        .constraints(Confirmation::isConfirmed, "confirmed", c -> c.notNull())
+        .build();
+
+ConstraintViolations violations = validator.validate(new Confirmation(true)); // Valid
+ConstraintViolations violations = validator.validate(new Confirmation(null)); // Invalid ("confirmed" must not be null)
+----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`object.notNull`
+|`"{0}" must not be null`
+a|
+* `{0}` ... field name
+* `{1}` ... the given value
+|===
+
+==== `isTrue()`
+
+Checks that the target value is `true`
+
+[source,java]
+----
+Validator<Confirmation> validator = ValidatorBuilder.<Confirmation> of()
+        .constraints(Confirmation::isConfirmed, "confirmed", c -> c.isTrue())
+        .build();
+
+ConstraintViolations violations = validator.validate(new Confirmation(true)); // Valid
+ConstraintViolations violations = validator.validate(new Confirmation(null)); // Valid
+ConstraintViolations violations = validator.validate(new Confirmation(false)); // Invalid ("confirmed" must be true)
+----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`boolean.isTrue`
+|`"{0}" must be true`
+a|
+* `{0}` ... field name
+* `{1}` ... the given value
+|===
+
+
+==== `isFalse()`
+
+Checks that the target value is `false`
+
+[source,java]
+----
+Validator<Rented> validator = ValidatorBuilder.<Rented> of()
+        .constraints(Rented::isRented, "rented", c -> c.isFalse())
+        .build();
+
+ConstraintViolations violations = validator.validate(new Rented(false)); // Valid
+ConstraintViolations violations = validator.validate(new Rented(null)); // Valid
+ConstraintViolations violations = validator.validate(new Rented(true)); // Invalid ("rented" must be false)
+----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`boolean.isFalse`
+|`"{0}" must be false`
+a|
+* `{0}` ... field name
+* `{1}` ... the given value
+|===
 
 === List/Array/Map
