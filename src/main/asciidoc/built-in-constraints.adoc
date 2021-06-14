@@ -1708,7 +1708,7 @@ Validator<TargetClass> validator = ValidatorBuilder.<TargetClass> of()
         .build();
 ----
 
-If you want to apply constraints on target class itself, you can use `constraintOnTarget` as follows:
+If you want to apply constraints on target class itself (e.g. <<cross-filed-validation>>), you can use `constraintOnTarget` as follows:
 
 [source,java]
 ----

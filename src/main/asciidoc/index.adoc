@@ -1,4 +1,4 @@
-= YAVI (__Y__et __A__nother __V__al__I__dation) Documentation
+= YAVI (__Y__et __A__nother __V__al__I__dation) Reference Documentation
 include::_attributes.adoc[]
 
 YAVI (pronounced jɑ-vάɪ)  is a lambda based type safe validation for Java.
