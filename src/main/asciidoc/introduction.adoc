@@ -6,7 +6,7 @@ The concepts are
 
 * No reflection!
 * No (runtime) annotation!
-* No Java Beans!
+* Not only Java Beans!
 * Zero dependency!
 
 If you are not a fan of https://beanvalidation.org/[Bean Validation], YAVI will be an awesome alternative.
