@@ -1211,7 +1211,7 @@ Apply the constraints on any `Object` as follows:
 [source,java]
 ----
 Validator<TargetClass> validator = ValidatorBuilder.<TargetClass> of()
-        .constraintsOnObject(/* Function from TargetClass to Object  */, /* Field Name */, /* Constraints */)
+        .constraint(/* Function from TargetClass to Object  */, /* Field Name */, /* Constraints */)
         .build();
 ----
 
