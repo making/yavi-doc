@@ -325,7 +325,7 @@ Check if the target value meets the specified password policy
 
 [source,java]
 ----
-Validator<Password> validator = ValidatorBuilder.<Password>of()
+Validator<Password> validator = ValidatorBuilder.<Password> of()
 		.constraint(Password::value, "password", c -> c.password(policy -> policy
 				.uppercase()
 				.lowercase()
@@ -383,7 +383,7 @@ PasswordPolicy<String> passwordPolicy = new PasswordPolicy<>() {
 };
 
 
-Validator<Password> validator = ValidatorBuilder.<Password>of()
+Validator<Password> validator = ValidatorBuilder.<Password> of()
 		.constraint(Password::value, "password", c -> c.password(policy -> policy
 				.required(passwordPolicy)
 				// ...
@@ -1281,7 +1281,7 @@ PasswordPolicy<Account> passwordPolicy = PasswordPolicy.of("DoNotIncludeUsername
 			}
 			return !password.toUpperCase().contains(username.toUpperCase());
 		});
-Validator<Account> validator = ValidatorBuilder.<Account>of()
+Validator<Account> validator = ValidatorBuilder.<Account> of()
 		.constraintOnTarget("password", c -> c.password(policy -> policy
 				.required(passwordPolicy)
 				.build()))
@@ -1318,7 +1318,7 @@ Checks that the target value is not `null`
 
 [source,java]
 ----
-Validator<Histories> validator = ValidatorBuilder.<Histories>of()
+Validator<Histories> validator = ValidatorBuilder.<Histories> of()
 		.constraint(Histories::asList, "histories", c -> c.notNull())
 		.build();
 
@@ -1342,7 +1342,7 @@ Checks that the target value is not empty
 
 [source,java]
 ----
-Validator<Histories> validator = ValidatorBuilder.<Histories>of()
+Validator<Histories> validator = ValidatorBuilder.<Histories> of()
 		.constraint(Histories::asList, "histories", c -> c.notEmpty())
 		.build();
 
@@ -1358,6 +1358,136 @@ ConstraintViolations violations = validator.validate(new Histories(List.of()); /
 a|
 * `{0}` ... field name
 * `{1}` ... the given value
+|===
+
+==== `fixedSize(int)`
+
+Checks if the target value's size is the specified size
+
+[source,java]
+----
+Validator<Histories> validator = ValidatorBuilder.<Histories> of()
+		.constraint(Histories::asList, "histories", c -> c.fixedSize(2))
+		.build();
+
+ConstraintViolations violations = validator.validate(new Histories(List.of(new History(), new History()))); // Valid
+ConstraintViolations violations = validator.validate(new Histories(List.of(new History()))); // Invalid (The size of "histories" must be 2. The given size is 1)
+----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`container.fixedSize`
+|`The size of "{0}" must be {1}. The given size is {2}`
+a|
+* `{0}` ... field name
+* `{1}` ... the specified size
+* `{2}` ... the given size
+* `{3}` ... the given value
+|===
+
+==== `greaterThan(int)`
+
+Checks if the target value's size is greater than the specified size
+
+[source,java]
+----
+Validator<Histories> validator = ValidatorBuilder.<Histories> of()
+		.constraint(Histories::asList, "histories", c -> c.greaterThan(1))
+		.build();
+
+ConstraintViolations violations = validator.validate(new Histories(List.of(new History(), new History()))); // Valid
+ConstraintViolations violations = validator.validate(new Histories(List.of(new History()))); // Invalid (The size of "histories" must be greater than 1. The given size is 1)
+----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`container.greaterThan`
+|`The size of "{0}" must be greater than {1}. The given size is {2}`
+a|
+* `{0}` ... field name
+* `{1}` ... the specified size
+* `{2}` ... the given size
+* `{3}` ... the given value
+|===
+
+==== `greaterThanOrEqual(int)`
+
+Checks if the target value's size is greater than or equals to the specified size
+
+[source,java]
+----
+Validator<Histories> validator = ValidatorBuilder.<Histories> of()
+		.constraint(Histories::asList, "histories", c -> c.greaterThanOrEqual(2))
+		.build();
+
+ConstraintViolations violations = validator.validate(new Histories(List.of(new History(), new History()))); // Valid
+ConstraintViolations violations = validator.validate(new Histories(List.of(new History()))); // Invalid (The size of "histories" must be greater than or equal to 2. The given size is 1)
+----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`container.greaterThanOrEqual`
+|`The size of "{0}" must be greater than or equal to {1}. The given size is {2}`
+a|
+* `{0}` ... field name
+* `{1}` ... the specified size
+* `{2}` ... the given size
+* `{3}` ... the given value
+|===
+
+==== `lessThan(int)`
+
+Checks if the target value's size is less than the specified size
+
+[source,java]
+----
+Validator<Histories> validator = ValidatorBuilder.<Histories> of()
+		.constraint(Histories::asList, "histories", c -> c.lessThan(3))
+		.build();
+
+ConstraintViolations violations = validator.validate(new Histories(List.of(new History(), new History()))); // Valid
+ConstraintViolations violations = validator.validate(new Histories(List.of(new History(), new History(), new History()))); // Invalid (The size of "histories" must be less than 3. The given size is 3)
+----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`container.lessThan`
+|`The size of "{0}" must be less than {1}. The given size is {2}`
+a|
+* `{0}` ... field name
+* `{1}` ... the specified size
+* `{2}` ... the given size
+* `{3}` ... the given value
+|===
+
+==== `lessThanOrEqual(int)`
+
+Checks if the target value's size is less than or equals to the specified size
+
+[source,java]
+----
+Validator<Histories> validator = ValidatorBuilder.<Histories> of()
+		.constraint(Histories::asList, "histories", c -> c.lessThanOrEqual(2))
+		.build();
+
+ConstraintViolations violations = validator.validate(new Histories(List.of(new History(), new History()))); // Valid
+ConstraintViolations violations = validator.validate(new Histories(List.of(new History(), new History(), new History()))); // Invalid (The size of "histories" must be less than or equal to 2. The given size is 3)
+----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`container.lessThanOrEqual`
+|`The size of "{0}" must be less than or equal to {1}. The given size is {2}`
+a|
+* `{0}` ... field name
+* `{1}` ... the specified size
+* `{2}` ... the given size
+* `{3}` ... the given value
 |===
 
 === Map
