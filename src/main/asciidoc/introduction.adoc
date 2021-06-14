@@ -1,6 +1,7 @@
 [[introduction]]
 == Introduction
 YAVI sounds as same as a Japanese slang "YABAI (ヤバイ)" that means awesome or awful depending on the context (like "Crazy").
+If you use YAVI, you will surely understand that it means the former.
 
 The concepts are
 
