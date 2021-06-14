@@ -804,7 +804,7 @@ Validator<Message> validator = ValidatorBuilder.<Message> of()
         .constraint(Message::getText, "text", c -> c.lessThanOrEqual(3))
         .build();
 
-validator.validate(new Message("𠮷野屋")); // Valid
+ConstraintViolations = validator.validate(new Message("𠮷野屋")); // Valid
 ----
 
 ===== Combining character
@@ -824,7 +824,7 @@ Validator<Message> validator = ValidatorBuilder.<Message> of()
         .constraint(Message::getText, "text", c -> c.lessThanOrEqual(2))
         .build();
 
-validator.validate(new Message("モジ")); // Valid
+ConstraintViolations = validator.validate(new Message("モジ")); // Valid
 ----
 
 YAVI uses `java.text.Normalizer` and normalizes with `java.text.Normalizer.Form#NFC` by default. This behavior can be changed as follows: (If `null` is set, it will not be normalized)
@@ -854,7 +854,7 @@ YAVI does *not* consider this character as a single character by default to prev
 Validator<Message> validator = ValidatorBuilder.<Message> of()
 		.constraint(Message::getText, "text", c -> c.lessThanOrEqual(1))
 		.build();
-validator.validate(new Message("𠮟󠄀")); // Invalid (The size of "text" must be less than or equal to 1. The given size is 2)
+ConstraintViolations = validator.validate(new Message("𠮟󠄀")); // Invalid (The size of "text" must be less than or equal to 1. The given size is 2)
 ----
 
 You can ignore (delete) the code point of `0xE0100`-`0xE01EF`, which is the range of IVS from the target string, as follows.
@@ -866,7 +866,7 @@ Validator<Message> validator = ValidatorBuilder.<Message> of()
 		.constraint(Message::getText, "text", c -> c.variant(opts -> opts.ivs(IdeographicVariationSequence.IGNORE))
 				.lessThanOrEqual(1))
 		.build();
-validator.validate(new Message("𠮟󠄀")); // Valid
+ConstraintViolations = validator.validate(new Message("𠮟󠄀")); // Valid
 ----
 
 SVS and FVS can be handled in the same way.
@@ -895,11 +895,11 @@ This process is expensive and is *not* enabled by default. To enable this featur
 Validator<Message> validator = ValidatorBuilder.<Message> of()
         .constraint(Message::getText, "text", c -> c.emoji().lessThanOrEqual(1))
         .build();
-validator.validate(new Message("❤️")); // Valid
-validator.validate(new Message("🤴🏻")); // Valid
-validator.validate(new Message("👨‍👦")); // Valid
-validator.validate(new Message("️👨‍👨‍👧‍👦")); // Valid
-validator.validate(new Message("🏴󠁧󠁢󠁥󠁮󠁧󠁿")); // Valid
+ConstraintViolations = validator.validate(new Message("❤️")); // Valid
+ConstraintViolations = validator.validate(new Message("🤴🏻")); // Valid
+ConstraintViolations = validator.validate(new Message("👨‍👦")); // Valid
+ConstraintViolations = validator.validate(new Message("️👨‍👨‍👧‍👦")); // Valid
+ConstraintViolations = validator.validate(new Message("🏴󠁧󠁢󠁥󠁮󠁧󠁿")); // Valid
 ----
 
 
@@ -915,8 +915,8 @@ Validator<Message> validator = ValidatorBuilder.<Message> of()
                 .asByteArray().lessThanOrEqual(16))
         .build();
 
-validator.validate(new Message("I❤️☕️️")); // Valid
-validator.validate(new Message("❤️❤️❤️️️")); // Invalid (The byte size of "text" must be less than or equal to 16. The given size is 24)
+ConstraintViolations = validator.validate(new Message("I❤️☕️️")); // Valid
+ConstraintViolations = validator.validate(new Message("❤️❤️❤️️️")); // Invalid (The byte size of "text" must be less than or equal to 16. The given size is 24)
 ----
 
 |===
