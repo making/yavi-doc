@@ -1462,7 +1462,7 @@ Validator<CodeMap> validator = ValidatorBuilder.<CodeMap> of()
 		.constraint(CodeMap::asMap, "codeMap", c -> c.notNull())
 		.build();
 
-ConstraintViolations violations = validator.validate(new CodeMap(Map.of("a", "A", "b", "B")));
+ConstraintViolations violations = validator.validate(new CodeMap(Map.of("a", "A", "b", "B"))); // Valid
 ConstraintViolations violations = validator.validate(new CodeMap(null)); // Invalid ("codeMap" must not be null)
 ----
 
@@ -1486,7 +1486,7 @@ Validator<CodeMap> validator = ValidatorBuilder.<CodeMap> of()
 		.constraint(CodeMap::asMap, "codeMap", c -> c.notNull())
 		.build();
 
-ConstraintViolations violations = validator.validate(new CodeMap(Map.of("a", "A", "b", "B")));
+ConstraintViolations violations = validator.validate(new CodeMap(Map.of("a", "A", "b", "B"))); // Valid
 ConstraintViolations violations = validator.validate(new CodeMap(null)); // Invalid ("codeMap" must not be empty)
 ConstraintViolations violations = validator.validate(new CodeMap(Map.of())); // Invalid ("codeMap" must not be empty)
 ----
@@ -1511,7 +1511,8 @@ Validator<CodeMap> validator = ValidatorBuilder.<CodeMap> of()
 		.constraint(CodeMap::asMap, "codeMap", c -> c.fixedSize(2))
 		.build();
 
-ConstraintViolations violations = validator.validate(new CodeMap(Map.of("a", "A", "b", "B")));
+ConstraintViolations violations = validator.validate(new CodeMap(Map.of("a", "A", "b", "B"))); // Valid
+ConstraintViolations violations = validator.validate(new CodeMap(null)); // Valid
 ConstraintViolations violations = validator.validate(new CodeMap(Map.of())); // Invalid (The size of "codeMap" must be 2. The given size is 1)
 ----
 
@@ -1537,7 +1538,8 @@ Validator<CodeMap> validator = ValidatorBuilder.<CodeMap> of()
 		.constraint(CodeMap::asMap, "codeMap", c -> c.greaterThan(1))
 		.build();
 
-ConstraintViolations violations = validator.validate(new CodeMap(Map.of("a", "A", "b", "B")));
+ConstraintViolations violations = validator.validate(new CodeMap(Map.of("a", "A", "b", "B"))); // Valid
+ConstraintViolations violations = validator.validate(new CodeMap(null)); // Valid
 ConstraintViolations violations = validator.validate(new CodeMap(Map.of("a", "A"))); // Invalid (The size of "codeMap" must be greater than 1. The given size is 1)
 ----
 
@@ -1563,7 +1565,8 @@ Validator<CodeMap> validator = ValidatorBuilder.<CodeMap> of()
 		.constraint(CodeMap::asMap, "codeMap", c -> c.greaterThanOrEqual(2))
 		.build();
 
-ConstraintViolations violations = validator.validate(new CodeMap(Map.of("a", "A", "b", "B")));
+ConstraintViolations violations = validator.validate(new CodeMap(Map.of("a", "A", "b", "B"))); // Valid
+ConstraintViolations violations = validator.validate(new CodeMap(null)); // Valid
 ConstraintViolations violations = validator.validate(new CodeMap(Map.of("a", "A"))); // Invalid (The size of "codeMap" must be greater than or equal to 2. The given size is 1)
 ----
 
@@ -1589,7 +1592,8 @@ Validator<CodeMap> validator = ValidatorBuilder.<CodeMap> of()
 		.constraint(CodeMap::asMap, "codeMap", c -> c.lessThan(3))
 		.build();
 
-ConstraintViolations violations = validator.validate(new CodeMap(Map.of("a", "A", "b", "B")));
+ConstraintViolations violations = validator.validate(new CodeMap(Map.of("a", "A", "b", "B"))); // Valid
+ConstraintViolations violations = validator.validate(new CodeMap(null)); // Valid
 ConstraintViolations violations = validator.validate(new CodeMap(Map.of("a", "A", "b", "B", "c", "C"))); // Invalid (The size of "histories" must be less than 3. The given size is 3)
 ----
 
@@ -1615,7 +1619,8 @@ Validator<CodeMap> validator = ValidatorBuilder.<CodeMap> of()
 		.constraint(CodeMap::asMap, "codeMap", c -> c.lessThanOrEqual(2))
 		.build();
 
-ConstraintViolations violations = validator.validate(new CodeMap(Map.of("a", "A", "b", "B")));
+ConstraintViolations violations = validator.validate(new CodeMap(Map.of("a", "A", "b", "B"))); // Valid
+ConstraintViolations violations = validator.validate(new CodeMap(null)); // Valid
 ConstraintViolations violations = validator.validate(new CodeMap(Map.of("a", "A", "b", "B", "c", "C"))); // Invalid (The size of "histories" must be less than or equal to 2. The given size is 3)
 ----
 
@@ -1642,6 +1647,7 @@ Validator<CodeMap> validator = ValidatorBuilder.<CodeMap> of()
 		.build();
 
 ConstraintViolations violations = validator.validate(new CodeMap(Map.of("a", "A", "b", "B"))); // Valid
+ConstraintViolations violations = validator.validate(new CodeMap(null)); // Valid
 ConstraintViolations violations = validator.validate(new CodeMap(Map.of("c", "C"))); // Invalid ("codeMap" must contain key b)
 ----
 
@@ -1667,6 +1673,7 @@ Validator<CodeMap> validator = ValidatorBuilder.<CodeMap> of()
 		.build();
 
 ConstraintViolations violations = validator.validate(new CodeMap(Map.of("a", "A", "b", "B"))); // Valid
+ConstraintViolations violations = validator.validate(new CodeMap(null)); // Valid
 ConstraintViolations violations = validator.validate(new CodeMap(Map.of("c", "C"))); // Invalid ("codeMap" must contain value B)
 ----
 
