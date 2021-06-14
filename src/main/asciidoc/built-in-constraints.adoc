@@ -336,22 +336,22 @@ Validator<Password> validator = ValidatorBuilder.<Password>of()
 
 ConstraintViolations violations = validator.validate(new Password("Yavi123")); // Valid
 ConstraintViolations violations = validator.validate(new Password(null)); // Valid
-ConstraintViolations violations = validator.validate(new Password("yavi123")); // Invalid ("password" must contain Uppercase policy)
-ConstraintViolations violations = validator.validate(new Password("yavi")); // Invalid ("password" must contain Uppercase policy, "password" must contain at least 1 policies from [Numbers, Symbols])
-ConstraintViolations violations = validator.validate(new Password("")); // Invalid ("password" must contain Uppercase policy, "password" must contain Lowercase policy, "password" must contain at least 1 policies from [Numbers, Symbols])
+ConstraintViolations violations = validator.validate(new Password("yavi123")); // Invalid ("password" must meet Uppercase policy)
+ConstraintViolations violations = validator.validate(new Password("yavi")); // Invalid ("password" must meet Uppercase policy, "password" must meet at least 1 policies from [Numbers, Symbols])
+ConstraintViolations violations = validator.validate(new Password("")); // Invalid ("password" must meet Uppercase policy, "password" must meet Lowercase policy, "password" must meet at least 1 policies from [Numbers, Symbols])
 ----
 
 |===
 |Message Key |Default Message Format |Args
 
-|`charSequence.passwordRequired`
-|`"{0}" must contain {1} policy`
+|`.password.required`
+|`"{0}" must meet {1} policy`
 a|
 * `{0}` ... field name
 * `{1}` ... the specified policy name
 * `{2}` ... the given value
-|`charSequence.passwordOptional`
-|`"{0}" must contain at least {1} policies from {2}`
+|`password.optional`
+|`"{0}" must meet at least {1} policies from {2}`
 a|
 * `{0}` ... field name
 * `{1}` ... minimum requirement
@@ -1263,22 +1263,42 @@ Checks that the target value is not `null`
 
 [source,java]
 ----
-Validator<CreatedAt> validator = ValidatorBuilder.<CreatedAt> of()
-        .constraint(CreatedAt::asInstant, "createdAt", c -> c.notNull())
-        .build();
+PasswordPolicy<Account> passwordPolicy = PasswordPolicy.of("DoNotIncludeUsername",
+		account -> {
+			String username = account.getUsername();
+			String password = account.getPassword();
+			if (username == null || password == null) {
+				return true;
+			}
+			return !password.toUpperCase().contains(username.toUpperCase());
+		});
+Validator<Account> validator = ValidatorBuilder.<Account>of()
+		.constraintOnTarget("password", c -> c.password(policy -> policy
+				.required(passwordPolicy)
+				.build()))
+		.build();
 
-ConstraintViolations violations = validator.validate(new CreatedAt(Instant.now())); // Valid
-ConstraintViolations violations = validator.validate(new CreatedAt(null)); // Invalid ("createdAt" must not be null)
+ConstraintViolations violations = validator.validate(new Account("foo", "Bar1234")); // Valid
+ConstraintViolations violations = validator.validate(new Account(null, null)); // Valid
+ConstraintViolations violations = validator.validate(new Account("foo", "Foo1234")); // Invalid ("password" must meet DoNotIncludeUsername policy)
 ----
 
 |===
 |Message Key |Default Message Format |Args
 
-|`object.notNull`
-|`"{0}" must not be null`
+|`.password.required`
+|`"{0}" must meet {1} policy`
 a|
 * `{0}` ... field name
-* `{1}` ... the given value
+* `{1}` ... the specified policy name
+* `{2}` ... the given value
+|`password.optional`
+|`"{0}" must meet at least {1} policies from {2}`
+a|
+* `{0}` ... field name
+* `{1}` ... minimum requirement
+* `{2}` ... the specified policy names
+* `{3}` ... the given value
 |===
 
 === List/Array/Map
