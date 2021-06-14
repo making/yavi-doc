@@ -175,9 +175,3 @@ The first three test methods show some expected constraint violations:
 
 If the object validates successfully, `validate()` returns an empty `ConstraintViolations` as you can see in `carIsValid()`.
 You can also check if the validation was successful with the `ConstraintViolations.isValid` method.
-
-[[gs-where-to-go-next]]
-=== Where to go next?
-
-That concludes the 5 minutes tour through the world of YAVI.
-If you want a more complete introduction, it is recommended to read https://github.com/making/yavi/blob/develop/README.md[the YAVI's README].
