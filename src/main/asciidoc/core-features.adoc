@@ -69,7 +69,7 @@ Validator<Address> validator = ValidatorBuilder.<Address> of()
 
 The default violation message for each constraint is defined in <<built-in-constraints>>.
 
-If you want to customize the violation message, add `message` method on the target constraint as follows:
+If you want to customize the violation message, append `message` method on the target constraint as follows:
 
 [source,java]
 ----
@@ -78,6 +78,53 @@ Validator<User> validator = ValidatorBuilder.<User> of()
         .greaterThanOrEqual(1).message("name is too small!")
         .lessThanOrEqual(20).message("name is too large!"))
     .build()
+----
+
+=== Creating a custom constraint
+
+If you want to apply constraints that are not in the <<built-in-constraints>>, you can create custom constraints by implementing `am.ik.yavi.core.CustomConstraint` interface as bellow:
+
+[source,java]
+----
+public class IsbnConstraint implements CustomConstraint<String> {
+
+    @Override
+    public boolean test(String s) {
+    	// Delegate processing to another method
+        return ISBNValidator.isISBN13(s);
+    }
+
+    @Override
+    public String messageKey() {
+        return "string.isbn13";
+    }
+
+    @Override
+    public String defaultMessageFormat() {
+        return "\"{0}\" must be ISBN13 format";
+    }
+}
+----
+
+The created custom constraint can be specified by `predicate` method as follows:
+
+[source,java]
+----
+IsbnConstraint isbn = new IsbnConstraint();
+Validator<Book> book = ValidatorBuilder.<Book> of()
+    .constraint(Book::getTitle, "title", c -> c.notBlank().lessThanOrEqual(64))
+    .constraint(Book::getIsbn, "isbn", c -> c.notBlank().predicate(isbn))
+    .build();
+----
+
+You can also write constraint rules directly in the `predicate` method instead of defining the `CustomConstraint` class.
+
+[source,java]
+----
+Validator<Book> book = ValidatorBuilder.<Book> of()
+    .constraint(Book::getTitle, "title", c -> c.notBlank().lessThanOrEqual(64))
+    .constraint(Book::getIsbn, "isbn", c -> c.notBlank().predicate(s -> ISBNValidator.isISBN13(s), ViolationMessage.of("string.isbn13", "\"{0}\" must be ISBN13 format")))
+    .build();
 ----
 
 === Kotlin Support
