@@ -10,11 +10,11 @@ Apply the constraints on the `String` as follows:
 [source,java]
 ----
 Validator<TargetClass> validator = ValidatorBuilder.<TargetClass> of()
-        .constraints(/* Function from TargetClass to String  */, /* Field Name */, /* Constraints */)
+        .constraint(/* Function from TargetClass to String  */, /* Field Name */, /* Constraints */)
         .build();
 ----
 
-To avoid ambiguous type inferences, you can use explicit `_string` instead of `constraints` as follows:
+To avoid ambiguous type inferences, you can use explicit `_string` instead of `constraint` as follows:
 
 [source,java]
 ----
@@ -39,7 +39,7 @@ Checks that the target value is not `null`
 [source,java]
 ----
 Validator<Email> validator = ValidatorBuilder.<Email> of()
-        .constraints(Email::value, "email", c -> c.notNull())
+        .constraint(Email::value, "email", c -> c.notNull())
         .build();
 
 ConstraintViolations violations = validator.validate(new Email("yavi@example.com")); // Valid
@@ -63,7 +63,7 @@ Checks whether the target value is not `null` nor empty
 [source,java]
 ----
 Validator<Email> validator = ValidatorBuilder.<Email> of()
-        .constraints(Email::value, "email", c -> c.notEmpty())
+        .constraint(Email::value, "email", c -> c.notEmpty())
         .build();
 
 ConstraintViolations violations = validator.validate(new Email("yavi@example.com")); // Valid
@@ -89,7 +89,7 @@ The difference to `notEmpty()` is that trailing white-spaces are ignored.
 [source,java]
 ----
 Validator<Email> validator = ValidatorBuilder.<Email> of()
-        .constraints(Email::value, "email", c -> c.notBlank())
+        .constraint(Email::value, "email", c -> c.notBlank())
         .build();
 
 ConstraintViolations violations = validator.validate(new Email("yavi@example.com")); // Valid
@@ -114,7 +114,7 @@ Checks if the target value's size is the specified size
 [source,java]
 ----
 Validator<ZipCode> validator = ValidatorBuilder.<ZipCode> of()
-        .constraints(ZipCode::value, "zipCode", c -> c.fixedSize(7))
+        .constraint(ZipCode::value, "zipCode", c -> c.fixedSize(7))
         .build();
 
 ConstraintViolations violations = validator.validate(new ZipCode("1234567")); // Valid
@@ -141,7 +141,7 @@ Checks if the target value's size is greater than the specified size
 [source,java]
 ----
 Validator<Country> validator = ValidatorBuilder.<Country> of()
-        .constraints(Country::value, "country", c -> c.greaterThan(2))
+        .constraint(Country::value, "country", c -> c.greaterThan(2))
         .build();
 
 ConstraintViolations violations = validator.validate(new Country("Japan")); // Valid
@@ -168,7 +168,7 @@ Checks if the target value's size is greater than or equals to the specified siz
 [source,java]
 ----
 Validator<Country> validator = ValidatorBuilder.<Country> of()
-        .constraints(Country::value, "country", c -> c.greaterThanOrEqual(2))
+        .constraint(Country::value, "country", c -> c.greaterThanOrEqual(2))
         .build();
 
 ConstraintViolations violations = validator.validate(new Country("Japan")); // Valid
@@ -195,7 +195,7 @@ Checks if the target value's size is less than the specified size
 [source,java]
 ----
 Validator<Country> validator = ValidatorBuilder.<Country> of()
-        .constraints(Country::value, "country", c -> c.lessThan(4))
+        .constraint(Country::value, "country", c -> c.lessThan(4))
         .build();
 
 ConstraintViolations violations = validator.validate(new Country("JP")); // Valid
@@ -222,7 +222,7 @@ Checks if the target value's size is less than or equals to the specified size
 [source,java]
 ----
 Validator<Country> validator = ValidatorBuilder.<Country> of()
-        .constraints(Country::value, "country", c -> c.lessThanOrEqual(4))
+        .constraint(Country::value, "country", c -> c.lessThanOrEqual(4))
         .build();
 
 ConstraintViolations violations = validator.validate(new Country("JP")); // Valid
@@ -249,7 +249,7 @@ Checks if the target value contains the specified sequence of char values
 [source,java]
 ----
 Validator<ZipCode> validator = ValidatorBuilder.<ZipCode> of()
-        .constraints(ZipCode::value, "zipCode", c -> c.contains("-"))
+        .constraint(ZipCode::value, "zipCode", c -> c.contains("-"))
         .build();
 
 ConstraintViolations violations = validator.validate(new ZipCode("123-4567")); // Valid
@@ -275,7 +275,7 @@ Checks if the target value matches the specified regular expression
 [source,java]
 ----
 Validator<ZipCode> validator = ValidatorBuilder.<ZipCode> of()
-        .constraints(ZipCode::value, "zipCode", c -> c.pattern("[0-9]{3}-[0-9]{4}"))
+        .constraint(ZipCode::value, "zipCode", c -> c.pattern("[0-9]{3}-[0-9]{4}"))
         .build();
 
 ConstraintViolations violations = validator.validate(new ZipCode("123-4567")); // Valid
@@ -301,7 +301,7 @@ Checks if the target value is a valid email address
 [source,java]
 ----
 Validator<Email> validator = ValidatorBuilder.<Email> of()
-        .constraints(Email::value, "email", c -> c.email())
+        .constraint(Email::value, "email", c -> c.email())
         .build();
 
 ConstraintViolations violations = validator.validate(new Email("yavi@example.com")); // Valid
@@ -398,7 +398,7 @@ Check if the target value is a valid IPv4 address
 [source,java]
 ----
 Validator<IpAddress> validator = ValidatorBuilder.<IpAddress> of()
-        .constraints(IpAddress::value, "ipAddress", c -> c.ipv4())
+        .constraint(IpAddress::value, "ipAddress", c -> c.ipv4())
         .build();
 
 ConstraintViolations violations = validator.validate(new IpAddress("192.0.2.1")); // Valid
@@ -423,7 +423,7 @@ Check if the target value is a valid IPv6 address
 [source,java]
 ----
 Validator<IpAddress> validator = ValidatorBuilder.<IpAddress> of()
-        .constraints(IpAddress::value, "ipAddress", c -> c.ipv6())
+        .constraint(IpAddress::value, "ipAddress", c -> c.ipv6())
         .build();
 
 ConstraintViolations violations = validator.validate(new IpAddress("2001:0db8:bd05:01d2:288a:1fc0:0001:10ee")); // Valid
@@ -448,7 +448,7 @@ Check if the target value is a valid URL
 [source,java]
 ----
 Validator<Url> validator = ValidatorBuilder.<Url> of()
-        .constraints(Url::value, "url", c -> c.url())
+        .constraint(Url::value, "url", c -> c.url())
         .build();
 
 ConstraintViolations violations = validator.validate(new Url("https://yavi.ik.am")); // Valid
@@ -473,7 +473,7 @@ Checks if the digits within the target value pass the Luhn checksum algorithm (s
 [source,java]
 ----
 Validator<CreditCard> validator = ValidatorBuilder.<CreditCard> of()
-        .constraints(CreditCard::number, "creditCardNumber", c -> c.luhn())
+        .constraint(CreditCard::number, "creditCardNumber", c -> c.luhn())
         .build();
 
 ConstraintViolations violations = validator.validate(new CreditCard("4111111111111111")); // Valid
@@ -498,7 +498,7 @@ Check if the target value can be parsed as a `Byte` value
 [source,java]
 ----
 Validator<UserId> validator = ValidatorBuilder.<UserId> of()
-        .constraints(UserId::value, "userId", c -> c.isByte())
+        .constraint(UserId::value, "userId", c -> c.isByte())
         .build();
 
 ConstraintViolations violations = validator.validate(UserId.valueOf("127")); // Valid
@@ -523,7 +523,7 @@ Check if the target value can be parsed as a `Short` value
 [source,java]
 ----
 Validator<UserId> validator = ValidatorBuilder.<UserId> of()
-        .constraints(UserId::value, "userId", c -> c.isShort())
+        .constraint(UserId::value, "userId", c -> c.isShort())
         .build();
 
 ConstraintViolations violations = validator.validate(UserId.valueOf("32767")); // Valid
@@ -548,7 +548,7 @@ Check if the target value can be parsed as an `Integer` value
 [source,java]
 ----
 Validator<UserId> validator = ValidatorBuilder.<UserId> of()
-        .constraints(UserId::value, "userId", c -> c.isInteger())
+        .constraint(UserId::value, "userId", c -> c.isInteger())
         .build();
 
 ConstraintViolations violations = validator.validate(UserId.valueOf("2147483647")); // Valid
@@ -573,7 +573,7 @@ Check if the target value can be parsed as a `Long` value
 [source,java]
 ----
 Validator<UserId> validator = ValidatorBuilder.<UserId> of()
-        .constraints(UserId::value, "userId", c -> c.isLong())
+        .constraint(UserId::value, "userId", c -> c.isLong())
         .build();
 
 ConstraintViolations violations = validator.validate(UserId.valueOf("9223372036854775807")); // Valid
@@ -598,7 +598,7 @@ Check if the target value can be parsed as a `Float` value
 [source,java]
 ----
 Validator<Money> validator = ValidatorBuilder.<Money> of()
-        .constraints(Money::value, "money", c -> c.isFloat())
+        .constraint(Money::value, "money", c -> c.isFloat())
         .build();
 
 ConstraintViolations violations = validator.validate(Money.valueOf("0.1")); // Valid
@@ -623,7 +623,7 @@ Check if the target value can be parsed as a `Double` value
 [source,java]
 ----
 Validator<Money> validator = ValidatorBuilder.<Money> of()
-        .constraints(Money::value, "money", c -> c.isDouble())
+        .constraint(Money::value, "money", c -> c.isDouble())
         .build();
 
 ConstraintViolations violations = validator.validate(Money.valueOf("0.1")); // Valid
@@ -648,7 +648,7 @@ Check if the target value can be parsed as a `BigInteger` value
 [source,java]
 ----
 Validator<UserId> validator = ValidatorBuilder.<UserId> of()
-        .constraints(UserId::value, "userId", c -> c.isBigInteger())
+        .constraint(UserId::value, "userId", c -> c.isBigInteger())
         .build();
 
 ConstraintViolations violations = validator.validate(UserId.valueOf("127")); // Valid
@@ -673,7 +673,7 @@ Check if the target value can be parsed as a `BigDecimal` value
 [source,java]
 ----
 Validator<Money> validator = ValidatorBuilder.<Money> of()
-        .constraints(Money::value, "money", c -> c.isBigDecimal())
+        .constraint(Money::value, "money", c -> c.isBigDecimal())
         .build();
 
 ConstraintViolations violations = validator.validate(Money.valueOf("50.0")); // Valid
@@ -966,11 +966,11 @@ Apply the constraints on the `Integer` as follows:
 [source,java]
 ----
 Validator<TargetClass> validator = ValidatorBuilder.<TargetClass> of()
-        .constraints(/* Function from TargetClass to Integer  */, /* Field Name */, /* Constraints */)
+        .constraint(/* Function from TargetClass to Integer  */, /* Field Name */, /* Constraints */)
         .build();
 ----
 
-To avoid ambiguous type inferences, you can use explicit `_integer` instead of `constraints` as follows:
+To avoid ambiguous type inferences, you can use explicit `_integer` instead of `constraint` as follows:
 
 [source,java]
 ----
@@ -988,7 +988,7 @@ Checks that the target value is not `null`
 [source,java]
 ----
 Validator<Age> validator = ValidatorBuilder.<Age> of()
-        .constraints(Age::value, "age", c -> c.notNull())
+        .constraint(Age::value, "age", c -> c.notNull())
         .build();
 
 ConstraintViolations violations = validator.validate(new Age(30)); // Valid
@@ -1012,7 +1012,7 @@ Checks if the target value is greater than the specified value
 [source,java]
 ----
 Validator<Age> validator = ValidatorBuilder.<Age> of()
-        .constraints(Age::value, "age", c -> c.greaterThan(20))
+        .constraint(Age::value, "age", c -> c.greaterThan(20))
         .build();
 
 ConstraintViolations violations = validator.validate(new Age(21)); // Valid
@@ -1038,7 +1038,7 @@ Checks if the target value is greater than or equals to the specified value
 [source,java]
 ----
 Validator<Age> validator = ValidatorBuilder.<Age> of()
-        .constraints(Age::value, "age", c -> c.greaterThanOrEqual(20))
+        .constraint(Age::value, "age", c -> c.greaterThanOrEqual(20))
         .build();
 
 ConstraintViolations violations = validator.validate(new Age(20)); // Valid
@@ -1064,7 +1064,7 @@ Checks if the target value is less than the specified value
 [source,java]
 ----
 Validator<Age> validator = ValidatorBuilder.<Age> of()
-        .constraints(Age::value, "age", c -> c.lessThan(20))
+        .constraint(Age::value, "age", c -> c.lessThan(20))
         .build();
 
 ConstraintViolations violations = validator.validate(new Age(19)); // Valid
@@ -1090,7 +1090,7 @@ Checks if the target value is less than or equals to the specified value
 [source,java]
 ----
 Validator<Age> validator = ValidatorBuilder.<Age> of()
-        .constraints(Age::value, "age", c -> c.lessThanOrEqual(20))
+        .constraint(Age::value, "age", c -> c.lessThanOrEqual(20))
         .build();
 
 ConstraintViolations violations = validator.validate(new Age(19)); // Valid
@@ -1116,11 +1116,11 @@ Apply the constraints on the `Boolean` as follows:
 [source,java]
 ----
 Validator<TargetClass> validator = ValidatorBuilder.<TargetClass> of()
-        .constraints(/* Function from TargetClass to Boolean  */, /* Field Name */, /* Constraints */)
+        .constraint(/* Function from TargetClass to Boolean  */, /* Field Name */, /* Constraints */)
         .build();
 ----
 
-To avoid ambiguous type inferences, you can use explicit `_boolean` instead of `constraints` as follows:
+To avoid ambiguous type inferences, you can use explicit `_boolean` instead of `constraint` as follows:
 
 [source,java]
 ----
@@ -1129,8 +1129,6 @@ Validator<TargetClass> validator = ValidatorBuilder.<TargetClass> of()
         .build();
 ----
 
-=== Object
-
 ==== `notNull()`
 
 Checks that the target value is not `null`
@@ -1138,7 +1136,7 @@ Checks that the target value is not `null`
 [source,java]
 ----
 Validator<Confirmation> validator = ValidatorBuilder.<Confirmation> of()
-        .constraints(Confirmation::isConfirmed, "confirmed", c -> c.notNull())
+        .constraint(Confirmation::isConfirmed, "confirmed", c -> c.notNull())
         .build();
 
 ConstraintViolations violations = validator.validate(new Confirmation(true)); // Valid
@@ -1162,7 +1160,7 @@ Checks that the target value is `true`
 [source,java]
 ----
 Validator<Confirmation> validator = ValidatorBuilder.<Confirmation> of()
-        .constraints(Confirmation::isConfirmed, "confirmed", c -> c.isTrue())
+        .constraint(Confirmation::isConfirmed, "confirmed", c -> c.isTrue())
         .build();
 
 ConstraintViolations violations = validator.validate(new Confirmation(true)); // Valid
@@ -1188,7 +1186,7 @@ Checks that the target value is `false`
 [source,java]
 ----
 Validator<Rented> validator = ValidatorBuilder.<Rented> of()
-        .constraints(Rented::isRented, "rented", c -> c.isFalse())
+        .constraint(Rented::isRented, "rented", c -> c.isFalse())
         .build();
 
 ConstraintViolations violations = validator.validate(new Rented(false)); // Valid
@@ -1201,6 +1199,83 @@ ConstraintViolations violations = validator.validate(new Rented(true)); // Inval
 
 |`boolean.isFalse`
 |`"{0}" must be false`
+a|
+* `{0}` ... field name
+* `{1}` ... the given value
+|===
+
+=== Object
+
+Apply the constraints on any `Object` as follows:
+
+[source,java]
+----
+Validator<TargetClass> validator = ValidatorBuilder.<TargetClass> of()
+        .constraintsOnObject(/* Function from TargetClass to Object  */, /* Field Name */, /* Constraints */)
+        .build();
+----
+
+To avoid ambiguous type inferences, you can use explicit `_object` instead of `constraint` as follows:
+
+[source,java]
+----
+Validator<TargetClass> validator = ValidatorBuilder.<TargetClass> of()
+        ._object(/* Function from TargetClass to Object  */, /* Field Name */, /* Constraints */)
+        .build();
+----
+
+If you want to apply constraints on target class itself, you can use `constraintOnTarget` as follows:
+
+[source,java]
+----
+Validator<TargetClass> validator = ValidatorBuilder.<TargetClass> of()
+        .constraintOnTarget(/* Field Name */, /* Constraints */)
+        .build();
+----
+
+==== `notNull()`
+
+Checks that the target value is not `null`
+
+[source,java]
+----
+Validator<CreatedAt> validator = ValidatorBuilder.<CreatedAt> of()
+        .constraint(CreatedAt::asInstant, "createdAt", c -> c.notNull())
+        .build();
+
+ConstraintViolations violations = validator.validate(new CreatedAt(Instant.now())); // Valid
+ConstraintViolations violations = validator.validate(new CreatedAt(null)); // Invalid ("createdAt" must not be null)
+----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`object.notNull`
+|`"{0}" must not be null`
+a|
+* `{0}` ... field name
+* `{1}` ... the given value
+|===
+
+==== `password()`
+
+Checks that the target value is not `null`
+
+[source,java]
+----
+Validator<CreatedAt> validator = ValidatorBuilder.<CreatedAt> of()
+        .constraint(CreatedAt::asInstant, "createdAt", c -> c.notNull())
+        .build();
+
+ConstraintViolations violations = validator.validate(new CreatedAt(Instant.now())); // Valid
+ConstraintViolations violations = validator.validate(new CreatedAt(null)); // Invalid ("createdAt" must not be null)
+----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`object.notNull`
+|`"{0}" must not be null`
 a|
 * `{0}` ... field name
 * `{1}` ... the given value
