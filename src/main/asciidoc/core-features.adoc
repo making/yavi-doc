@@ -50,17 +50,17 @@ Or if you don't want your method to expose the target field, you can define it l
 [source,java]
 ----
 public class User {
-	private final String name;
+    private final String name;
 
-	public final Validator<User> validator = ValidatorBuilder.<User>of()
-			._string(x -> x.name, "name", c -> c.notNull().lessThanOrEqual(20))
-			.build();
+    public final Validator<User> validator = ValidatorBuilder.<User>of()
+        ._string(x -> x.name, "name", c -> c.notNull().lessThanOrEqual(20))
+        .build();
 
-	public User(String name) {
-		this.name = name;
-	}
+    public User(String name) {
+        this.name = name;
+    }
 
-	// Omits others
+    // Omits others
 }
 ----
 
