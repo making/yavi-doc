@@ -128,7 +128,7 @@ public class IsbnConstraint implements CustomConstraint<String> {
 
     @Override
     public boolean test(String s) {
-    	// Delegate processing to another method
+        // Delegate processing to another method
         return ISBNValidator.isISBN13(s);
     }
 
@@ -162,6 +162,60 @@ You can also write constraint rules directly in the `predicate` method instead o
 Validator<Book> book = ValidatorBuilder.<Book> of()
     .constraint(Book::getTitle, "title", c -> c.notBlank().lessThanOrEqual(64))
     .constraint(Book::getIsbn, "isbn", c -> c.notBlank().predicate(s -> ISBNValidator.isISBN13(s), ViolationMessage.of("string.isbn13", "\"{0}\" must be ISBN13 format")))
+    .build();
+----
+
+The first argument of the violation message is the field name. Also, the last argument is the violated value.
+
+If you want to use other arguments, override `arguments` method as bellow:
+
+[source,java]
+----
+public class InstantRangeConstraint implements CustomConstraint<Instant> {
+
+    private final Instant end;
+
+    private final Instant start;
+
+    InstantRangeConstraint(Instant start, Instant end) {
+        this.start = Objects.requireNonNull(start);
+        this.end = Objects.requireNonNull(end);
+    }
+
+    @Override
+    public Object[] arguments() {
+        return new Object[] { this.start /* {1} */, this.end /* {2} */};
+    }
+
+    @Override
+    public String defaultMessageFormat() {
+        return "Instant value \"{0}\" must be between \"{1}\" and \"{2}\".";
+    }
+
+    @Override
+    public String messageKey() {
+        return "instant.range";
+    }
+
+    @Override
+    public boolean test(Instant instant) {
+        return instant.isAfter(this.start) && instant.isBefore(this.end);
+    }
+}
+----
+
+[[cross-filed-validation]]
+=== Cross-field validation
+
+If you want to apply constraints on target class itself, you can use `constraintOnTarget`.
+It can be used when you want to apply cross-field constraints as follows:
+
+[source,java]
+----
+Validator<Range> validator = ValidatorBuilder.<Range> of()
+    .constraint(range::getFrom, "from", c -> c.greaterThan(0))
+    .constraint(range::getTo, "to", c -> c.greaterThan(0))
+    .constraintOnTarget(range -> range.to > range.from, "to", "to.isGreaterThanFrom", "\"to\" must be greater than \"from\".")
     .build();
 ----
 
