@@ -344,7 +344,7 @@ ConstraintViolations violations = validator.validate(new Password("")); // Inval
 |===
 |Message Key |Default Message Format |Args
 
-|`.password.required`
+|`password.required`
 |`"{0}" must meet {1} policy`
 a|
 * `{0}` ... field name
@@ -1233,6 +1233,15 @@ Validator<TargetClass> validator = ValidatorBuilder.<TargetClass> of()
         .build();
 ----
 
+It is equivalent to bellow:
+
+[source,java]
+----
+Validator<TargetClass> validator = ValidatorBuilder.<TargetClass> of()
+        ._object(Function.identity(), /* Field Name */, /* Constraints */)
+        .build();
+----
+
 ==== `notNull()`
 
 Checks that the target value is not `null`
@@ -1286,7 +1295,7 @@ ConstraintViolations violations = validator.validate(new Account("foo", "Foo1234
 |===
 |Message Key |Default Message Format |Args
 
-|`.password.required`
+|`password.required`
 |`"{0}" must meet {1} policy`
 a|
 * `{0}` ... field name
