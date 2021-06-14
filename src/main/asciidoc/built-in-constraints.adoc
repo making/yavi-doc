@@ -1642,7 +1642,7 @@ Validator<CodeMap> validator = ValidatorBuilder.<CodeMap>of()
 		.build();
 
 ConstraintViolations violations = validator.validate(new CodeMap(Map.of("a", "A", "b", "B"))); // Valid
-ConstraintViolations violations = validator.validate(new CodeMap(Map.of("c", "C"))); // Invalid ("codMap" must contain key b)
+ConstraintViolations violations = validator.validate(new CodeMap(Map.of("c", "C"))); // Invalid ("codeMap" must contain key b)
 ----
 
 |===
@@ -1667,7 +1667,7 @@ Validator<CodeMap> validator = ValidatorBuilder.<CodeMap>of()
 		.build();
 
 ConstraintViolations violations = validator.validate(new CodeMap(Map.of("a", "A", "b", "B"))); // Valid
-ConstraintViolations violations = validator.validate(new CodeMap(Map.of("c", "C"))); // Invalid ("codMap" must contain value B)
+ConstraintViolations violations = validator.validate(new CodeMap(Map.of("c", "C"))); // Invalid ("codeMap" must contain value B)
 ----
 
 |===
