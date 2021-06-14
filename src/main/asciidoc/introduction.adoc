@@ -16,7 +16,7 @@ YAVI has the following features:
 * Type-safe constraints, unsupported constraints cannot be applied to the wrong type
 * Fluent and intuitive API
 * Constraints on any object. Java Beans, https://openjdk.java.net/jeps/395[Records], https://developers.google.com/protocol-buffers[Protocol Buffers], https://immutables.github.io/[Immutables] and anything else.
-* Lots of useful built-in constraints
+* Lots of powerful built-in constraints
 * Easy custom constraints
 * Validation for groups, conditional validation
 * Validation for arguments before creating an object
