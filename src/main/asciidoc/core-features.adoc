@@ -25,7 +25,7 @@ violations.isValid(); // true or false
 violations.forEach(x -> System.out.println(x.message()));
 ----
 
-==== Kotlin Support
+=== Kotlin Support
 
 If you are using Kotlin, you can define a `Validator` a bit shorter than Java using `konstraint` method instead of `constraint` as follows:
 
