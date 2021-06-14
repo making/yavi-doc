@@ -49,3 +49,5 @@ val validator: Validator<User> = ValidatorBuilder.of<User>()
     }
     .build()
 ----
+
+NOTE: `konstraint` actually uses `kotlin.reflect.KProperty1` 🤫
