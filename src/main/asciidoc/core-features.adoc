@@ -25,6 +25,8 @@ violations.isValid(); // true or false
 violations.forEach(x -> System.out.println(x.message()));
 ----
 
+See <<built-in-constraints>> for other constraint rules.
+
 === Constraints on nested objects
 
 You can use `nested` method to apply constraints to the nested fields.
