@@ -1,6 +1,6 @@
 [[introduction]]
 == Introduction
-YAVI sounds as same as a Japanese slang "YABAI" that means awesome or awful depending on the context (like "Crazy").
+YAVI sounds as same as a Japanese slang "YABAI (ヤバイ)" that means awesome or awful depending on the context (like "Crazy").
 
 The concepts are
 
