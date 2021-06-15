@@ -112,5 +112,3 @@ Validated<ContactInfo> contactInfoValidated = contactInfoValidator.validate(new 
 
 ====
 
-=== `Validation` / `Validated` API
-
