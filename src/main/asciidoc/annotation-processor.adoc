@@ -527,7 +527,7 @@ public class _UserArgumentsMeta {
 
 [source,java]
 ----
-final Arguments3Validator<String, String, Integer, User> validator = ArgumentsValidatorBuilder
+Arguments3Validator<String, String, Integer, User> validator = ArgumentsValidatorBuilder
     .of(User::new)
     .builder(b -> b
         .constraint(_UserArgumentsMeta.NAME, c -> c.notEmpty())
@@ -621,7 +621,7 @@ public class _UserServiceCreateUserArgumentsMeta {
 
 [source,java]
 ----
-final Arguments4Validator<UserService, String, String, Integer, User> validator = ArgumentsValidatorBuilder
+Arguments4Validator<UserService, String, String, Integer, User> validator = ArgumentsValidatorBuilder
     .of(UserService::createUser)
     .builder(b -> b
         .constraint(_UserServiceCreateUserArgumentsMeta.USERSERVICE, c -> c.notNull())
