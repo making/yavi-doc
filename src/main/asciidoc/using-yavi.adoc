@@ -447,15 +447,9 @@ This can be useful for the validation of large object graphs where you are only 
 [source,java]
 ----
 Validator<User> validator = ValidatorBuilder.<User> of()
-    .constraint(User::getName, "name", c -> c.notNull()
-        .lessThanOrEqual(20))
-    .constraint(User::getEmail, "email", c -> c.notNull()
-        .greaterThanOrEqual(5)
-        .lessThanOrEqual(50)
-        .email())
-    .constraint(User::getAge, "age", c -> c.notNull()
-        .greaterThanOrEqual(0)
-        .lessThanOrEqual(200))
+    .constraint(User::getName, "name", c -> c.notNull().lessThanOrEqual(20))
+    .constraint(User::getEmail, "email", c -> c.notNull().greaterThanOrEqual(5).lessThanOrEqual(50).email())
+    .constraint(User::getAge, "age", c -> c.notNull().greaterThanOrEqual(0).lessThanOrEqual(200))
     .failFast(true) // <-- Enable the fail fast mode
     .build();
 ----
