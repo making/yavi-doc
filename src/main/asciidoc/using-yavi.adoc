@@ -136,8 +136,8 @@ Validator<Histories> validator = ValidatorBuilder.<Histories> of()
 
 [NOTE]
 ====
-For the constraints on elements in a Map, only values can be applied out of the box.
-If you want to apply constraints on key in a map, you need to convert the map to key's `Set` and regard it as a collection as follows
+For the constraints on elements in a map, only values can be applied out of the box.
+If you want to apply constraints on keys in a map, you need to convert the map to key's `Set` and regard it as a collection as follows
 
 [source,java]
 ----
