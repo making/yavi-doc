@@ -88,7 +88,7 @@ Validated<ContactInfo> contactInfoValidated = contactInfoValidator.validate(new 
 
 === Validating the source object before creating the target object
 
-In a web application, you often get a value from a Map, Form Object, or `HttpServletRequest` to create a Domain Object.
+In a web application, you often get values from a `Map`, Form Object, or `HttpServletRequest` to create a Domain Object.
 
 `Arguments1Validator` can validate the source object and then convert it to the target object using `compose` method.
 
