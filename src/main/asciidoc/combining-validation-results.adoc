@@ -26,17 +26,15 @@ ApplicativeValidator<User> applicativeValidator = validator.applicative();
 
 [source,java]
 ----
-ApplicativeValidator<Email> emailValidator = ValidatorBuilder.<Email> of()
+Validator<Email> emailValidator = ValidatorBuilder.<Email> of()
     .constraint(Email::value, "email", c -> c.notBlank().email())
-    .build()
-    .applicative();
-ApplicativeValidator<PhoneNumber> phoneNumberValidator = ValidatorBuilder.<PhoneNumber> of()
+    .build();
+Validator<PhoneNumber> phoneNumberValidator = ValidatorBuilder.<PhoneNumber> of()
     .constraint(PhoneNumber::value, "phoneNumber", c -> c.notBlank().pattern("[0-9\\-]+"))
-    .build()
-    .applicative();
+    .build();
 
-Validated<Email> emailValidated = emailValidator.validate(email);
-Validated<PhoneNumber> phoneNumberValidated = phoneNumberValidator.validate(phoneNumber);
+Validated<Email> emailValidated = emailValidator.applicative().validate(email);
+Validated<PhoneNumber> phoneNumberValidated = phoneNumberValidator.applicative().validate(phoneNumber);
 ----
 
 The validated target or constraint violations can be retrieved from the `Validated` instance as follows:
@@ -74,7 +72,7 @@ Validated<ContactInfo> contactInfoValidated = Validations.combine(emailValidated
 ----
 The important thing here is that even if the validation of `Email` or `PhoneNumber` fails, all validation results are aggregated without shortcuts in the middle.
 
-For example, if you put a blank space in `Email` and `a` in `PhoneNumber` and try to create a `ContactInfo`, the validation will fail and you will get the following three `ContraintViolation` s:
+For example, if you put a blank space in `Email` and `a` in `PhoneNumber` and try to create a `ContactInfo`, the validation will fail, and you will get the following three `ContraintViolation` s:
 
 ----
 * "email" must not be blank
@@ -82,6 +80,35 @@ For example, if you put a blank space in `Email` and `a` in `PhoneNumber` and tr
 * "phoneNumber" must match [0-9\-]+
 ----
 
-=== Converting the target object after the validation
+[TIP]
+====
+Validation for `ContactInfo` in the above example can be achieved by using `nest` method as follows:
 
-=== Validating the source object before creating a target object
+[source,java]
+----
+Validator<Email> emailValidator = ValidatorBuilder.<Email> of()
+    .constraint(Email::value, "value", c -> c.notBlank().email())
+    .build();
+Validator<PhoneNumber> phoneNumberValidator = ValidatorBuilder.<PhoneNumber> of()
+    .constraint(PhoneNumber::value, "value", c -> c.notBlank().pattern("[0-9\\-]+"))
+    .build();
+
+Validator<ContactInfo> validator = ValidatorBuilder.<ContactInfo> of()
+    .nest(ContactInfo::email, "email", emailValidator)
+    .nest(ContactInfo::phoneNumber, "phoneNumber", phoneNumberValidator)
+    .build();
+----
+
+Alternatively, you can combine `ApplicativeValidator<Email>` and `ApplicativeValidator<PhoneNumber>` as introduced in <<combining-validators>>.
+
+[source,java]
+----
+Arguments2Validator<Email, PhoneNumber, ContactInfo> validator = ArgumentsValidators
+    .split(emailValidator.applicative(), phoneNumberValidator.applicative())
+    .apply(ContactInfo::new);
+----
+
+====
+
+=== `Validation` / `Validated` API
+
