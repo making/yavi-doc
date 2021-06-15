@@ -113,4 +113,28 @@ public RouterFunction<ServerResponse> routes() {
 
 TIP: YAVI was originally developed as a validator naturally fit with Spring WebFlux.fn.
 
+=== Integration with `MessageSource` in Spring Framework
+
+
+`am.ik.yavi.message.MessageSourceMessageFormatter` accepts the Functional Interface with the same arguments as Spring Framework's `MessageSource#getMessage`.
+This allows you to delegate control of the message format of violation messages to Spring Framework.
+
+`MessageSourceMessageFormatter` can be used as follows:
+
+[source,java]
+----
+@RestController
+public class OrderController {
+    private final Validator<CartItem> validator;
+
+    public OrderController(MessageSource messageSource) {
+    	MessageFormatter messageFormatter = new MessageSourceMessageFormatter(messageSource::getMessage);
+        this.validator = ValidatorBuilder.<CartItem> of()
+            .constraints(...)
+            .messageFormatter(messageFormatter)
+            .build();
+    }
+}
+----
+
 
