@@ -247,6 +247,62 @@ Validator<Range> validator = ValidatorBuilder.<Range>of()
         .constraintOnTarget(range, "to")
         .build();
 ----
+
+=== Message Formatter
+
+YAVI provides `am.ik.yavi.message.MessageFormatter` interface for constructing violation messages.
+
+By default, `am.ik.yavi.message.SimpleMessageFormatter` is used, which simply uses `java.text.MessageFormatter` to interpolate the message.
+A list of message keys and default message formats is given in <<built-in-constraints>>.
+
+If you want to customize the message interpolation, implement `MessageFormatter`.
+As an example, the implementation that reads messages in `messages.properties` is shown as follows:
+
+[source,java]
+----
+import java.text.MessageFormat;
+import java.util.Locale;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+
+import am.ik.yavi.constraint.ViolationMessage;
+import am.ik.yavi.message.MessageFormatter;
+
+public enum ResourceBundleMessageFormatter implements MessageFormatter {
+    SINGLETON;
+
+    @Override
+    public String format(String messageKey, String defaultMessageFormat, Object[] args,
+            Locale locale) {
+        ResourceBundle resourceBundle = ResourceBundle.getBundle("messages", locale);
+        String format;
+        try {
+            format = resourceBundle.getString(messageKey);
+        }
+        catch (MissingResourceException e) {
+            format = defaultMessageFormat;
+        }
+        try {
+            String target = resourceBundle.getString((String) args[0] /* field name */);
+            args[0] = target;
+        }
+        catch (MissingResourceException e) {
+        }
+        return new MessageFormat(format, locale).format(args);
+    }
+}
+----
+
+If you want to replace the `MessageFormatter`, you can set it as follows.
+
+[source,java]
+----
+Validator<User> validator = ValidatorBuilder.<User> of()
+    .messageFormatter(ResourceBundleMessageFormatter.SINGLETON)
+    // ...
+    .build();
+----
+
 === Kotlin Support
 
 If you are using Kotlin, you can define a `Validator` a bit shorter than Java using `konstraint` method instead of `constraint` as follows:
