@@ -80,7 +80,7 @@ Validated<User> userValidated = validator.validate(userService, "jdoe@example.co
 NOTE: `void` cannot be used as return type while `java.lang.Void` is available.
 
 [[define-validator-for-a-single-value]]
-=== Define Validator for a single value
+=== Defining a Validator for a single value
 
 If you just want to define `Arguments1Validator` for a single `String` or `Integer` etc, you can write:
 
