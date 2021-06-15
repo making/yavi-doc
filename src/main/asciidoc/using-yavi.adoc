@@ -3,7 +3,7 @@
 
 This section describes the basic usage of YAVI.
 
-=== Define and obtain a core `Validator` instance
+=== Defining and obtaining a core `Validator` instance
 
 The core validator `am.ik.yavi.core.Validator` can be defined and obtained via `am.ik.yavi.builder.ValidatorBuilder`.
 Here is an example:

@@ -5,7 +5,7 @@ YAVI supports validating arguments of a constructor or factory method *before cr
 
 This is one of YAVI's unique features.
 
-=== Define and obtain an Arguments Validator instance
+=== Defining and obtaining an Arguments Validator instance
 Arguments Validator, as the name implies, is a Validator for arguments.
 
 A normal Validator, like Bean Validation, validates if the values are valid for the object to which the values are set, while the Arguments Validator validates that *the arguments* set to the Object are valid.
