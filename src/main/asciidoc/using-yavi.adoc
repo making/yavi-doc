@@ -105,6 +105,14 @@ Validator<Address> validator = ValidatorBuilder.<Address> of()
       .build();
 ----
 
+If the nested field is nullable, use `nestIfPresent` instead of `nest`.
+
+=== Constraints on elements in a List / Map / Array
+
+=== Applying constraints only to specific groups
+
+=== Applying constraints only to specific conditions
+
 === Overriding violation messages
 
 The default violation message for each constraint is defined in <<built-in-constraints>>.
@@ -260,7 +268,7 @@ A list of message keys and default message formats is given in <<built-in-constr
 As a feature of error messages, the following are supported compared to Bean Validation:
 
 * Include field name in error message by default
-* Allows you to include values that violate error messages
+* Allows you to include the violated values in the error message
 
 The first placeholder `{0}` of the message is set to the field name, and the last placeholder is set to the violation value.
 
