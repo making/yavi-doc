@@ -44,7 +44,7 @@ Validated<Person> personValidated = Person.validator.validate("Jone Doe", "jdoe@
 `am.ik.yavi.arguments.Arguments1Validator` to `am.ik.yavi.arguments.Arguments16Validator` are available.
 
 Arguments Validator is useful, but it can be a bit verbose to define. Since it is Type-Safe, it is not possible to define something that does not fit the type, but it feels like a puzzle that fits the type.
-Building the Arguments Validator can be simplified by <<combining-validators>>.
+Building the Arguments Validator can be simplified by "<<define-validator-for-a-single-value>>" and "<<combining-validators>>".
 
 === Validating method arguments
 
@@ -78,3 +78,53 @@ Validated<User> userValidated = validator.validate(userService, "jdoe@example.co
 ----
 
 NOTE: `void` cannot be used as return type while `java.lang.Void` is available.
+
+[[define-validator-for-a-single-value]]
+=== Define Validator for a single value
+
+If you just want to define `Arguments1Validator` for a single String or Integer, you can write:
+
+[source,java]
+----
+StringValidator<String> nameValidator = StringValidatorBuilder
+    .of("name", c -> c.notBlank().lessThanOrEqual(100))
+    .build();  // -> extends Arguments1Validator<String, String>
+
+StringValidator<String> emailValidator = StringValidatorBuilder
+    .of("email", c -> c.notBlank().lessThanOrEqual(100).email())
+    .build();  // -> extends Arguments1Validator<String, String>
+
+IntegerValidator<Integer> ageValidator = IntegerValidatorBuilder
+    .of("age", c -> c.greaterThanOrEqual(0).lessThan(200))
+    .build();  // -> extends Arguments1Validator<Integer, Integer>
+
+Validated<String> nameValidated = nameValidator.validate("Jone Doe");
+Validated<String> emailValidated = nameValidator.validate("jdoe@example.com");
+Validated<Integer> ageValidated = nameValidator.validate(30);
+----
+
+You can convert it to a Value Object after validation by using the `andThen` method as follows:
+
+[source,java]
+----
+StringValidator<Name> nameValidator = StringValidatorBuilder
+    .of("name", c -> c.notBlank().lessThanOrEqual(100))
+    .build()
+    .andThen(name -> new Name(name)); // -> extends Arguments1Validator<String, Name>
+
+StringValidator<Email> emailValidator = StringValidatorBuilder
+    .of("email", c -> c.notBlank().lessThanOrEqual(100).email())
+    .build()
+    .andThen(email -> new Email(email)); // -> extends Arguments1Validator<String, Email>
+
+IntegerValidator<Age> ageValidator = IntegerValidatorBuilder
+    .of("age", c -> c.greaterThanOrEqual(0).lessThan(200))
+    .build()
+    .andThen(age -> new Age(age)); // -> extends Arguments1Validator<Integer, Age>
+
+Validated<Name> nameValidated = nameValidator.validate("Jone Doe");
+Validated<Email> emailValidated = nameValidator.validate("jdoe@example.com");
+Validated<Age> ageValidated = nameValidator.validate(30);
+----
+
+These "small Validators" can be very powerful parts by using the Validator combinators described in "<<combining-validators>>".

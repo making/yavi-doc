@@ -21,7 +21,7 @@ boolean isValid = violations.isValid();
 violations.forEach(x -> System.out.println(x.message()));
 ----
 
-TIP: YAVI aggregates all violation messages by default. If a violation is found during the validation, it will not be shortcut. If you want to return from the current validation as soon as the first constraint violation occurs, use <<fail-fast-mode>>.
+TIP: YAVI aggregates all violation messages by default. If a violation is found during the validation, it will not be shortcut. If you want to return from the current validation as soon as the first constraint violation occurs, use "<<fail-fast-mode>>".
 
 In order to avoid ambiguous type inferences, you can use explicit `_<type>` method per type instead of constraint as follows:
 
@@ -68,7 +68,7 @@ public class User {
 }
 ----
 
-See <<built-in-constraints>> for other constraint rules.
+See "<<built-in-constraints>>" for other constraint rules.
 
 === Constraints on nested objects
 
@@ -228,7 +228,7 @@ Also, if no group is specified in the `validate` method, it will be treated as `
 
 === Creating a custom constraint
 
-If you want to apply constraints that are not in the <<built-in-constraints>>, you can create custom constraints by implementing `am.ik.yavi.core.CustomConstraint` interface as bellow:
+If you want to apply constraints that are not in the "<<built-in-constraints>>", you can create custom constraints by implementing `am.ik.yavi.core.CustomConstraint` interface as bellow:
 
 [source,java]
 ----
@@ -357,7 +357,7 @@ Validator<Range> validator = ValidatorBuilder.<Range> of()
 
 === Overriding violation messages
 
-The default violation message for each constraint is defined in <<built-in-constraints>>.
+The default violation message for each constraint is defined in "<<built-in-constraints>>".
 
 If you want to customize the violation message, append `message` method on the target constraint as follows:
 
@@ -375,7 +375,7 @@ Validator<User> validator = ValidatorBuilder.<User> of()
 YAVI provides `am.ik.yavi.message.MessageFormatter` interface for constructing violation messages.
 
 By default, `am.ik.yavi.message.SimpleMessageFormatter` is used, which simply uses `java.text.MessageFormatter` to interpolate the message.
-A list of message keys and default message formats is given in <<built-in-constraints>>.
+A list of message keys and default message formats is given in "<<built-in-constraints>>".
 
 [NOTE]
 ====
