@@ -168,7 +168,7 @@ public class OrderController {
 
 === Obtaining a `BiValidator`
 
-`BiValidator<T, E>` is a `BiConsumer<T, E>`.
+`am.ik.yavi.core.BiValidator<T, E>` is a `BiConsumer<T, E>`.
 `T` is the type of target object as usual and `E` is the type of errors object.
 
 This class is helpful for libraries or apps to adapt both YAVI and other validation framework that accepts these two arguments like Spring Framework's `org.springframework.validation.Validator#validate(Object, Errors)`.
@@ -177,7 +177,7 @@ This class is helpful for libraries or apps to adapt both YAVI and other validat
 
 [source,java]
 ----
-BiValidator<CartItem, Errors> validator = ValidatorBuilder.<CartItem>of()
+BiValidator<CartItem, Errors> validator = ValidatorBuilder.<CartItem> of()
     .constraint(...)
     .build(Errors::rejectValue);
 ----
