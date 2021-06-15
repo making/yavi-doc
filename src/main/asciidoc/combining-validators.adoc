@@ -2,7 +2,8 @@
 == Combining validators
 
 `ApplicativeValidator<T>` and `Arguments1Validator<S, T>` we've seen so far extend `ValueValidator<S, T>`.
-`T` is the type of the target object to be validated and `S` is the type of the source object to create the target object.
+(`T` is the type of the target object to be validated and `S` is the type of the source object to create the target object.)
+
 `ApplicativeValidator<T>` is equivalent to `ValueValidator<T, T>`.
 
 `ValueValidator` can be combined to validate a larger object.
