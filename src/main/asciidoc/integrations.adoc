@@ -98,7 +98,7 @@ YAVI will be a great fit for https://docs.spring.io/spring/docs/current/spring-f
 final Validator<UserCreateRequest> validator = ...;
 
 public RouterFunction<ServerResponse> routes() {
-    return route()
+    return RouterFunctions.route()
         .POST("/users", request -> request.bodyToMono(UserCreateRequest.class)
             .flatMap(body -> validator.applicative()
                 .validate(body)
