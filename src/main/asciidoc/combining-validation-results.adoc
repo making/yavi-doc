@@ -1,2 +1,8 @@
 [[combining-validation-results]]
 == Combining validation results
+
+=== Validation using Applicative Functor
+
+=== `Validation` / `Validated` API
+
+=== `Either` API
