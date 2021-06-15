@@ -41,7 +41,7 @@ For example, If you want to create a `Validator` for https://openjdk.java.net/je
 public record User(String name, String email, int age) {
 }
 
-Validator<User> validator = ValidatorBuilder.<User> of() // or ValidatorBuilder.of(User.class)
+Validator<User> validator = ValidatorBuilder.<User> of()
     .constraint(User::name, "name", c -> c.notNull().lessThanOrEqual(20))
     .constraint(User::email, "email", c -> c.notNull().greaterThanOrEqual(5).lessThanOrEqual(50).email())
     .constraint(User::age, "age", c -> c.notNull().greaterThanOrEqual(0).lessThanOrEqual(200))
@@ -108,7 +108,45 @@ Validator<Address> validator = ValidatorBuilder.<Address> of()
 
 If the nested field is nullable, use `nestIfPresent` instead of `nest`.
 
-=== Constraints on elements in a List / Map / Array
+=== Constraints on elements in a Collection / Map / Array
+
+You can use `forEach` method to apply constraints to each element of Collection / Map / Array.
+Like nested fields, You can delegate to the `Validator` for validating each element,
+or you can also define a set of constraints on the elements inside.
+
+[source,java]
+----
+Validator<History> historyValidator = ValidatorBuilder.<History>of()
+        .constraint(History::getRevision, "revision", c -> c.notNull().greaterThanOrEqual(1))
+        .build();
+Validator<Histories> validator = ValidatorBuilder.<Histories>of()
+        .forEach(Histories::asList, "histories", historyValidator)
+        .build();
+----
+
+Or:
+
+[source,java]
+----
+Validator<Histories> validator = ValidatorBuilder.<Histories>of()
+        .forEach(Histories::asList, "histories",
+                b -> b.constraint(History::getRevision, "revision", c -> c.notNull().greaterThanOrEqual(1)))
+        .build();
+----
+
+[NOTE]
+====
+For the constraints on elements in a Map, only values can be applied out of the box.
+If you want to apply constraints on key in a map, you need to convert the map to key's `Set` and regard it as a collection as follows
+
+[source,java]
+----
+ToCollection<CodeMap, Collection<String>, String> toCollection = codeMap -> codeMap.asMap().keySet();
+Validator<CodeMap> validator = ValidatorBuilder.<CodeMap> of()
+        .forEach(toCollection, "codeMap", b -> b._string(String::toString, "value", c -> c.notEmpty()))
+        .build();
+----
+====
 
 === Applying constraints only to specific groups
 
