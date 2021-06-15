@@ -10,12 +10,12 @@
 
 === Splitting a validator for an object into small pieces
 
-You can use `split` method to split the constructor and the arguments of the factory method for creating a large Object into small validators and combine them.
+You can use `split` method to split the constructor and the arguments of the factory method for creating a large object into small validators and combine them.
 
 Let's look at an example.
 
 Validator for constructor `Person(String, String, Integer)` is `Arguments3Validator<String, String, Integer, Person>`.
-This can be divided into two `StringValidator<String>` and one `IntegerValidator<Integer>` and then combined.
+This can be divided into two `StringValidator<String>` s and one `IntegerValidator<Integer>` and then combined.
 
 It can be defined as bellow:
 
@@ -27,9 +27,9 @@ public class Person {
     }
 }
 
-StringValidator<String> nameValidator = ...;
-StringValidator<String> emailValidator = ...;
-IntegerValidator<Integer> ageValidator = ...;
+StringValidator<String> nameValidator = /* see examples above */;
+StringValidator<String> emailValidator = /* see examples above */;
+IntegerValidator<Integer> ageValidator = /* see examples above */;
 
 Arguments3Validator<String, String, Integer, Person> personValidator = ArgumentsValidators
     .split(nameValidator, emailValidator, ageValidator)
@@ -51,9 +51,9 @@ public class Person {
     }
 }
 
-StringValidator<Name> nameValidator = ...;
-StringValidator<Email> emailValidator = ...;
-IntegerValidator<Age> ageValidator = ...;
+StringValidator<Name> nameValidator = /* see examples above */;
+StringValidator<Email> emailValidator = /* see examples above */;
+IntegerValidator<Age> ageValidator = /* see examples above */;
 
 Arguments3Validator<String, String, Integer, Person> personValidator = ArgumentsValidators
     .split(nameValidator, emailValidator, ageValidator)
