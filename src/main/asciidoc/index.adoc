@@ -11,6 +11,12 @@ include::getting-started.adoc[]
 
 include::using-yavi.adoc[]
 
+include::combining-validation-results.adoc[]
+
+include::validating-arguments.adoc[]
+
+include::combining-validators.adoc[]
+
 include::built-in-constraints.adoc[]
 
 include::integrations.adoc[]
