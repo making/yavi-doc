@@ -9,7 +9,7 @@ include::introduction.adoc[]
 
 include::getting-started.adoc[]
 
-include::core-features.adoc[]
+include::using-yavi.adoc[]
 
 include::built-in-constraints.adoc[]
 

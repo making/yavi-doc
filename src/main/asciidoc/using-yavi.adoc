@@ -1,5 +1,5 @@
-[[core-features]]
-== Core Features
+[[using-yavi]]
+== Using YAVI
 
 === Define and obtain a core `Validator` instance
 
