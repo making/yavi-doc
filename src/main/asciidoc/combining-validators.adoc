@@ -10,7 +10,7 @@ Multiple `ValueValidator` s can be combined to validate a larger object.
 
 === Splitting a validator for an object into small pieces
 
-You can use `split` method to split the constructor and the arguments of the factory method for creating a large object into small validators and combine them.
+You can use `split` method to split a validator for the arguments of a constructor or a factory method for creating a large object into small validators and combine them.
 
 Let's take a look at an example.
 
