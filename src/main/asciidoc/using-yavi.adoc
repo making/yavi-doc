@@ -99,11 +99,11 @@ Or:
 [source,java]
 ----
 Validator<Address> validator = ValidatorBuilder.<Address> of()
-      .nest(Address::getCountry, "country",
-            b -> b.constraint(Country::getName, "name", c -> c.notBlank().lessThanOrEqual(20)))
-      .nest(Address::getCity, "city",
-            b -> b.constraint(City::getName, "name", c -> c.notBlank().lessThanOrEqual(100)))
-      .build();
+    .nest(Address::getCountry, "country",
+        b -> b.constraint(Country::getName, "name", c -> c.notBlank().lessThanOrEqual(20)))
+    .nest(Address::getCity, "city",
+        b -> b.constraint(City::getName, "name", c -> c.notBlank().lessThanOrEqual(100)))
+    .build();
 ----
 
 If the nested field is nullable, use `nestIfPresent` instead of `nest`.
@@ -141,12 +141,12 @@ public class Histories {
 }
 
 Validator<History> historyValidator = ValidatorBuilder.<History> of()
-        .constraint(History::getRevision, "revision", c -> c.notNull().greaterThanOrEqual(1))
-        .build();
+    .constraint(History::getRevision, "revision", c -> c.notNull().greaterThanOrEqual(1))
+    .build();
 
 Validator<Histories> validator = ValidatorBuilder.<Histories> of()
-        .forEach(Histories::asList, "histories", historyValidator)
-        .build();
+    .forEach(Histories::asList, "histories", historyValidator)
+    .build();
 ----
 
 Or:
@@ -154,9 +154,9 @@ Or:
 [source,java]
 ----
 Validator<Histories> validator = ValidatorBuilder.<Histories> of()
-        .forEach(Histories::asList, "histories",
-                b -> b.constraint(History::getRevision, "revision", c -> c.notNull().greaterThanOrEqual(1)))
-        .build();
+    .forEach(Histories::asList, "histories",
+        b -> b.constraint(History::getRevision, "revision", c -> c.notNull().greaterThanOrEqual(1)))
+    .build();
 ----
 
 [NOTE]
@@ -168,14 +168,63 @@ If you want to apply constraints on keys in a map, you need to convert the map t
 ----
 ToCollection<CodeMap, Collection<String>, String> toCollection = codeMap -> codeMap.asMap().keySet();
 Validator<CodeMap> validator = ValidatorBuilder.<CodeMap> of()
-        .forEach(toCollection, "codeMap", b -> b._string(String::toString, "value", c -> c.notEmpty()))
-        .build();
+    .forEach(toCollection, "codeMap", b -> b._string(String::toString, "value", c -> c.notEmpty()))
+    .build();
 ----
 ====
 
+=== Applying constraints only to specific conditions
+
+You can apply constraints only to specific conditions with `am.ik.yavi.core.ConstraintCondition` interface:
+
+[source,java]
+----
+Validator<User> validator = ValidatorBuilder.<User> of()
+    .constraintOnCondition((user, constraintGroup) -> !user.getName().isEmpty(),
+        b -> b.constraint(User::getEmail, "email", c -> c.email().notEmpty()))
+    .build();
+----
+
+The constraint above on email will only be activated if the name is not empty.
+
 === Applying constraints only to specific groups
 
-=== Applying constraints only to specific conditions
+You can apply constraints only to specific groups with `am.ik.yavi.core.ConstraintGroup` as a part of `ConstraintCondition` as well:
+
+[source,java]
+----
+enum Group implements ConstraintGroup {
+    CREATE, UPDATE, DELETE
+}
+
+Validator<User> validator = ValidatorBuilder.<User> of()
+    .constraintOnCondition(Group.CREATE.toCondition(),
+        b -> b.constraint(User::getId, "id", c -> c.isNull()))
+    .build();
+----
+
+The group to validate can be specified in `validate` method:
+
+[source,java]
+----
+validator.validate(user, Group.CREATE);
+----
+
+You can use a shortcut `constraintOnGroup` method
+
+[source,java]
+----
+Validator<User> validator = ValidatorBuilder.<User> of()
+    .constraintOnGroup(Group.CREATE,
+        b -> b.constraint(User::getId, "id", c -> c.isNull()))
+    .build();
+----
+
+[NOTE]
+====
+Note that all constraints without conditions will be validated for any constraint group.
+Also, if no group is specified in the `validate` method, it will be treated as `DEFAULT` group.
+====
 
 === Creating a custom constraint
 
