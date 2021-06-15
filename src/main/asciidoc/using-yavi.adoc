@@ -204,7 +204,7 @@ public class InstantRangeConstraint implements CustomConstraint<Instant> {
 }
 ----
 
-[[cross-filed-validation]]
+[[cross-field-validation]]
 === Cross-field validation
 
 If you want to apply constraints on target class itself, you can use `constraintOnTarget`.
@@ -215,10 +215,39 @@ It can be used when you want to apply cross-field constraints as follows:
 Validator<Range> validator = ValidatorBuilder.<Range> of()
     .constraint(range::getFrom, "from", c -> c.greaterThan(0))
     .constraint(range::getTo, "to", c -> c.greaterThan(0))
-    .constraintOnTarget(range -> range.to > range.from, "to", "to.isGreaterThanFrom", "\"to\" must be greater than \"from\".")
+    .constraintOnTarget(range -> range.getTo() > range.getFrom(), "to", "to.isGreaterThanFrom", "\"to\" must be greater than \"from\"")
     .build();
 ----
 
+You can also create a custom constraint for cross-field validation as follows:
+
+[source,java]
+----
+public class RangeConstraint implements CustomConstraint<Range> {
+    @Override
+    public String defaultMessageFormat() {
+        return "\"to\" must be greater than \"from\"";
+    }
+
+    @Override
+    public String messageKey() {
+        return "to.isGreaterThanFrom";
+    }
+
+    @Override
+    public boolean test(Range range) {
+        if (range == null) {
+            return true;
+        }
+        return range.getTo() > range.getFrom();
+    }
+}
+
+RangeConstraint range = new RangeConstraint();
+Validator<Range> validator = ValidatorBuilder.<Range>of()
+        .constraintOnTarget(range, "to")
+        .build();
+----
 === Kotlin Support
 
 If you are using Kotlin, you can define a `Validator` a bit shorter than Java using `konstraint` method instead of `constraint` as follows:
