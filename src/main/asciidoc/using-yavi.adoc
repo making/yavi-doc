@@ -461,6 +461,8 @@ You can switch an existing `Validator` to the fail fast mode as follows:
 Validator<User> failFastValidator = validator.failFast(true);
 ----
 
+INFO:: This feature comes from https://docs.jboss.org/hibernate/stable/validator/reference/en-US/html_single/#section-fail-fast[the fail fast mode of Hibernate Validator.]
+
 === Kotlin Support
 
 If you are using Kotlin, you can define a `Validator` a bit shorter than Java using `konstraint` method instead of `constraint` as follows:
