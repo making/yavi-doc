@@ -255,6 +255,20 @@ YAVI provides `am.ik.yavi.message.MessageFormatter` interface for constructing v
 By default, `am.ik.yavi.message.SimpleMessageFormatter` is used, which simply uses `java.text.MessageFormatter` to interpolate the message.
 A list of message keys and default message formats is given in <<built-in-constraints>>.
 
+[NOTE]
+====
+As a feature of error messages, the following are supported compared to Bean Validation:
+
+* Include field name in error message by default
+* Allows you to include values that violate error messages
+
+The first placeholder `{0}` of the message is set to the field name, and the last placeholder is set to the violation value.
+
+Especially for the second one, since it is not supported by the general Validation library, for example, even if the error message "xyz should be 100 characters or less" is returned, what characters are actually entered now? Sometimes I try to cut the letters little by little because I don't know if they are counted. By default, the following message is displayed so that the user does not have to do this wasteful thing.
+
+image::https://user-images.githubusercontent.com/106908/44784067-4b010600-abc7-11e8-8878-930d017405bb.png[]
+====
+
 If you want to customize the message interpolation, implement `MessageFormatter`.
 As an example, the implementation that reads messages in `messages.properties` is shown as follows:
 
