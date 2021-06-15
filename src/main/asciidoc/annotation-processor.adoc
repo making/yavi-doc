@@ -60,7 +60,7 @@ You'll see `target/generated-sources/annotations/com/example/_UserFormMeta.java`
 === Annotating `@ConstraintTarget`
 
 `@ConstraintTarget` is used to generate meta classes that can be used with `ValidatorBuilder#constraint`.
-+ It can be annotated on methods or constructor parameters.
++ It can be annotated on methods or constructor arguments.
 
 `Xyz` class that is annotated with `@ConstraintTarget` will generate `_XyzMeta`.
 
@@ -135,50 +135,50 @@ package com.example;
 // Generated at 2020-02-11T17:37:47.866300+09:00
 public class _UserFormMeta {
 
-	public static final am.ik.yavi.meta.StringConstraintMeta<com.example.UserForm> NAME = new am.ik.yavi.meta.StringConstraintMeta<com.example.UserForm>() {
+    public static final am.ik.yavi.meta.StringConstraintMeta<com.example.UserForm> NAME = new am.ik.yavi.meta.StringConstraintMeta<com.example.UserForm>() {
 
-		@Override
-		public String name() {
-			return "name";
-		}
+        @Override
+        public String name() {
+            return "name";
+        }
 
-		@Override
-		public java.util.function.Function<com.example.UserForm, java.lang.String> toValue() {
-			return com.example.UserForm::getName;
-		}
-	};
+        @Override
+        public java.util.function.Function<com.example.UserForm, java.lang.String> toValue() {
+            return com.example.UserForm::getName;
+        }
+    };
 
-	public static final am.ik.yavi.meta.StringConstraintMeta<com.example.UserForm> EMAIL = new am.ik.yavi.meta.StringConstraintMeta<com.example.UserForm>() {
+    public static final am.ik.yavi.meta.StringConstraintMeta<com.example.UserForm> EMAIL = new am.ik.yavi.meta.StringConstraintMeta<com.example.UserForm>() {
 
-		@Override
-		public String name() {
-			return "email";
-		}
+        @Override
+        public String name() {
+            return "email";
+        }
 
-		@Override
-		public java.util.function.Function<com.example.UserForm, java.lang.String> toValue() {
-			return com.example.UserForm::getEmail;
-		}
-	};
+        @Override
+        public java.util.function.Function<com.example.UserForm, java.lang.String> toValue() {
+            return com.example.UserForm::getEmail;
+        }
+    };
 
-	public static final am.ik.yavi.meta.IntegerConstraintMeta<com.example.UserForm> AGE = new am.ik.yavi.meta.IntegerConstraintMeta<com.example.UserForm>() {
+    public static final am.ik.yavi.meta.IntegerConstraintMeta<com.example.UserForm> AGE = new am.ik.yavi.meta.IntegerConstraintMeta<com.example.UserForm>() {
 
-		@Override
-		public String name() {
-			return "age";
-		}
+        @Override
+        public String name() {
+            return "age";
+        }
 
-		@Override
-		public java.util.function.Function<com.example.UserForm, java.lang.Integer> toValue() {
-			return com.example.UserForm::getAge;
-		}
-	};
+        @Override
+        public java.util.function.Function<com.example.UserForm, java.lang.Integer> toValue() {
+            return com.example.UserForm::getAge;
+        }
+    };
 }
 ----
 
-==== on constructor parameters + getters
+==== on constructor arguments + getters
 
-If you prefer an immutable class like ValueObject, annotate `@ConstraintTarget` on constructor parameters.
+If you prefer an immutable class like Value Object, annotate `@ConstraintTarget` on constructor arguments.
 
 [source,java]
 ----
@@ -226,53 +226,53 @@ package com.example;
 // Generated at 2020-02-11T17:59:03.892823+09:00
 public class _UserFormMeta {
 
-	public static final am.ik.yavi.meta.StringConstraintMeta<com.example.UserForm> NAME = new am.ik.yavi.meta.StringConstraintMeta<com.example.UserForm>() {
+    public static final am.ik.yavi.meta.StringConstraintMeta<com.example.UserForm> NAME = new am.ik.yavi.meta.StringConstraintMeta<com.example.UserForm>() {
 
-		@Override
-		public String name() {
-			return "name";
-		}
+        @Override
+        public String name() {
+            return "name";
+        }
 
-		@Override
-		public java.util.function.Function<com.example.UserForm, java.lang.String> toValue() {
-			return com.example.UserForm::getName;
-		}
-	};
+        @Override
+        public java.util.function.Function<com.example.UserForm, java.lang.String> toValue() {
+            return com.example.UserForm::getName;
+        }
+    };
 
-	public static final am.ik.yavi.meta.StringConstraintMeta<com.example.UserForm> EMAIL = new am.ik.yavi.meta.StringConstraintMeta<com.example.UserForm>() {
+    public static final am.ik.yavi.meta.StringConstraintMeta<com.example.UserForm> EMAIL = new am.ik.yavi.meta.StringConstraintMeta<com.example.UserForm>() {
 
-		@Override
-		public String name() {
-			return "email";
-		}
+        @Override
+        public String name() {
+            return "email";
+        }
 
-		@Override
-		public java.util.function.Function<com.example.UserForm, java.lang.String> toValue() {
-			return com.example.UserForm::getEmail;
-		}
-	};
+        @Override
+        public java.util.function.Function<com.example.UserForm, java.lang.String> toValue() {
+            return com.example.UserForm::getEmail;
+        }
+    };
 
-	public static final am.ik.yavi.meta.IntegerConstraintMeta<com.example.UserForm> AGE = new am.ik.yavi.meta.IntegerConstraintMeta<com.example.UserForm>() {
+    public static final am.ik.yavi.meta.IntegerConstraintMeta<com.example.UserForm> AGE = new am.ik.yavi.meta.IntegerConstraintMeta<com.example.UserForm>() {
 
-		@Override
-		public String name() {
-			return "age";
-		}
+        @Override
+        public String name() {
+            return "age";
+        }
 
-		@Override
-		public java.util.function.Function<com.example.UserForm, java.lang.Integer> toValue() {
-			return com.example.UserForm::getAge;
-		}
-	};
+        @Override
+        public java.util.function.Function<com.example.UserForm, java.lang.Integer> toValue() {
+            return com.example.UserForm::getAge;
+        }
+    };
 }
 ----
 
 This is as same as the first example.
 
-==== on constructor parameters + non-getters
+==== on constructor arguments + non-getters
 
 You may not like "getter" style for immutable objects.
-You can use filed name as method name using `getter = false`.
+You can use filed name as method name using `getter = false`. This will be a great fit for https://openjdk.java.net/jeps/395[Records].
 
 [source,java]
 ----
@@ -320,48 +320,48 @@ package com.example;
 // Generated at 2020-02-11T18:00:37.868495+09:00
 public class _UserFormMeta {
 
-	public static final am.ik.yavi.meta.StringConstraintMeta<com.example.UserForm> NAME = new am.ik.yavi.meta.StringConstraintMeta<com.example.UserForm>() {
+    public static final am.ik.yavi.meta.StringConstraintMeta<com.example.UserForm> NAME = new am.ik.yavi.meta.StringConstraintMeta<com.example.UserForm>() {
 
-		@Override
-		public String name() {
-			return "name";
-		}
+        @Override
+        public String name() {
+            return "name";
+        }
 
-		@Override
-		public java.util.function.Function<com.example.UserForm, java.lang.String> toValue() {
-			return com.example.UserForm::name;
-		}
-	};
+        @Override
+        public java.util.function.Function<com.example.UserForm, java.lang.String> toValue() {
+            return com.example.UserForm::name;
+        }
+    };
 
-	public static final am.ik.yavi.meta.StringConstraintMeta<com.example.UserForm> EMAIL = new am.ik.yavi.meta.StringConstraintMeta<com.example.UserForm>() {
+    public static final am.ik.yavi.meta.StringConstraintMeta<com.example.UserForm> EMAIL = new am.ik.yavi.meta.StringConstraintMeta<com.example.UserForm>() {
 
-		@Override
-		public String name() {
-			return "email";
-		}
+        @Override
+        public String name() {
+            return "email";
+        }
 
-		@Override
-		public java.util.function.Function<com.example.UserForm, java.lang.String> toValue() {
-			return com.example.UserForm::email;
-		}
-	};
+        @Override
+        public java.util.function.Function<com.example.UserForm, java.lang.String> toValue() {
+            return com.example.UserForm::email;
+        }
+    };
 
-	public static final am.ik.yavi.meta.IntegerConstraintMeta<com.example.UserForm> AGE = new am.ik.yavi.meta.IntegerConstraintMeta<com.example.UserForm>() {
+    public static final am.ik.yavi.meta.IntegerConstraintMeta<com.example.UserForm> AGE = new am.ik.yavi.meta.IntegerConstraintMeta<com.example.UserForm>() {
 
-		@Override
-		public String name() {
-			return "age";
-		}
+        @Override
+        public String name() {
+            return "age";
+        }
 
-		@Override
-		public java.util.function.Function<com.example.UserForm, java.lang.Integer> toValue() {
-			return com.example.UserForm::age;
-		}
-	};
+        @Override
+        public java.util.function.Function<com.example.UserForm, java.lang.Integer> toValue() {
+            return com.example.UserForm::age;
+        }
+    };
 }
 ----
 
-==== on constructor parameters + field access
+==== on constructor arguments + field access
 
 You may prefer accessing fields directly rather than accessors, then use `field = true`.
 
@@ -398,44 +398,44 @@ package com.example;
 // Generated at 2020-02-11T18:02:47.124191+09:00
 public class _UserFormMeta {
 
-	public static final am.ik.yavi.meta.StringConstraintMeta<com.example.UserForm> NAME = new am.ik.yavi.meta.StringConstraintMeta<com.example.UserForm>() {
+    public static final am.ik.yavi.meta.StringConstraintMeta<com.example.UserForm> NAME = new am.ik.yavi.meta.StringConstraintMeta<com.example.UserForm>() {
 
-		@Override
-		public String name() {
-			return "name";
-		}
+        @Override
+        public String name() {
+            return "name";
+        }
 
-		@Override
-		public java.util.function.Function<com.example.UserForm, java.lang.String> toValue() {
-			return x  -> x.name;
-		}
-	};
+        @Override
+        public java.util.function.Function<com.example.UserForm, java.lang.String> toValue() {
+            return x  -> x.name;
+        }
+    };
 
-	public static final am.ik.yavi.meta.StringConstraintMeta<com.example.UserForm> EMAIL = new am.ik.yavi.meta.StringConstraintMeta<com.example.UserForm>() {
+    public static final am.ik.yavi.meta.StringConstraintMeta<com.example.UserForm> EMAIL = new am.ik.yavi.meta.StringConstraintMeta<com.example.UserForm>() {
 
-		@Override
-		public String name() {
-			return "email";
-		}
+        @Override
+        public String name() {
+            return "email";
+        }
 
-		@Override
-		public java.util.function.Function<com.example.UserForm, java.lang.String> toValue() {
-			return x  -> x.email;
-		}
-	};
+        @Override
+        public java.util.function.Function<com.example.UserForm, java.lang.String> toValue() {
+            return x  -> x.email;
+        }
+    };
 
-	public static final am.ik.yavi.meta.IntegerConstraintMeta<com.example.UserForm> AGE = new am.ik.yavi.meta.IntegerConstraintMeta<com.example.UserForm>() {
+    public static final am.ik.yavi.meta.IntegerConstraintMeta<com.example.UserForm> AGE = new am.ik.yavi.meta.IntegerConstraintMeta<com.example.UserForm>() {
 
-		@Override
-		public String name() {
-			return "age";
-		}
+        @Override
+        public String name() {
+            return "age";
+        }
 
-		@Override
-		public java.util.function.Function<com.example.UserForm, java.lang.Integer> toValue() {
-			return x  -> x.age;
-		}
-	};
+        @Override
+        public java.util.function.Function<com.example.UserForm, java.lang.Integer> toValue() {
+            return x  -> x.age;
+        }
+    };
 }
 ----
 
@@ -482,44 +482,44 @@ package com.example;
 // Generated at 2020-02-11T18:22:15.164882+09:00
 public class _UserArgumentsMeta {
 
-	public static final am.ik.yavi.meta.StringConstraintMeta<am.ik.yavi.arguments.Arguments3<java.lang.String, java.lang.String, java.lang.Integer>> NAME = new am.ik.yavi.meta.StringConstraintMeta<am.ik.yavi.arguments.Arguments3<java.lang.String, java.lang.String, java.lang.Integer>>() {
+    public static final am.ik.yavi.meta.StringConstraintMeta<am.ik.yavi.arguments.Arguments3<java.lang.String, java.lang.String, java.lang.Integer>> NAME = new am.ik.yavi.meta.StringConstraintMeta<am.ik.yavi.arguments.Arguments3<java.lang.String, java.lang.String, java.lang.Integer>>() {
 
-		@Override
-		public String name() {
-			return "name";
-		}
+        @Override
+        public String name() {
+            return "name";
+        }
 
-		@Override
-		public java.util.function.Function<am.ik.yavi.arguments.Arguments3<java.lang.String, java.lang.String, java.lang.Integer>, java.lang.String> toValue() {
-			return am.ik.yavi.arguments.Arguments1::arg1;
-		}
-	};
+        @Override
+        public java.util.function.Function<am.ik.yavi.arguments.Arguments3<java.lang.String, java.lang.String, java.lang.Integer>, java.lang.String> toValue() {
+            return am.ik.yavi.arguments.Arguments1::arg1;
+        }
+    };
 
-	public static final am.ik.yavi.meta.StringConstraintMeta<am.ik.yavi.arguments.Arguments3<java.lang.String, java.lang.String, java.lang.Integer>> EMAIL = new am.ik.yavi.meta.StringConstraintMeta<am.ik.yavi.arguments.Arguments3<java.lang.String, java.lang.String, java.lang.Integer>>() {
+    public static final am.ik.yavi.meta.StringConstraintMeta<am.ik.yavi.arguments.Arguments3<java.lang.String, java.lang.String, java.lang.Integer>> EMAIL = new am.ik.yavi.meta.StringConstraintMeta<am.ik.yavi.arguments.Arguments3<java.lang.String, java.lang.String, java.lang.Integer>>() {
 
-		@Override
-		public String name() {
-			return "email";
-		}
+        @Override
+        public String name() {
+            return "email";
+        }
 
-		@Override
-		public java.util.function.Function<am.ik.yavi.arguments.Arguments3<java.lang.String, java.lang.String, java.lang.Integer>, java.lang.String> toValue() {
-			return am.ik.yavi.arguments.Arguments2::arg2;
-		}
-	};
+        @Override
+        public java.util.function.Function<am.ik.yavi.arguments.Arguments3<java.lang.String, java.lang.String, java.lang.Integer>, java.lang.String> toValue() {
+            return am.ik.yavi.arguments.Arguments2::arg2;
+        }
+    };
 
-	public static final am.ik.yavi.meta.IntegerConstraintMeta<am.ik.yavi.arguments.Arguments3<java.lang.String, java.lang.String, java.lang.Integer>> AGE = new am.ik.yavi.meta.IntegerConstraintMeta<am.ik.yavi.arguments.Arguments3<java.lang.String, java.lang.String, java.lang.Integer>>() {
+    public static final am.ik.yavi.meta.IntegerConstraintMeta<am.ik.yavi.arguments.Arguments3<java.lang.String, java.lang.String, java.lang.Integer>> AGE = new am.ik.yavi.meta.IntegerConstraintMeta<am.ik.yavi.arguments.Arguments3<java.lang.String, java.lang.String, java.lang.Integer>>() {
 
-		@Override
-		public String name() {
-			return "age";
-		}
+        @Override
+        public String name() {
+            return "age";
+        }
 
-		@Override
-		public java.util.function.Function<am.ik.yavi.arguments.Arguments3<java.lang.String, java.lang.String, java.lang.Integer>, java.lang.Integer> toValue() {
-			return am.ik.yavi.arguments.Arguments3::arg3;
-		}
-	};
+        @Override
+        public java.util.function.Function<am.ik.yavi.arguments.Arguments3<java.lang.String, java.lang.String, java.lang.Integer>, java.lang.Integer> toValue() {
+            return am.ik.yavi.arguments.Arguments3::arg3;
+        }
+    };
 }
 ----
 
@@ -563,57 +563,57 @@ package com.example;
 // Generated at 2020-02-11T18:40:53.554587+09:00
 public class _UserServiceCreateUserArgumentsMeta {
 
-	public static final am.ik.yavi.meta.ObjectConstraintMeta<am.ik.yavi.arguments.Arguments4<com.example.UserService, java.lang.String, java.lang.String, java.lang.Integer>, com.example.UserService> USERSERVICE = new am.ik.yavi.meta.ObjectConstraintMeta<am.ik.yavi.arguments.Arguments4<com.example.UserService, java.lang.String, java.lang.String, java.lang.Integer>, com.example.UserService>() {
+    public static final am.ik.yavi.meta.ObjectConstraintMeta<am.ik.yavi.arguments.Arguments4<com.example.UserService, java.lang.String, java.lang.String, java.lang.Integer>, com.example.UserService> USERSERVICE = new am.ik.yavi.meta.ObjectConstraintMeta<am.ik.yavi.arguments.Arguments4<com.example.UserService, java.lang.String, java.lang.String, java.lang.Integer>, com.example.UserService>() {
 
-		@Override
-		public String name() {
-			return "userService";
-		}
+        @Override
+        public String name() {
+            return "userService";
+        }
 
-		@Override
-		public java.util.function.Function<am.ik.yavi.arguments.Arguments4<com.example.UserService, java.lang.String, java.lang.String, java.lang.Integer>, com.example.UserService> toValue() {
-			return am.ik.yavi.arguments.Arguments1::arg1;
-		}
-	};
+        @Override
+        public java.util.function.Function<am.ik.yavi.arguments.Arguments4<com.example.UserService, java.lang.String, java.lang.String, java.lang.Integer>, com.example.UserService> toValue() {
+            return am.ik.yavi.arguments.Arguments1::arg1;
+        }
+    };
 
-	public static final am.ik.yavi.meta.StringConstraintMeta<am.ik.yavi.arguments.Arguments4<com.example.UserService, java.lang.String, java.lang.String, java.lang.Integer>> NAME = new am.ik.yavi.meta.StringConstraintMeta<am.ik.yavi.arguments.Arguments4<com.example.UserService, java.lang.String, java.lang.String, java.lang.Integer>>() {
+    public static final am.ik.yavi.meta.StringConstraintMeta<am.ik.yavi.arguments.Arguments4<com.example.UserService, java.lang.String, java.lang.String, java.lang.Integer>> NAME = new am.ik.yavi.meta.StringConstraintMeta<am.ik.yavi.arguments.Arguments4<com.example.UserService, java.lang.String, java.lang.String, java.lang.Integer>>() {
 
-		@Override
-		public String name() {
-			return "name";
-		}
+        @Override
+        public String name() {
+            return "name";
+        }
 
-		@Override
-		public java.util.function.Function<am.ik.yavi.arguments.Arguments4<com.example.UserService, java.lang.String, java.lang.String, java.lang.Integer>, java.lang.String> toValue() {
-			return am.ik.yavi.arguments.Arguments2::arg2;
-		}
-	};
+        @Override
+        public java.util.function.Function<am.ik.yavi.arguments.Arguments4<com.example.UserService, java.lang.String, java.lang.String, java.lang.Integer>, java.lang.String> toValue() {
+            return am.ik.yavi.arguments.Arguments2::arg2;
+        }
+    };
 
-	public static final am.ik.yavi.meta.StringConstraintMeta<am.ik.yavi.arguments.Arguments4<com.example.UserService, java.lang.String, java.lang.String, java.lang.Integer>> EMAIL = new am.ik.yavi.meta.StringConstraintMeta<am.ik.yavi.arguments.Arguments4<com.example.UserService, java.lang.String, java.lang.String, java.lang.Integer>>() {
+    public static final am.ik.yavi.meta.StringConstraintMeta<am.ik.yavi.arguments.Arguments4<com.example.UserService, java.lang.String, java.lang.String, java.lang.Integer>> EMAIL = new am.ik.yavi.meta.StringConstraintMeta<am.ik.yavi.arguments.Arguments4<com.example.UserService, java.lang.String, java.lang.String, java.lang.Integer>>() {
 
-		@Override
-		public String name() {
-			return "email";
-		}
+        @Override
+        public String name() {
+            return "email";
+        }
 
-		@Override
-		public java.util.function.Function<am.ik.yavi.arguments.Arguments4<com.example.UserService, java.lang.String, java.lang.String, java.lang.Integer>, java.lang.String> toValue() {
-			return am.ik.yavi.arguments.Arguments3::arg3;
-		}
-	};
+        @Override
+        public java.util.function.Function<am.ik.yavi.arguments.Arguments4<com.example.UserService, java.lang.String, java.lang.String, java.lang.Integer>, java.lang.String> toValue() {
+            return am.ik.yavi.arguments.Arguments3::arg3;
+        }
+    };
 
-	public static final am.ik.yavi.meta.IntegerConstraintMeta<am.ik.yavi.arguments.Arguments4<com.example.UserService, java.lang.String, java.lang.String, java.lang.Integer>> AGE = new am.ik.yavi.meta.IntegerConstraintMeta<am.ik.yavi.arguments.Arguments4<com.example.UserService, java.lang.String, java.lang.String, java.lang.Integer>>() {
+    public static final am.ik.yavi.meta.IntegerConstraintMeta<am.ik.yavi.arguments.Arguments4<com.example.UserService, java.lang.String, java.lang.String, java.lang.Integer>> AGE = new am.ik.yavi.meta.IntegerConstraintMeta<am.ik.yavi.arguments.Arguments4<com.example.UserService, java.lang.String, java.lang.String, java.lang.Integer>>() {
 
-		@Override
-		public String name() {
-			return "age";
-		}
+        @Override
+        public String name() {
+            return "age";
+        }
 
-		@Override
-		public java.util.function.Function<am.ik.yavi.arguments.Arguments4<com.example.UserService, java.lang.String, java.lang.String, java.lang.Integer>, java.lang.Integer> toValue() {
-			return am.ik.yavi.arguments.Arguments4::arg4;
-		}
-	};
+        @Override
+        public java.util.function.Function<am.ik.yavi.arguments.Arguments4<com.example.UserService, java.lang.String, java.lang.String, java.lang.Integer>, java.lang.Integer> toValue() {
+            return am.ik.yavi.arguments.Arguments4::arg4;
+        }
+    };
 }
 ----
 
