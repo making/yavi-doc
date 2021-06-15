@@ -43,7 +43,8 @@ public record User(String name, String email, int age) {
 
 Validator<User> validator = ValidatorBuilder.<User> of() // or ValidatorBuilder.of(User.class)
     .constraint(User::name, "name", c -> c.notNull().lessThanOrEqual(20))
-    // Omits others
+    .constraint(User::email, "email", c -> c.notNull().greaterThanOrEqual(5).lessThanOrEqual(50).email())
+    .constraint(User::age, "age", c -> c.notNull().greaterThanOrEqual(0).lessThanOrEqual(200))
     .build();
 ----
 
