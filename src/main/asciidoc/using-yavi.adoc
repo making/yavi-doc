@@ -236,9 +236,6 @@ public class RangeConstraint implements CustomConstraint<Range> {
 
     @Override
     public boolean test(Range range) {
-        if (range == null) {
-            return true;
-        }
         return range.getTo() > range.getFrom();
     }
 }
