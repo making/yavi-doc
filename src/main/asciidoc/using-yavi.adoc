@@ -219,7 +219,7 @@ Validator<Range> validator = ValidatorBuilder.<Range> of()
     .build();
 ----
 
-You can also create a custom constraint for cross-field validation as follows:
+You can also create a custom constraint for the cross-field validation as follows:
 
 [source,java]
 ----
