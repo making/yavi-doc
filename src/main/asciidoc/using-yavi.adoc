@@ -207,7 +207,7 @@ The group to validate can be specified in `validate` method:
 
 [source,java]
 ----
-validator.validate(user, Group.CREATE);
+ConstraintViolations violations = validator.validate(user, Group.CREATE);
 ----
 
 You can use a shortcut `constraintOnGroup` method
