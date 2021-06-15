@@ -198,8 +198,7 @@ enum Group implements ConstraintGroup {
 }
 
 Validator<User> validator = ValidatorBuilder.<User> of()
-    .constraintOnCondition(Group.CREATE.toCondition(),
-        b -> b.constraint(User::getId, "id", c -> c.isNull()))
+    .constraintOnCondition(Group.CREATE.toCondition(), b -> b.constraint(User::getId, "id", c -> c.isNull()))
     .build();
 ----
 
@@ -215,8 +214,7 @@ You can use a shortcut `constraintOnGroup` method
 [source,java]
 ----
 Validator<User> validator = ValidatorBuilder.<User> of()
-    .constraintOnGroup(Group.CREATE,
-        b -> b.constraint(User::getId, "id", c -> c.isNull()))
+    .constraintOnGroup(Group.CREATE, b -> b.constraint(User::getId, "id", c -> c.isNull()))
     .build();
 ----
 
