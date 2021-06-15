@@ -9,6 +9,7 @@ It is helpful when you want to combine validation results of multiple https://ma
 === Validating with Applicative Functor
 
 `am.ik.yavi.fn.Validation<E, T>` class is the implementation of Applicative Functor. `E` is the type of error and `T` is the type of target object.
+
 It can be obtained by `am.ik.yavi.core.ApplicativeValidator` that can be converted from `Validator` by `applicative()` method.
 
 [source,java]
@@ -21,19 +22,21 @@ Validator<User> validator = ValidatorBuilder.<User> of()
 ApplicativeValidator<User> applicativeValidator = validator.applicative();
 ----
 
-`am.ik.yavi.core.Validated<T>` is a shortcut of `Validation<ConstraintViolation, T>` which is specialized for `Validator`'s usage.
+`am.ik.yavi.core.Validated<T>` is a shortcut of `Validation<ConstraintViolation, T>` which is specialized for `Validator` 's usage.
 
 [source,java]
 ----
-Validator<Email> emailValidator = ValidatorBuilder.<Email> of()
+ApplicativeValidator<Email> emailValidator = ValidatorBuilder.<Email> of()
     .constraint(Email::value, "email", c -> c.notBlank().email())
-    .build();
-Validator<PhoneNumber> phoneNumberValidator = ValidatorBuilder.<PhoneNumber> of()
+    .build()
+    .applicative();
+ApplicativeValidator<PhoneNumber> phoneNumberValidator = ValidatorBuilder.<PhoneNumber> of()
     .constraint(PhoneNumber::value, "phoneNumber", c -> c.notBlank().pattern("[0-9\\-]+"))
-    .build();
+    .build()
+    .applicative();
 
-Validated<Email> emailValidated = emailValidator.applicative().validate(email);
-Validated<PhoneNumber> phoneNumberValidated = phoneNumberValidator.applicative().validate(phoneNumber);
+Validated<Email> emailValidated = emailValidator.validate(email);
+Validated<PhoneNumber> phoneNumberValidated = phoneNumberValidator.validate(phoneNumber);
 ----
 
 The validated target or constraint violations can be retrieved from the `Validated` instance as follows:
@@ -43,7 +46,7 @@ The validated target or constraint violations can be retrieved from the `Validat
 if (emailValidated.isValid()) {
     Email email = emailValidated.value(); // throws NoSuchElementException if it is invalid
 } else {
-    ConstraintViolations violations = emailValidated.errors(); // throws NoSuchElementException if it is invalid
+    ConstraintViolations violations = emailValidated.errors(); // throws NoSuchElementException if it is valid
 }
 // or
 Email email = emailValidated.orElseThrow(violations -> new ConstraintViolationsException(violations));
@@ -53,7 +56,7 @@ Email email = emailValidated.orElseThrow(violations -> new ConstraintViolationsE
 
 [source,java]
 ----
-HttpStatus status = emailValidated.fold(violations -> HttpStatus.BAD_REQUEST, contactInfo -> HttpStatus.OK);
+HttpStatus status = emailValidated.fold(violations -> HttpStatus.BAD_REQUEST, email -> HttpStatus.OK);
 ----
 
 === Combining `Validation` / `Validated` objects
@@ -81,4 +84,4 @@ For example, if you put a blank space in `Email` and `a` in `PhoneNumber` and tr
 
 === Converting the target object after the validation
 
-=== Validating the source object before building a target object
+=== Validating the source object before creating a target object
