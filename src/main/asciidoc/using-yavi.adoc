@@ -50,7 +50,7 @@ Validator<User> validator = ValidatorBuilder.<User> of()
     .build();
 ----
 
-Or if you don't want your method to expose the target field, you can define the contraint like follwing:
+Or if you don't want your method to expose the target field, you can define the constraint like following:
 
 [source,java]
 ----
@@ -69,6 +69,8 @@ public class User {
 ----
 
 See "<<built-in-constraints>>" for other constraint rules.
+
+TIP: If you don't like to specify the field name as a string literal, you can use "<<annotation-processor>>" to make it completely type-safe.
 
 === Constraints on nested objects
 
