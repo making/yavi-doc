@@ -103,9 +103,11 @@ Alternatively, you can combine `ApplicativeValidator<Email>` and `ApplicativeVal
 
 [source,java]
 ----
-Arguments2Validator<Email, PhoneNumber, ContactInfo> validator = ArgumentsValidators
+Arguments2Validator<Email, PhoneNumber, ContactInfo> contactInfoValidator = ArgumentsValidators
     .split(emailValidator.applicative(), phoneNumberValidator.applicative())
     .apply(ContactInfo::new);
+
+Validated<ContactInfo> contactInfoValidated = contactInfoValidator.validate(new Email("yavi@example.com"), new PhoneNumber("090-123-4567"));
 ----
 
 ====
