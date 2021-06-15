@@ -1,2 +1,86 @@
 [[combining-validators]]
 == Combining validators
+
+`ApplicativeValidator<T>` and `Arguments1Validator<S, T>` we've seen so far extend `ValueValidator<S, T>`.
+`T` is the type of the target object to be validated and `S` is the type of the source object to create the target object.
+`ApplicativeValidator<T>` is equivalent to `ValueValidator<T, T>`.
+
+`ValueValidator` can be combined to validate a larger object.
+
+=== Splitting a validator for an object into small pieces
+
+You can use `split` method to split the constructor and the arguments of the factory method for creating a large Object into small validators and combine them.
+
+Let's look at an example.
+
+Validator for constructor `Person(String, String, Integer)` is `Arguments3Validator<String, String, Integer, Person>`.
+This can be divided into two `StringValidator<String>` and one `IntegerValidator<Integer>` and then combined.
+
+It can be defined as bellow:
+
+[source,java]
+----
+public class Person {
+    public Person(String name, String email, Integer age) {
+        // ...
+    }
+}
+
+StringValidator<String> nameValidator = ...;
+StringValidator<String> emailValidator = ...;
+IntegerValidator<Integer> ageValidator = ...;
+
+Arguments3Validator<String, String, Integer, Person> personValidator = ArgumentsValidators
+    .split(nameValidator, emailValidator, ageValidator)
+    .apply(Person::new);
+// or
+Arguments3Validator<String, String, Integer, Person> personValidator = nameValidator
+    .split(emailValidator)
+    .split(ageValidator)
+    .apply(Person::new);
+----
+
+The same goes for Validators for Value Objects.
+
+[source,java]
+----
+public class Person {
+    public Person(Name name, Email email, Age age) {
+        // ...
+    }
+}
+
+StringValidator<Name> nameValidator = ...;
+StringValidator<Email> emailValidator = ...;
+IntegerValidator<Age> ageValidator = ...;
+
+Arguments3Validator<String, String, Integer, Person> personValidator = ArgumentsValidators
+    .split(nameValidator, emailValidator, ageValidator)
+    .apply(Person::new);
+// or
+Arguments3Validator<String, String, Integer, Person> personValidator = nameValidator
+    .split(emailValidator)
+    .split(ageValidator)
+    .apply(Person::new);
+----
+
+The created Validator can be used as follows:
+
+[source,java]
+----
+Validated<Person> personValidated = Person.validator.validate("Jone Doe", "jdoe@example.com", 30);
+----
+
+Since the argument of `ArgumentsValidators.split` is `ValueValidator` rather than `Arguments1Validator`, you can also combine `ApplicativeValidators` as follows:
+
+[source,java]
+----
+ApplicativeValidator<Email> emailValidator = ...;
+ApplicativeValidator<PhoneNumber> phoneNumberValidator = ...;
+
+Arguments2Validator<Email, PhoneNumber, ContactInfo> contactInfoValidator = ArgumentsValidators
+    .split(emailValidator, phoneNumberValidator)
+    .apply(ContactInfo::new);
+
+Validated<ContactInfo> contactInfoValidated = contactInfoValidator.validate(new Email("yavi@example.com"), new PhoneNumber("090-123-4567"));
+----
