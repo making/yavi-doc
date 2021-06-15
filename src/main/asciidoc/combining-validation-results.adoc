@@ -60,7 +60,7 @@ HttpStatus status = emailValidated.fold(violations -> HttpStatus.BAD_REQUEST, em
 === Combining `Validation` / `Validated` objects
 
 `Validation` / `Validated` objects can be combined to produce a new object.
-In the bellow example, `ContactInfo` instance is created using `Email` and `PhoneNumber` after validting them.
+In the bellow example, `ContactInfo` instance is created using `Email` and `PhoneNumber` after validating them.
 
 [source,java]
 ----
