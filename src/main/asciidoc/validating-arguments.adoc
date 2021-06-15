@@ -41,7 +41,40 @@ The Arguments Validator can be used as follows:
 Validated<Person> personValidated = Person.validator.validate("Jone Doe", "jdoe@example.com", 30);
 ----
 
-`am.ik.yavi.arguments.Arguments1Validator` to `am.ik.yavi.arguments.Arguments16Validator` are available..
+`am.ik.yavi.arguments.Arguments1Validator` to `am.ik.yavi.arguments.Arguments16Validator` are available.
 
 Arguments Validator is useful, but it can be a bit verbose to define. Since it is Type-Safe, it is not possible to define something that does not fit the type, but it feels like a puzzle that fits the type.
 Building the Arguments Validator is simplified by <<combining-validators>>.
+
+=== Validating method arguments
+
+Arguments Validator can be used for validating method arguments as well.
+
+[source,java]
+----
+// From https://beanvalidation.org/
+public class UserService {
+    public User createUser(/* @Email */ String email,
+                         /* @NotNull */ String name) {
+        // ...
+    }
+}
+----
+
+The arguments for `UserService.createUser` in the above example can be validated as follows:
+
+[source,java]
+----
+static final Arguments3Validator<UserService, String, String, User> validator = ArgumentsValidatorBuilder
+        .of(UserService::createUser) //
+        .builder(b -> b //
+                ._object(Arguments1::arg1, "userService", c -> c.notNull())
+                ._string(Arguments2::arg2, "email", c -> c.email())
+                ._string(Arguments3::arg3, "name", c -> c.notNull())) //
+        .build();
+
+UserService userService = new UserService();
+Validated<User> userValidated = validator.validate(userService, "jdoe@example.com", "John Doe");
+----
+
+NOTE: `void` cannot be used as return type while `java.lang.Void` is available.
