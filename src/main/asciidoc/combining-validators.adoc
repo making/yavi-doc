@@ -85,3 +85,50 @@ Arguments2Validator<Email, PhoneNumber, ContactInfo> contactInfoValidator = Argu
 
 Validated<ContactInfo> contactInfoValidated = contactInfoValidator.validate(new Email("yavi@example.com"), new PhoneNumber("090-123-4567"));
 ----
+
+=== Validating the source object before creating the target object
+
+In a web application, you often get a value from a Map, Form Object, or `HttpServletRequest` to create a Domain Object.
+
+`Arguments1Validator` can validate the source object and then convert it to the target object using `compose` method.
+
+For example, in the case where `name`, `email` and `age` are obtained from `HttpServletRequest` object as HTTP request parameters in Servlet, it can be defined as follows:
+
+[source,java]
+----
+Argument1Validator<HttpServletRequest, Name> requestNameValidator = nameValidator.compose(req -> req.getParameter("name"));
+Argument1Validator<HttpServletRequest, Email> requestEmailValidator = emailValidator.compose(req -> req.getParameter("email"));
+Argument1Validator<HttpServletRequest, Age> requestAgeValidator = ageValidator.compose(req -> Integer.valueOf(req.getParameter("age")));
+
+HttpServletRequest request = ...;
+Validated<Name> nameValidated = requestNameValidator.validate(request);
+Validated<Email> emailValidated = requestEmailValidator.validate(request);
+Validated<Age> ageValidated = requestAgeValidator.validate(request);
+----
+
+You can combine these Validators with `combine` method as follows to create a Validator for `Person` object:
+
+[source,java]
+----
+Arguments1Validator<HttpServletRequest, Person> requestPersonValidator = ArgumentsValidators
+    .combine(requestNameValidator, requestEmailValidator, requestAgeValidator)
+    .apply(Person::new);
+// or
+Arguments1Validator<HttpServletRequest, Person> requestPersonValidator = requestNameValidator
+    .combine(requestEmailValidator)
+    .combine(requestAgeValidator)
+    .apply(Person::new);
+
+HttpServletRequest request = ...;
+Validated<Person> personValidated = requestPersonValidator.validate(request);
+----
+
+This Validator can also be converted from `Arguments3Validator<String, String, Integer, Person>` as follows:
+
+[source,java]
+----
+Arguments1Validator<HttpServletRequest, Person> requestPersonValidator = personValidator
+    .compose(req -> Arguments.of(req.getParameter("name"), req.getParameter("email"), Integer.valueOf(req.getParameter("age"))));
+----
+
+By combining Validators in this way, you can create various patterns of Validators. Creating a small Arguments Validator not only allows you to validate the values before creating the object, but also makes it more reusable.
