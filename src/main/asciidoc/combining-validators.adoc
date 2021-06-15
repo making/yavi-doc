@@ -76,8 +76,8 @@ Since the argument of `ArgumentsValidators.split` is `ValueValidator` rather tha
 
 [source,java]
 ----
-ApplicativeValidator<Email> emailValidator = ...;
-ApplicativeValidator<PhoneNumber> phoneNumberValidator = ...;
+ApplicativeValidator<Email> emailValidator = /* see examples above */;
+ApplicativeValidator<PhoneNumber> phoneNumberValidator = /* see examples above */;
 
 Arguments2Validator<Email, PhoneNumber, ContactInfo> contactInfoValidator = ArgumentsValidators
     .split(emailValidator, phoneNumberValidator)
@@ -96,9 +96,12 @@ For example, in the case where `name`, `email` and `age` are obtained from `Http
 
 [source,java]
 ----
-Argument1Validator<HttpServletRequest, Name> requestNameValidator = nameValidator.compose(req -> req.getParameter("name"));
-Argument1Validator<HttpServletRequest, Email> requestEmailValidator = emailValidator.compose(req -> req.getParameter("email"));
-Argument1Validator<HttpServletRequest, Age> requestAgeValidator = ageValidator.compose(req -> Integer.valueOf(req.getParameter("age")));
+Argument1Validator<HttpServletRequest, Name> requestNameValidator = nameValidator
+    .compose(req -> req.getParameter("name"));
+Argument1Validator<HttpServletRequest, Email> requestEmailValidator = emailValidator
+    .compose(req -> req.getParameter("email"));
+Argument1Validator<HttpServletRequest, Age> requestAgeValidator = ageValidator
+    .compose(req -> Integer.valueOf(req.getParameter("age")));
 
 HttpServletRequest request = ...;
 Validated<Name> nameValidated = requestNameValidator.validate(request);
@@ -127,6 +130,7 @@ This Validator can also be converted from `Arguments3Validator<String, String, I
 
 [source,java]
 ----
+Arguments3Validator<String, String, Integer, Person> personValidator = /* see examples above */;
 Arguments1Validator<HttpServletRequest, Person> requestPersonValidator = personValidator
     .compose(req -> Arguments.of(req.getParameter("name"), req.getParameter("email"), Integer.valueOf(req.getParameter("age"))));
 ----
