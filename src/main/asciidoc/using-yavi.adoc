@@ -21,6 +21,8 @@ boolean isValid = violations.isValid();
 violations.forEach(x -> System.out.println(x.message()));
 ----
 
+TIP:: YAVI aggregates all violation messages by default. If a violation is found during the validation, it will not be shortcut. If you want to return from the current validation as soon as the first constraint violation occurs, use <<fail-fast-mode>>.
+
 In order to avoid ambiguous type inferences, you can use explicit `_<type>` method per type instead of constraint as follows:
 
 [source,java]
@@ -434,6 +436,35 @@ Validator<User> validator = ValidatorBuilder.<User> of()
     .messageFormatter(ResourceBundleMessageFormatter.SINGLETON)
     // ...
     .build();
+----
+
+[[fail-fast-mode]]
+=== Fail fast mode
+
+Using the fail fast mode, YAVI allows to return from the current validation as soon as the first constraint violation occurs.
+This can be useful for the validation of large object graphs where you are only interested in a quick check whether there is any constraint violation at all.
+
+[source,java]
+----
+Validator<User> validator = ValidatorBuilder.<User> of()
+    .constraint(User::getName, "name", c -> c.notNull()
+        .lessThanOrEqual(20))
+    .constraint(User::getEmail, "email", c -> c.notNull()
+        .greaterThanOrEqual(5)
+        .lessThanOrEqual(50)
+        .email())
+    .constraint(User::getAge, "age", c -> c.notNull()
+        .greaterThanOrEqual(0)
+        .lessThanOrEqual(200))
+    .failFast(true) // <-- Enable the fail fast mode
+    .build();
+----
+
+You can switch an existing `Validator` to the fail fast mode as follows:
+
+[source,java]
+----
+Validator<User> failFastValidator = validator.failFast(true);
 ----
 
 === Kotlin Support
