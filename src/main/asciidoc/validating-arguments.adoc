@@ -127,4 +127,13 @@ Validated<Email> emailValidated = nameValidator.validate("jdoe@example.com");
 Validated<Age> ageValidated = nameValidator.validate(30);
 ----
 
+If you want to create an `Arguments1Validator` for a `List`, you can "lift" a `Validator` for the element of the list as follows:
+
+[source,java]
+----
+Arguments1Validator<Iterable<String>, List<Email>> emailsValidator = ArgumentsValidators.liftList(emailValidator);
+Validated<List<Email>> emailsValidated = emailsValidator.validate(List.of("foo@example.com", "bar@example.com"));
+----
+
+
 These "small Validators" can be very powerful parts by using the Validator combinators described in "<<combining-validators>>".
