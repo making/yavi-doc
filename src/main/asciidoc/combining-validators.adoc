@@ -4,15 +4,15 @@
 `ApplicativeValidator<T>` and `Arguments1Validator<S, T>` we've seen so far extend `ValueValidator<S, T>`.
 (`T` is the type of the target object to be validated and `S` is the type of the source object to create the target object.)
 
-`ApplicativeValidator<T>` is equivalent to `ValueValidator<T, T>`.
+`ApplicativeValidator<T>` is a `ValueValidator<T, T>`.
 
-`ValueValidator` can be combined to validate a larger object.
+Multiple `ValueValidator` s can be combined to validate a larger object.
 
 === Splitting a validator for an object into small pieces
 
 You can use `split` method to split the constructor and the arguments of the factory method for creating a large object into small validators and combine them.
 
-Let's look at an example.
+Let's take a look at an example.
 
 Validator for constructor `Person(String, String, Integer)` is `Arguments3Validator<String, String, Integer, Person>`.
 This can be divided into two `StringValidator<String>` s and one `IntegerValidator<Integer>` and then combined.
@@ -72,7 +72,7 @@ The created Validator can be used as follows:
 Validated<Person> personValidated = Person.validator.validate("Jone Doe", "jdoe@example.com", 30);
 ----
 
-Since the argument of `ArgumentsValidators.split` is `ValueValidator` rather than `Arguments1Validator`, you can also combine `ApplicativeValidators` as follows:
+Since the arguments of `ArgumentsValidators#split` are `ValueValidator` s rather than `Arguments1Validator` s, you can also combine `ApplicativeValidator` s as follows:
 
 [source,java]
 ----
