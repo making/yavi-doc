@@ -4,7 +4,7 @@
 YAVI provides Annotation Processor to generates classes which defines meta classes
 that implement `am.ik.yavi.meta.ConstraintMeta` for each target which is annotated with `am.ik.yavi.meta.ConstraintTarget` or `am.ik.yavi.meta.ConstraintArguments`.
 
-When you have a class like following, run `mvn clean compile`:
+When you have a class as following, run `mvn clean compile`:
 
 [source,java]
 ----
@@ -54,7 +54,7 @@ You'll see `target/generated-sources/annotations/com/example/_UserFormMeta.java`
 [NOTE]
 ====
 `@ConstraintTarget` and `@ConstraintArguments` are compile-time annotations, so they disappear at runtime.
-+ This won't break YAVI's "No more annotation!" concept ;)
++ This won't break YAVI's "No annotation!" concept ;)
 ====
 
 === Annotating `@ConstraintTarget`

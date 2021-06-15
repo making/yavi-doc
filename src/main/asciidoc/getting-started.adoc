@@ -95,7 +95,7 @@ public class Car {
 }
 ----
 
-The `ValidatorBuilder.constraint` is used to declare the constraints which should be applied to the return values of getter for the `Car` instance:
+The `ValidatorBuilder#constraint` is used to declare the constraints which should be applied to the return values of getter for the `Car` instance:
 
 * `manufacturer` must never be null
 * `licensePlate` must never be null and must be between 2 and 14 characters long
