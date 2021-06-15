@@ -441,12 +441,12 @@ public class _UserFormMeta {
 
 === Annotating `@ConstraintArguments`
 
-`@ConstraintArguments` is used to generate meta classes that can be used with link:../README.md#arguments-validator[`ArgumentsValidatorBuilder`].
+`@ConstraintArguments` is used to generate meta classes that can be used with `ArgumentsValidatorBuilder`.
 + It can be annotated on constructors or methods.
 
 The constructor of `Xyz` class that is annotated with `@ConstraintTarget` will generate `_XyzArgumentsMeta`.
 
-`doSomthing` method of `Xyz` class that is annotated with `@ConstraintTarget` will generate `_XyzDoSomethingArgumentsMeta`.
+`doSomething` method of `Xyz` class that is annotated with `@ConstraintTarget` will generate `_XyzDoSomethingArgumentsMeta`.
 
 ==== Validating Constructor Arguments
 
