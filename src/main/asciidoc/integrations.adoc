@@ -137,7 +137,7 @@ public class OrderController {
 }
 ----
 
-==== Managing `ValidatorBuilder` in an IoC Container
+=== Managing `ValidatorBuilder` in an IoC Container
 
 If you want to customize `ValidatorBuilder` and manage it with an IoC Container like Spring Framework, you can use `am.ik.yavi.factory.ValidatorFactory`.
 
@@ -166,7 +166,7 @@ public class OrderController {
 }
 ----
 
-==== Obtaining a `BiValidator`
+=== Obtaining a `BiValidator`
 
 `BiValidator<T, E>` is a `BiConsumer<T, E>`.
 `T` is the type of target object as usual and `E` is the type of errors object.
