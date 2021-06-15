@@ -19,4 +19,6 @@ include::combining-validators.adoc[]
 
 include::built-in-constraints.adoc[]
 
+include::annotation-processor.adoc[]
+
 include::integrations.adoc[]
