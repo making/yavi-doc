@@ -1898,7 +1898,7 @@ a|
 
 ==== `password()`
 
-Checks that the target value is not `null`
+Check if the target value meets the specified custom password policy (e.g. Cross-field check)
 
 [source,java]
 ----
