@@ -10,11 +10,11 @@ Arguments Validator, as the name implies, is a Validator for arguments.
 
 A normal Validator, like Bean Validation, validates if the values are valid for the object to which the values are set, while the Arguments Validator validates that *the arguments* set to the Object are valid.
 
-Since an Object is created before validation in a normal Validator, there is a possibility of creating an Object in an incomplete state temporarily.
+Since an object is created before validation in a normal Validator, there is a possibility of creating an object in an incomplete state temporarily.
 For example, even if the constraint of `notNull()` is imposed on the Validator side,
 if the `null` check is implemented in the constructor, this `null` check will work before the validation by Validator is executed.
 
-The Arguments Validator creates an Object after validation, so you don't have to worry about an incomplete Object.
+The Arguments Validator *creates an object after validation*, so you don't have to worry about an incomplete object.
 
 
 [source,java]
