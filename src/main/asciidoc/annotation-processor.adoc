@@ -68,7 +68,7 @@ You'll see `target/generated-sources/annotations/com/example/_UserFormMeta.java`
 
 [source,java]
 ----
-final Validator<UserForm> validator = ValidatorBuilder.<UserForm>of()
+Validator<UserForm> validator = ValidatorBuilder.<UserForm> of()
     .constraint(_UserFormMeta.NAME, c -> c.notEmpty())
     .constraint(_UserFormMeta.EMAIL, c -> c.notEmpty().email())
     .constraint(_UserFormMeta.AGE, c -> c.greaterThan(0))
