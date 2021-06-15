@@ -1,2 +1,91 @@
 [[integrations]]
 == Integrations
+
+Although YAVI doesn't depend on anything, it has interfaces that magically fit into Framework.
+
+=== Integration with `BindingResult` in Spring MVC
+
+`ConstraintViolations#apply` accepts the Function Interface with the same arguments as Spring Framework's `BindingResult#rejectValue` method and passes the violation messages.
+
+To reflect validation results by YAVI in a Controller of Spring MVC, you can write the following code.
+
+[source,java]
+----
+final Validator<UserForm> validator = ...;
+
+@PostMapping(path = "users")
+public String createUser(Model model, UserForm userForm, BindingResult bindingResult) {
+    ConstraintViolations violations = validator.validate(userForm);
+    if (!violations.isValid()) {
+        violations.apply(BindingResult::rejectValue);
+        return "userForm";
+    }
+    // ...
+    return "redirect:/";
+}
+----
+
+If you like the functional way, you can also write:
+
+[source,java]
+----
+final Validator<UserForm> validator = ...;
+
+@PostMapping(path = "users")
+public String createUser(Model model, UserForm userForm, BindingResult bindingResult) {
+    return validator.applicative()
+        .validate(userForm)
+        .fold(violations -> {
+            ConstraintViolations.of(violations).apply(BindingResult::rejectValue);
+            return "userForm";
+        }, form -> {
+            // ...
+            return "redirect:/";
+        });
+}
+----
+
+TIP: `List<ContraintViolation>` is passed to the function of the first argument of `Validated#fold` instead of `ConstraintViolations`. You can convert the `List<ContraintViolation>` to `ConstraintViolations` by using the `ConstraintViolations#of` method.
+
+=== Converting `ConstraintViolations` to the format to serialize as a response body
+
+`ConstraintViolation` is not suitable for serializing with a serializer like Jackson. Instead, you can use `ConstraintViolation#detail` method to convert it to a `ViolationDetail` object that is easy to serialize.
+The `ConstraintViolations#details` method translates all `ConstraintViolation` s and returns `List<ViolationDetail>`.
+
+[source,java]
+----
+final Validator<UserCreateRequest> validator = ...;
+
+@PostMapping(path = "users")
+public ResponseEntity<?> createUser(@RequestBody UserCreateRequest request) {
+    ConstraintViolations violations = validator.validate(request);
+    if (violations.isValid()) {
+        User created = this.userService.create(request.toUser());
+        return ResponseEntity.ok(created);
+    } else {
+        return ResponseEntity.badRequest().body(violations.details());
+    }
+}
+----
+
+If you like the functional way, you can also write:
+
+[source,java]
+----
+final Validator<UserForm> validator = ...;
+
+@PostMapping(path = "users")
+public ResponseEntity<?> createUser(@RequestBody UserCreateRequest request) {
+    return validator.applicative()
+        .validate(request)
+        .map(req -> this.userService.create(req.toUser()))
+        .mapErrors(ConstraintViolations.of(violations).details())
+        // or .mapErrorsF(ConstraintViolation::detail)
+        .fold(details -> ResponseEntity.badRequest().body(details),
+            created -> ResponseEntity.ok(created));
+}
+----
+
+TIP: `ViolationDetail` works with GraalVM native image out of the box.
+
+
