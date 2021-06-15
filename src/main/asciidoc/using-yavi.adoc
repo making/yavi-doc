@@ -116,9 +116,34 @@ or you can also define a set of constraints on the elements inside.
 
 [source,java]
 ----
+public class History {
+	private final int revision;
+
+	public History(int revision) {
+		this.revision = revision;
+	}
+
+	public int getRevision() {
+		return revision;
+	}
+}
+
+public class Histories {
+	private final List<History> value;
+
+	public Histories(List<History> value) {
+		this.value = value;
+	}
+
+	public List<History> asList() {
+		return value;
+	}
+}
+
 Validator<History> historyValidator = ValidatorBuilder.<History> of()
         .constraint(History::getRevision, "revision", c -> c.notNull().greaterThanOrEqual(1))
         .build();
+
 Validator<Histories> validator = ValidatorBuilder.<Histories> of()
         .forEach(Histories::asList, "histories", historyValidator)
         .build();
