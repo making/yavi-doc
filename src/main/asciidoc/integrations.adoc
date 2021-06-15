@@ -98,7 +98,7 @@ final Validator<UserCreateRequest> validator = ...;
 
 public RouterFunction<ServerResponse> routes() {
     return route()
-        .POST("/users", req -> req.bodyToMono(UserCreateRequest.class)
+        .POST("/users", request -> request.bodyToMono(UserCreateRequest.class)
             .flatMap(body -> validator.applicative()
                 .validate(body)
                 .map(req -> userService.create(req.toUser()))
