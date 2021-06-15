@@ -17,7 +17,7 @@ Validator<User> validator = ValidatorBuilder.<User> of() // or ValidatorBuilder.
     .build();
 
 ConstraintViolations violations = validator.validate(user);
-violations.isValid(); // true or false
+boolean isValid = violations.isValid(); // true or false
 violations.forEach(x -> System.out.println(x.message()));
 ----
 

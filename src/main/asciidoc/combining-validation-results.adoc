@@ -1,8 +1,84 @@
 [[combining-validation-results]]
 == Combining validation results
 
-=== Validation using Applicative Functor
+YAVI supports a functional programming concept known as https://en.wikipedia.org/wiki/Applicative_functor[Applicative Functor].
+A sequence of validations are executed while accumulating the results (`ConstraintViolation`), even if some or all of these validations fail during the execution chain.
 
-=== `Validation` / `Validated` API
+It is helpful when you want to combine validation results of multiple https://martinfowler.com/bliki/ValueObject.html[Value Object]s to produce a new object. (Of course, it is also useful for any objects other than Value Objects.)
 
-=== `Either` API
+=== Validating with Applicative Functor
+
+`am.ik.yavi.fn.Validation<E, T>` class is the implementation of Applicative Functor. `E` is the type of error and `T` is the type of target object.
+It can be obtained by `am.ik.yavi.core.ApplicativeValidator` that can be converted from `Validator` by `applicative()` method.
+
+[source,java]
+----
+Validator<User> validator = ValidatorBuilder.<User> of()
+    .constraint(User::getName, "name", c -> c.notNull().lessThanOrEqual(20))
+    // ...
+    .build();
+
+ApplicativeValidator<User> applicativeValidator = validator.applicative();
+----
+
+`am.ik.yavi.core.Validated<T>` is a shortcut of `Validation<ConstraintViolation, T>` which is specialized for `Validator`'s usage.
+
+[source,java]
+----
+Validator<Email> emailValidator = ValidatorBuilder.<Email> of()
+    .constraint(Email::value, "email", c -> c.notBlank().email())
+    .build();
+Validator<PhoneNumber> phoneNumberValidator = ValidatorBuilder.<PhoneNumber> of()
+    .constraint(PhoneNumber::value, "phoneNumber", c -> c.notBlank().pattern("[0-9\\-]+"))
+    .build();
+
+Validated<Email> emailValidated = emailValidator.applicative().validate(email);
+Validated<PhoneNumber> phoneNumberValidated = phoneNumberValidator.applicative().validate(phoneNumber);
+----
+
+The validated target or constraint violations can be retrieved from the `Validated` instance as follows:
+
+[source,java]
+----
+if (emailValidated.isValid()) {
+    Email email = emailValidated.value(); // throws NoSuchElementException if it is invalid
+} else {
+    ConstraintViolations violations = emailValidated.errors(); // throws NoSuchElementException if it is invalid
+}
+// or
+Email email = emailValidated.orElseThrow(violations -> new ConstraintViolationsException(violations));
+----
+
+`fold` method is convenient if you want to create an instance of the same type regardless of the success or failure of the validation.
+
+[source,java]
+----
+HttpStatus status = emailValidated.fold(violations -> HttpStatus.BAD_REQUEST, contactInfo -> HttpStatus.OK);
+----
+
+=== Combining `Validation` / `Validated` objects
+
+`Validation` / `Validated` objects can be combined to produce a new object.
+In the bellow example, `ContactInfo` instance is created using `Email` and `PhoneNumber` after validting them.
+
+[source,java]
+----
+Validated<ContactInfo> contactInfoValidated = emailValidated.combine(phoneNumberValidated)
+    .apply((em, ph) -> new ContactInfo(em, ph));
+// or
+Validated<ContactInfo> contactInfoValidated = Validations.combine(emailValidated, phoneNumberValidation)
+    .apply((em, ph) -> new ContactInfo(em, ph));
+----
+The important thing here is that even if the validation of `Email` or `PhoneNumber` fails, all validation results are aggregated without shortcuts in the middle.
+
+For example, if you put a blank space in `Email` and `a` in `PhoneNumber` and try to create a `ContactInfo`, the validation will fail and you will get the following three `ContraintViolation` s:
+
+----
+* "email" must not be blank
+* "email" must be a valid email address
+* "phoneNumber" must match [0-9\-]+
+----
+
+=== Converting the target object after the validation
+
+=== Validating the source object before building a target object
