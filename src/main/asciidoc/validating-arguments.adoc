@@ -1,2 +1,47 @@
 [[validating-arguments]]
 == Validating arguments
+
+YAVI supports validating arguments of a constructor or factory method *before creating an object* with Arguments Validator.
+
+This is one of YAVI's unique features.
+
+=== Define and obtain an Arguments Validator instance
+Arguments Validator, as the name implies, is a Validator for arguments.
+
+A normal Validator, like Bean Validation, validates if the values are valid for the object to which the values are set, while the Arguments Validator validates that *the arguments* set to the Object are valid.
+
+Since an Object is created before validation in a normal Validator, there is a possibility of creating an Object in an incomplete state temporarily.
+For example, even if the constraint of `notNull()` is imposed on the Validator side,
+if the `null` check is implemented in the constructor, this `null` check will work before the validation by Validator is executed.
+
+The Arguments Validator creates an Object after validation, so you don't have to worry about an incomplete Object.
+
+
+[source,java]
+----
+public class Person {
+    public Person(String name, String email, Integer age) {
+        // ...
+    }
+
+    public static Arguments3Validator<String, String, Integer, Person> validator = ArgumentsValidatorBuilder
+        .of(Person::new)
+        .builder(b -> b
+            ._string(Arguments1::arg1, "name", c -> c.notBlank().lessThanOrEqual(100)) // Constrains onf the first argument of Person::new
+            ._string(Arguments2::arg2, "email", c -> c.notBlank().lessThanOrEqual(100).email()) // Constrains onf the second argument of Person::new
+            ._integer(Arguments3::arg3, "age", c -> c.greaterThanOrEqual(0).lessThan(200))) // Constrains onf the third argument of Person::new
+        .build();
+}
+----
+
+The Arguments Validator can be used as follows:
+
+[source,java]
+----
+Validated<Person> personValidated = Person.validator.validate("Jone Doe", "jdoe@example.com", 30);
+----
+
+`am.ik.yavi.arguments.Arguments1Validator` to `am.ik.yavi.arguments.Arguments16Validator` are available..
+
+Arguments Validator is useful, but it can be a bit verbose to define. Since it is Type-Safe, it is not possible to define something that does not fit the type, but it feels like a puzzle that fits the type.
+Building the Arguments Validator is simplified by <<combining-validators>>.
