@@ -67,7 +67,7 @@ See <<built-in-constraints>> for other constraint rules.
 
 === Constraints on nested objects
 
-You can use `nested` method to apply constraints to the nested fields.
+You can use `nest` method to apply constraints to the nested fields.
 You can delegate to the `Validator` for the nested field, or you can also define a set of constraints on the nested field inside.
 
 [source,java]
