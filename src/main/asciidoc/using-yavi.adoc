@@ -55,7 +55,7 @@ Or if you don't want your method to expose the target field, you can define the 
 public class User {
     private final String name;
 
-    public final Validator<User> validator = ValidatorBuilder.<User>of()
+    public final Validator<User> validator = ValidatorBuilder.<User> of()
         ._string(x -> x.name, "name", c -> c.notNull().lessThanOrEqual(20))
         .build();
 
@@ -116,10 +116,10 @@ or you can also define a set of constraints on the elements inside.
 
 [source,java]
 ----
-Validator<History> historyValidator = ValidatorBuilder.<History>of()
+Validator<History> historyValidator = ValidatorBuilder.<History> of()
         .constraint(History::getRevision, "revision", c -> c.notNull().greaterThanOrEqual(1))
         .build();
-Validator<Histories> validator = ValidatorBuilder.<Histories>of()
+Validator<Histories> validator = ValidatorBuilder.<Histories> of()
         .forEach(Histories::asList, "histories", historyValidator)
         .build();
 ----
@@ -128,7 +128,7 @@ Or:
 
 [source,java]
 ----
-Validator<Histories> validator = ValidatorBuilder.<Histories>of()
+Validator<Histories> validator = ValidatorBuilder.<Histories> of()
         .forEach(Histories::asList, "histories",
                 b -> b.constraint(History::getRevision, "revision", c -> c.notNull().greaterThanOrEqual(1)))
         .build();
@@ -276,7 +276,7 @@ public class RangeConstraint implements CustomConstraint<Range> {
 }
 
 RangeConstraint range = new RangeConstraint();
-Validator<Range> validator = ValidatorBuilder.<Range>of()
+Validator<Range> validator = ValidatorBuilder.<Range> of()
         .constraintOnTarget(range, "to")
         .build();
 ----
