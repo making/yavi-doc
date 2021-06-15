@@ -163,6 +163,8 @@ Validator<Histories> validator = ValidatorBuilder.<Histories> of()
     .build();
 ----
 
+If the colletion / map / array field is nullable, use `forEachIfPresent` instead of `forEach`.
+
 [NOTE]
 ====
 For the constraints on elements in a map, only values can be applied out of the box.
