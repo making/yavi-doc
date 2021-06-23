@@ -17,7 +17,7 @@ final Validator<UserForm> validator = ...;
 public String createUser(Model model, UserForm userForm, BindingResult bindingResult) {
     ConstraintViolations violations = validator.validate(userForm);
     if (!violations.isValid()) {
-        violations.apply(BindingResult::rejectValue);
+        violations.apply(bindingResult::rejectValue);
         return "userForm";
     }
     // ...
