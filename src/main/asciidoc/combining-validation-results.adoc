@@ -70,7 +70,7 @@ Validated<ContactInfo> contactInfoValidated = emailValidated.combine(phoneNumber
 Validated<ContactInfo> contactInfoValidated = Validations.combine(emailValidated, phoneNumberValidated)
     .apply((em, ph) -> new ContactInfo(em, ph));
 ----
-The important thing here is that even if the validation of `Email` or `PhoneNumber` fails, all validation results are aggregated without shortcuts in the middle.
+The important thing here is that even if the validation of `Email` or `PhoneNumber` fails, all validation results are accumulated without shortcuts in the middle.
 
 For example, if you put a blank space in `Email` and `a` in `PhoneNumber` and try to create a `ContactInfo`, the validation will fail, and you will get the following three `ContraintViolation` s:
 

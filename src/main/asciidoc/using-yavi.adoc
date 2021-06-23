@@ -21,7 +21,7 @@ boolean isValid = violations.isValid();
 violations.forEach(x -> System.out.println(x.message()));
 ----
 
-TIP: YAVI aggregates all violation messages by default. If a violation is found during the validation, it will not be shortcut. If you want to return from the current validation as soon as the first constraint violation occurs, use "<<fail-fast-mode>>".
+TIP: YAVI accumulates all violation messages by default. If a violation is found during the validation, it will not be shortcut. If you want to return from the current validation as soon as the first constraint violation occurs, use "<<fail-fast-mode>>".
 
 In order to avoid ambiguous type inferences, you can use explicit `_<type>` method per type instead of constraint as follows:
 
