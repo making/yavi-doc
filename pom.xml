@@ -9,7 +9,7 @@
 	<name>${project.artifactId}</name>
 
 	<properties>
-		<yavi.version>0.8.0-SNAPSHOT</yavi.version>
+		<yavi.version>${project.version}</yavi.version>
 		<java.version>11</java.version>
 		<refdocs.build.directory>${project.basedir}/docs</refdocs.build.directory>
 		<spring-doc-resources.version>0.2.2.RELEASE</spring-doc-resources.version>
