@@ -36,7 +36,7 @@ public String createUser(Model model, UserForm userForm, BindingResult bindingRe
     return validator.applicative()
         .validate(userForm)
         .fold(violations -> {
-            ConstraintViolations.of(violations).apply(BindingResult::rejectValue);
+            ConstraintViolations.of(violations).apply(bindingResult::rejectValue);
             return "userForm";
         }, form -> {
             // ...
