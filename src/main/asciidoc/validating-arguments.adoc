@@ -133,7 +133,10 @@ If you want to create an `Arguments1Validator` for a `List`, you can "lift" a `V
 ----
 Arguments1Validator<Iterable<String>, List<Email>> emailsValidator = ArgumentsValidators.liftList(emailValidator);
 Validated<List<Email>> emailsValidated = emailsValidator.validate(List.of("foo@example.com", "bar@example.com"));
+// or
+Validated<List<Email>> emailsValidated = emailValidator.liftList().validate(List.of("foo@example.com", "bar@example.com"));
 ----
 
+`liftSet()`, `listCollection(Supplier)` and `liftOptional()` are available as well.
 
 These "small Validators" can be very powerful parts by using the Validator combinators described in "<<combining-validators>>".

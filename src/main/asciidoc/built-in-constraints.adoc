@@ -387,8 +387,22 @@ Buit-in password policies are following:
 
 * `am.ik.yavi.constraint.password.PasswordPolicy#UPPERCASE`
 * `am.ik.yavi.constraint.password.PasswordPolicy#LOWERCASE`
+* `am.ik.yavi.constraint.password.PasswordPolicy#ALPHABETS`
 * `am.ik.yavi.constraint.password.PasswordPolicy#NUMBERS`
 * `am.ik.yavi.constraint.password.PasswordPolicy#SYMBOLS`
+
+You can specify the count of the pattern as follows:
+
+[source,java]
+----
+Validator<Password> validator = ValidatorBuilder.<Password> of()
+		.constraint(Password::value, "password", c -> c.password(policy -> policy
+				.uppercase(2) // at least 2 upper case characters are required
+				.lowercase(2) // at least 2 lower case characters are required
+				// or .required(PasswordPolicy.UPPERCASE.count(2), PasswordPolicy.LOWERCASE.count(2))
+				.build()))
+		.build();
+----
 
 You can define a custom password policy as bellow:
 
