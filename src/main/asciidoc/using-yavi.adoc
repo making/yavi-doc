@@ -86,10 +86,10 @@ public class Address {
 }
 
 Validator<Country> countryValidator = ValidatorBuilder.<Country> of()
-    .nest(Country::getName, "name", c -> c.notBlank().lessThanOrEqual(20))
+    .constraint(Country::getName, "name", c -> c.notBlank().lessThanOrEqual(20))
     .build();
 Validator<City> cityValidator = ValidatorBuilder.<City> of()
-    .nest(City::getName, "name", c -> c.notBlank().lessThanOrEqual(100))
+    .constraint(City::getName, "name", c -> c.notBlank().lessThanOrEqual(100))
     .build();
 
 Validator<Address> validator = ValidatorBuilder.<Address> of()
