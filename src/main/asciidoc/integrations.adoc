@@ -83,7 +83,7 @@ public ResponseEntity<?> createUser(@RequestBody UserCreateRequest request) {
         .validate(request)
         .map(req -> userService.create(req.toUser()))
         .mapErrors(violations -> ConstraintViolations.of(violations).details())
-        // or .mapErrorsF(ConstraintViolation::detail)
+        // or .mapError(ConstraintViolation::detail)
         .fold(details -> ResponseEntity.badRequest().body(Map.of("message", "Invalid request body", "details", details)),
             created -> ResponseEntity.ok(created));
 }
@@ -106,7 +106,7 @@ public RouterFunction<ServerResponse> routes() {
                 .validate(body)
                 .map(req -> userService.create(req.toUser()))
                 .mapErrors(violations -> ConstraintViolations.of(violations).details())
-                // or .mapErrorsF(ConstraintViolation::detail)
+                // or .mapError(ConstraintViolation::detail)
                 .fold(details -> ServerResponse.badRequest().bodyValue(Map.of("message", "Invalid request body", "details", details)),
                     created -> ServerResponse.ok().bodyValue(created))))
         .build();
