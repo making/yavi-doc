@@ -370,9 +370,9 @@ If you want to customize the violation message, append `message` method on the t
 [source,java]
 ----
 Validator<User> validator = ValidatorBuilder.<User> of()
-    .constraint(User::getName, "name", c -> c.notNull().message("name is required!")
-        .greaterThanOrEqual(1).message("name is too small!")
-        .lessThanOrEqual(20).message("name is too large!"))
+    .constraint(User::getName, "name", c -> c.notNull().message("{0} is required!")
+        .greaterThanOrEqual(1).message("{0} is too small!")
+        .lessThanOrEqual(20).message("{0} is too large!"))
     .build()
 ----
 
