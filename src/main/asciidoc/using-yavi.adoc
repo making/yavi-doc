@@ -517,7 +517,7 @@ val validator = validator<User> {
 }
 ----
 
-forEach example
+`forEach` example:
 
 [source,kotlin]
 ----
@@ -531,18 +531,21 @@ val validator = validator<DemoForEachCollection> {
 }
 ----
 
-nest example
+`nest` example:
 
 [source,kotlin]
 ----
 val validator = validator<DemoNested> {
     DemoNested::x nest {
-        DemoString::x { greaterThan(1).lessThan(5) }
+        DemoString::x {
+            greaterThan(1)
+            lessThan(5)
+        }
     }
 }
 ----
 
-nest delegate example
+`nest` delegate example:
 
 [source,kotlin]
 ----
