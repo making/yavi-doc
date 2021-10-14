@@ -298,7 +298,7 @@ public class InstantRangeConstraint implements CustomConstraint<Instant> {
     }
 
     @Override
-    public Object[] arguments() {
+    public Object[] arguments(Instant violatedValue) {
         return new Object[] { this.start /* {1} */, this.end /* {2} */};
     }
 
@@ -471,27 +471,25 @@ NOTE: This feature comes from https://docs.jboss.org/hibernate/stable/validator/
 
 === Kotlin Support
 
-If you are using Kotlin, you can define a `Validator` a bit shorter than Java using `konstraint` method instead of `constraint` as follows:
+If you are using Kotlin, you can define a `Validator` with DSL as follows:
 
 [source,kotlin]
 ----
-val validator: Validator<User> = ValidatorBuilder.of<User>()
-    .konstraint(User::name) {
-        notNull()
-            .lessThanOrEqual(20)
-    }
-    .konstraint(User::email) {
-        notNull()
-            .greaterThanOrEqual(5)
-            .lessThanOrEqual(50)
-            .email()
-    }
-    .konstraint(User::age) {
-        notNull()
-            .greaterThanOrEqual(0)
-            .lessThanOrEqual(200)
-    }
-    .build()
+val validator: Validator<User> = validator<User> {
+	User::name {
+		notNull()
+		lessThanOrEqual(20)
+	}
+	User::email {
+		notNull()
+		greaterThanOrEqual(5)
+		lessThanOrEqual(50)
+		email()
+	}
+	User::age {
+		notNull()
+		greaterThanOrEqual(0)
+		lessThanOrEqual()
+	}
+}
 ----
-
-NOTE: `konstraint` actually uses `kotlin.reflect.KProperty1` 🤫
