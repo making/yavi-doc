@@ -493,3 +493,60 @@ val validator = validator<User> {
 	}
 }
 ----
+
+Field names can be overridden like bellow:
+
+[source,kotlin]
+----
+val validator = validator<User> {
+	(User::name)("Name") {
+		notNull()
+		lessThanOrEqual(20)
+	}
+	(User::email)("Email") {
+		notNull()
+		greaterThanOrEqual(5)
+		lessThanOrEqual(50)
+		email()
+	}
+	(User::age)("Age") {
+		notNull()
+		greaterThanOrEqual(0)
+		lessThanOrEqual()
+	}
+}
+----
+
+forEach example
+
+[source,kotlin]
+----
+val validator = validator<DemoForEachCollection> {
+    DemoForEachCollection::x forEach {
+        DemoString::x {
+            greaterThan(1)
+            lessThan(5)
+        }
+    }
+}
+----
+
+nest example
+
+[source,kotlin]
+----
+val validator = validator<DemoNested> {
+    DemoNested::x nest {
+        DemoString::x { greaterThan(1).lessThan(5) }
+    }
+}
+----
+
+nest delegate example
+
+[source,kotlin]
+----
+val validator = validator<DemoNested> {
+    DemoNested::x nest demoStringValidator
+}
+----
