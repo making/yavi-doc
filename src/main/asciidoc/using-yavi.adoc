@@ -475,7 +475,7 @@ If you are using Kotlin, you can define a `Validator` with DSL as follows:
 
 [source,kotlin]
 ----
-val validator: Validator<User> = validator<User> {
+val validator = validator<User> {
 	User::name {
 		notNull()
 		lessThanOrEqual(20)
