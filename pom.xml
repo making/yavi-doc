@@ -5,14 +5,14 @@
 	<packaging>jar</packaging>
 	<groupId>am.ik.yavi</groupId>
 	<artifactId>yavi-doc</artifactId>
-	<version>0.9.0</version>
+	<version>0.9.1</version>
 	<name>${project.artifactId}</name>
 
 	<properties>
 		<yavi.version>${project.version}</yavi.version>
 		<java.version>11</java.version>
 		<refdocs.build.directory>${project.basedir}/docs</refdocs.build.directory>
-		<spring-doc-resources.version>0.2.2.RELEASE</spring-doc-resources.version>
+		<spring-doc-resources.version>0.2.5</spring-doc-resources.version>
 	</properties>
 
 	<dependencies>
