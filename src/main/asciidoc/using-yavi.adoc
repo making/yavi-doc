@@ -489,7 +489,7 @@ val validator = validator<User> {
 	User::age {
 		notNull()
 		greaterThanOrEqual(0)
-		lessThanOrEqual()
+		lessThanOrEqual(100)
 	}
 }
 ----
@@ -512,7 +512,7 @@ val validator = validator<User> {
 	(User::age)("Age") {
 		notNull()
 		greaterThanOrEqual(0)
-		lessThanOrEqual()
+		lessThanOrEqual(100)
 	}
 }
 ----
