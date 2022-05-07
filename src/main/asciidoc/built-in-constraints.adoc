@@ -337,7 +337,7 @@ ConstraintViolations violations = validator.validate(new Email("example.com")); 
 |Message Key |Default Message Format |Args
 
 |`charSequence.email`
-|`"{0}" must match {1}`
+|`"{0}" must be a valid email address`
 a|
 * `{0}` ... field name
 * `{1}` ... the given value
