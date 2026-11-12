@@ -175,3 +175,111 @@ The first three test methods show some expected constraint violations:
 
 If the object validates successfully, `validate()` returns an empty `ConstraintViolations` as you can see in `carIsValid()`.
 You can also check if the validation was successful with the `ConstraintViolations.isValid` method.
+
+[[gs-always-valid]]
+=== The Always Valid model
+
+The examples above create a `Car` instance and then validate it, so an invalid `Car` can exist temporarily.
+YAVI can also make invalid objects impossible to create by validating the arguments before the constructor runs and returning the result only when all arguments are valid.
+
+Make the constructor private and expose a static factory method that returns `Validated<Car>`:
+
+[source,java]
+----
+package com.example;
+
+import am.ik.yavi.arguments.Arguments3Validator;
+import am.ik.yavi.core.Validated;
+import am.ik.yavi.validator.Yavi;
+
+public final class Car {
+
+    private static final Arguments3Validator<String, String, Integer, Car> validator = Yavi.arguments()
+        ._string("manufacturer", c -> c.notNull())
+        ._string("licensePlate", c -> c.notNull().greaterThanOrEqual(2).lessThanOrEqual(14))
+        ._integer("seatCount", c -> c.greaterThanOrEqual(2))
+        .apply(Car::new);
+
+    private final String manufacturer;
+
+    private final String licensePlate;
+
+    private final Integer seatCount;
+
+    public static Validated<Car> of(String manufacturer, String licensePlate, Integer seatCount) {
+        return validator.validate(manufacturer, licensePlate, seatCount);
+    }
+
+    private Car(String manufacturer, String licensePlate, Integer seatCount) {
+        this.manufacturer = manufacturer;
+        this.licensePlate = licensePlate;
+        this.seatCount = seatCount;
+    }
+
+    public String manufacturer() {
+        return manufacturer;
+    }
+
+    public String licensePlate() {
+        return licensePlate;
+    }
+
+    public Integer seatCount() {
+        return seatCount;
+    }
+}
+----
+
+`Car.of(...)` validates the arguments and returns the result wrapped in `Validated`.
+Because the constructor is private, a `Car` can only be obtained from the validated result.
+When validation fails, inspect the violations with `Validated#errors()`:
+
+[source,java]
+----
+Validated<Car> validated = Car.of(null, "DD-AB-123", 4);
+if (!validated.isValid()) {
+    ConstraintViolations violations = validated.errors();
+    // ...
+}
+----
+
+If you prefer a record and want validation inside the constructor, use `lazy()` and call `validated(...)` from the compact constructor:
+
+[source,java]
+----
+package com.example;
+
+import am.ik.yavi.arguments.Arguments3Validator;
+import am.ik.yavi.validator.Yavi;
+
+public record Car(String manufacturer, String licensePlate, Integer seatCount) {
+
+    private static final Arguments3Validator<String, String, Integer, Car> validator = Yavi.arguments()
+        ._string("manufacturer", c -> c.notNull())
+        ._string("licensePlate", c -> c.notNull().greaterThanOrEqual(2).lessThanOrEqual(14))
+        ._integer("seatCount", c -> c.greaterThanOrEqual(2))
+        .apply(Car::new);
+
+    public Car {
+        validator.lazy().validated(manufacturer, licensePlate, seatCount);
+    }
+}
+----
+
+`lazy()` returns a validator that produces a `Supplier` instead of invoking the mapper, so the validation runs without calling `Car::new` again.
+Without `lazy()`, the validator would construct a `Car` while the constructor is still running and recurse until a `StackOverflowError`.
+
+Invalid arguments make the compact constructor throw `ConstraintViolationsException`.
+Its `violations()` method returns the violations:
+
+[source,java]
+----
+assertThatThrownBy(() -> new Car(null, "DD-AB-123", 4))
+    .isInstanceOf(ConstraintViolationsException.class)
+    .satisfies(e -> {
+        ConstraintViolations violations = ((ConstraintViolationsException) e).violations();
+        assertThat(violations).hasSize(1);
+    });
+----
+
+See <<validating-arguments>> for the `Yavi.arguments()` builder and the other ways to define arguments validators.
