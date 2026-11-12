@@ -181,21 +181,51 @@ Validator<CodeMap> validator = ValidatorBuilder.<CodeMap> of()
 
 === Applying constraints only to specific conditions
 
-You can apply constraints only to specific conditions with `am.ik.yavi.core.ConstraintCondition` interface:
+You can apply constraints only to specific conditions with `am.ik.yavi.core.ConstraintCondition`.
+Since 0.11.0 a condition receives an `am.ik.yavi.core.ConstraintContext` instead of a `ConstraintGroup`, so it can read arbitrary attributes of the validation call:
 
 [source,java]
 ----
 Validator<User> validator = ValidatorBuilder.<User> of()
-    .constraintOnCondition((user, constraintGroup) -> !user.getName().isEmpty(),
+    .constraintOnCondition((user, context) -> !user.getName().isEmpty(),
         b -> b.constraint(User::getEmail, "email", c -> c.email().notEmpty()))
     .build();
 ----
 
 The constraint above on email will only be activated if the name is not empty.
 
+A `ConstraintContext` can be created from a `Map` or from a lookup function, and passed to the validation method:
+
+[source,java]
+----
+ConstraintContext context = ConstraintContext.from(Map.of("country", "IT"));
+// or
+ConstraintContext context = ConstraintContext.from(key -> lookupAttribute(key));
+
+Validator<User> validator = ValidatorBuilder.<User> of()
+    .constraintOnCondition((user, ctx) -> "IT".equals(ctx.attribute("country").value()),
+        b -> b.constraint(User::getTaxId, "taxId", c -> c.notBlank()))
+    .build();
+
+ConstraintViolations violations = validator.validate(user, context);
+----
+
+`ConstraintCondition.hasAttribute(String)` and `ConstraintCondition.hasAttributeWithValue(String, Object)` are shortcuts for the common attribute checks:
+
+[source,java]
+----
+Validator<User> validator = ValidatorBuilder.<User> of()
+    .constraintOnCondition(ConstraintCondition.hasAttributeWithValue("country", "IT"),
+        b -> b.constraint(User::getTaxId, "taxId", c -> c.notBlank()))
+    .build();
+----
+
+If the attribute is absent, `context.attribute("key").value()` returns `null`.
+
 === Applying constraints only to specific groups
 
-You can apply constraints only to specific groups with `am.ik.yavi.core.ConstraintGroup` as a part of `ConstraintCondition` as well:
+A `ConstraintGroup` is a `ConstraintContext` that only carries a name.
+You can apply constraints only to specific groups as follows:
 
 [source,java]
 ----
@@ -209,11 +239,20 @@ Validator<User> validator = ValidatorBuilder.<User> of()
     .build();
 ----
 
+A group can also be created from a name without declaring an enum:
+
+[source,java]
+----
+ConstraintGroup create = ConstraintGroup.of("CREATE");
+----
+
 The group to validate can be specified in `validate` method:
 
 [source,java]
 ----
-ConstraintViolations violations = validator.validate(user, Group.CREATE);
+ConstraintViolations violations = validator.validate(user, ConstraintGroup.of("CREATE"));
+// or, with the enum above
+violations = validator.validate(user, Group.CREATE);
 ----
 
 You can use a shortcut `constraintOnGroup` method
@@ -229,7 +268,8 @@ Validator<User> validator = ValidatorBuilder.<User> of()
 [NOTE]
 ====
 Note that all constraints without conditions will be validated for any constraint group.
-Also, if no group is specified in the `validate` method, it will be treated as `DEFAULT` group.
+Also, if no group is specified in the `validate` method, `ConstraintGroup.DEFAULT` is used.
+Groups match by name; two groups are equal when their names are equal.
 ====
 
 === Creating a custom constraint
@@ -376,11 +416,80 @@ Validator<User> validator = ValidatorBuilder.<User> of()
     .build()
 ----
 
+`message` also accepts an `am.ik.yavi.core.ViolationMessage` that carries the message key and the default message format, for example `ViolationMessage.of("string.isbn13", "\"{0}\" must be ISBN13 format")`.
+Since 0.17.2, overriding the message of a constraint preserves the violated value in the message arguments.
+
+=== Value validators
+
+`am.ik.yavi.core.ValueValidator` validates an input and produces a validated value.
+It is the applicative counterpart of `Validator`; see "<<combining-validators>>" for combining value validators and "<<combining-validation-results>>" for the `Validated` result type.
+
+A value validator maps the validated value with `map`:
+
+[source,java]
+----
+ValueValidator<String, String> trimmed = ValueValidator.<String> passThrough().map(String::trim);
+----
+
+`andThen(Function)` is deprecated since 0.17.0; use `map(Function)` instead.
+`andThen(ValueValidator)` is still supported and chains validators, applying the next validator to the value produced by the previous one:
+
+[source,java]
+----
+ValueValidator<String, Integer> length = trimmed
+    .andThen(ValueValidator.<String> passThrough().map(String::length));
+----
+
+`validated(...)` validates the input and returns the value, throwing `am.ik.yavi.core.ConstraintViolationsException` when a violation exists.
+The same behavior is available through `Validation#throwIfInvalid` and `ConstraintViolations#throwIfInvalid`:
+
+[source,java]
+----
+try {
+    String value = trimmed.validated(input);
+}
+catch (ConstraintViolationsException e) {
+    // handle the violations
+}
+
+ConstraintViolations violations = validator.validate(user);
+violations.throwIfInvalid(ConstraintViolationsException::new);
+----
+
+A value validator can be converted to a regular `Validator` with `Validatable.from(ValueValidator)`, which discards the produced value and only reports the violations:
+
+[source,java]
+----
+Validatable<String> validator = Validatable.from(trimmed);
+----
+
+=== Handling violation results
+
+`ConstraintViolation` has a staged builder since 0.15.0.
+The `name`, `messageKey` and `defaultMessageFormat` stages are required; the argument, formatter and locale methods are optional:
+
+[source,java]
+----
+ConstraintViolation violation = ConstraintViolation.builder()
+    .name("email")
+    .messageKey("email.invalid")
+    .defaultMessageFormat("\"{0}\" must be a valid email address")
+    .argsWithPrependedNameAndAppendedViolatedValue(new Object[] {}, new ViolatedValue(input))
+    .messageFormatter(SimpleMessageFormatter.getInstance())
+    .locale(Locale.JAPAN)
+    .build();
+----
+
+`ConstraintViolation#violatedValue()` returns the value that violated the constraint.
+
+`SimpleMessageFormatter` can be obtained with `SimpleMessageFormatter.getInstance()`; the public no-arg constructor is still available but is deprecated since 0.16.0.
+
 === Message Formatter
 
 YAVI provides `am.ik.yavi.message.MessageFormatter` interface for constructing violation messages.
 
-By default, `am.ik.yavi.message.SimpleMessageFormatter` is used, which simply uses `java.text.MessageFormatter` to interpolate the message.
+By default, `am.ik.yavi.message.SimpleMessageFormatter` is used, which simply uses `java.text.MessageFormat` to interpolate the message.
+A shared instance is available with `SimpleMessageFormatter.getInstance()`; the public no-arg constructor is kept for backward compatibility but is deprecated.
 A list of message keys and default message formats is given in "<<built-in-constraints>>".
 
 [NOTE]
@@ -467,11 +576,53 @@ You can switch an existing `Validator` to the fail fast mode as follows:
 Validator<User> failFastValidator = validator.failFast(true);
 ----
 
+The `failFast(boolean)` and `isFailFast()` methods are also declared on `am.ik.yavi.core.Validatable`, so the mode can be read and switched through that interface:
+
+[source,java]
+----
+boolean failFast = failFastValidator.isFailFast();
+Validatable<User> validatable = validator.failFast(true);
+----
+
+Since 0.13.0 nested, collection and conditional validators honor the parent's fail-fast mode.
+The mode is passed down to nested validators and element validators, so the validation stops at the first violation in those validators as well.
+
 NOTE: This feature comes from https://docs.jboss.org/hibernate/stable/validator/reference/en-US/html_single/#section-fail-fast[the fail fast mode of Hibernate Validator.]
+
+=== Resolving conflicting constraint names
+
+When the same constraint name is registered more than once, `ValidatorBuilder#conflictStrategy(ConflictStrategy)` decides what happens when the validator is built.
+The default, `am.ik.yavi.builder.ConflictStrategy.NOOP`, keeps the existing constraints and appends the new one, so the target is validated by all of them.
+`ConflictStrategy.OVERRIDE` removes the existing constraints and keeps only the new one:
+
+[source,java]
+----
+Validator<User> validator = ValidatorBuilder.<User> of()
+    .conflictStrategy(ConflictStrategy.OVERRIDE)
+    .constraint(User::getName, "name", c -> c.notNull())
+    .constraint(User::getName, "name", c -> c.notBlank()) // replaces the previous "name" constraint
+    .build();
+----
+
+A custom strategy can mutate the list of existing predicates; the new predicate is appended after the strategy returns:
+
+[source,java]
+----
+ConflictStrategy keepFirst = new ConflictStrategy() {
+    @Override
+    public <T> void resolveConflict(List<ConstraintPredicates<T, ?>> predicatesList,
+            ConstraintPredicates<T, ?> predicates) {
+        while (predicatesList.size() > 1) {
+            predicatesList.remove(predicatesList.size() - 1);
+        }
+    }
+};
+----
 
 === Kotlin Support
 
-If you are using Kotlin, you can define a `Validator` with DSL as follows:
+If you are using Kotlin, you can define a `Validator` with DSL as follows.
+The DSL obtains property names with Kotlin reflection, so `kotlin-reflect` must be on the runtime classpath.
 
 [source,kotlin]
 ----
@@ -552,4 +703,77 @@ val validator = validator<DemoNested> {
 val validator = validator<DemoNested> {
     DemoNested::x nest demoStringValidator
 }
+----
+
+`nestIfPresent` and `forEachIfPresent` validate nullable nested objects, collections, maps and arrays only when they are present:
+
+[source,kotlin]
+----
+val validator = validator<Order> {
+    Order::customer nestIfPresent {
+        Customer::name {
+            notBlank()
+        }
+    }
+    Order::items forEachIfPresent {
+        OrderItem::name {
+            notBlank()
+        }
+    }
+}
+----
+
+Temporal and enum properties have their own overloads.
+For example, `LocalDate`, `LocalTime`, `LocalDateTime`, `ZonedDateTime`, `OffsetDateTime`, `Instant`, `Year` and `YearMonth` properties can use the date and time constraints, and enum properties can use `oneOf`.
+See "<<built-in-constraints>>" for the available constraints:
+
+[source,kotlin]
+----
+enum class Status { ACTIVE, INACTIVE }
+
+val validator = validator<Account> {
+    Account::createdAt {
+        notNull()
+        past()
+    }
+    Account::status {
+        notNull()
+        oneOf(Status.ACTIVE)
+    }
+}
+----
+
+`onCondition` and `onGroup` add conditional and group-specific constraints, and `unwrap` gives access to the underlying `ValidatorBuilder`:
+
+[source,kotlin]
+----
+val validator = validator<User> {
+    onCondition({ _, context -> "IT".equals(context.attribute("country").value()) }) {
+        User::taxId {
+            notNull()
+        }
+    }
+    onGroup(ConstraintGroup.of("CREATE")) {
+        User::id {
+            isNull()
+        }
+    }
+    unwrap().failFast(true)
+}
+----
+
+==== Coroutines support
+
+The extensions in `am.ik.yavi.fn.ValidationExtensions` suspend the validation result handling.
+`awaitFold`, `awaitBimap`, `awaitMap`, `awaitMapErrors` and `awaitMapError` correspond to `fold`, `bimap`, `map`, `mapErrors` and `mapError`.
+They require `kotlinx-coroutines-core`:
+
+[source,kotlin]
+----
+import am.ik.yavi.fn.awaitFold
+
+suspend fun createUser(validated: Validated<User>): HttpStatus = validated.awaitFold(
+    errorsMapper = { violations -> HttpStatus.BAD_REQUEST },
+    mapper = { user -> HttpStatus.OK },
+)
 ----

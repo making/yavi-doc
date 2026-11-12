@@ -50,12 +50,56 @@ if (emailValidated.isValid()) {
 Email email = emailValidated.orElseThrow(violations -> new ConstraintViolationsException(violations));
 ----
 
+`Validation#throwIfInvalid` and `ConstraintViolations#throwIfInvalid` throw the exception supplied by their function argument instead of returning a value:
+
+[source,java]
+----
+emailValidated.throwIfInvalid(ConstraintViolationsException::new);
+----
+
 `fold` method is convenient if you want to create an instance of the same type regardless of the success or failure of the validation.
 
 [source,java]
 ----
 HttpStatus status = emailValidated.fold(violations -> HttpStatus.BAD_REQUEST, email -> HttpStatus.OK);
 ----
+
+For `Validated`, the error type of `fold` is `List<ConstraintViolation>`.
+
+=== Mapping and inspecting validation results
+
+`Validation` provides `map`, `flatMap`, `mapError`, `mapErrors`, `bimap`, `orElseThrow` and `throwIfInvalid` to transform or unwrap the result:
+
+[source,java]
+----
+Validation<ConstraintViolation, String> mapped = emailValidated.map(Email::value);
+Validation<String, Email> mappedErrors = emailValidated.mapError(ConstraintViolation::messageKey);
+Validation<String, String> bimapped = emailValidated
+    .bimap(violations -> List.of("invalid"), Email::value);
+----
+
+`am.ik.yavi.core.Validated` is a shortcut of `Validation<ConstraintViolation, T>`.
+It can be created with `Validated.successWith`, `Validated.failureWith` and `Validated.of`:
+
+[source,java]
+----
+Validated<Email> success = Validated.successWith(new Email("yavi@example.com"));
+Validated<Email> failure = Validated.failureWith(violations); // ConstraintViolations is a List<ConstraintViolation>
+Validated<Email> fromValidation = Validated.of(Validation.success(new Email("yavi@example.com")));
+----
+
+Multiple results can be combined with `Validated.sequence`, `Validated.traverse`, `Validated.traverseIndexed` and `Validated.traverseOptional`:
+
+[source,java]
+----
+Validated<List<Email>> emails = Validated.sequence(List.of(emailValidated, anotherEmailValidated));
+Validated<List<Email>> traversed = Validated.traverse(inputs, emailValidator::validate);
+Validated<List<Email>> indexed = Validated.traverseIndexed(inputs,
+    (input, index) -> emailValidator.indexed(index).validate(input));
+Validated<Optional<Email>> optional = Validated.traverseOptional(optionalInput, emailValidator::validate);
+----
+
+`ConstraintViolations#of(List<ConstraintViolation>)` creates a `ConstraintViolations` from a list of violations.
 
 === Combining `Validation` / `Validated` objects
 
@@ -70,9 +114,11 @@ Validated<ContactInfo> contactInfoValidated = emailValidated.combine(phoneNumber
 Validated<ContactInfo> contactInfoValidated = Validations.combine(emailValidated, phoneNumberValidated)
     .apply((em, ph) -> new ContactInfo(em, ph));
 ----
+`Validations.combine(...)` supports 2 to 16 validations.
+
 The important thing here is that even if the validation of `Email` or `PhoneNumber` fails, all validation results are accumulated without shortcuts in the middle.
 
-For example, if you put a blank space in `Email` and `a` in `PhoneNumber` and try to create a `ContactInfo`, the validation will fail, and you will get the following three `ContraintViolation` s:
+For example, if you put a blank space in `Email` and `a` in `PhoneNumber` and try to create a `ContactInfo`, the validation will fail, and you will get the following three `ConstraintViolation` s:
 
 ----
 * "email" must not be blank
