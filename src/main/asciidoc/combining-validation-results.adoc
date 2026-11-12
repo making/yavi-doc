@@ -50,6 +50,13 @@ if (emailValidated.isValid()) {
 Email email = emailValidated.orElseThrow(violations -> new ConstraintViolationsException(violations));
 ----
 
+`Validation#throwIfInvalid` and `ConstraintViolations#throwIfInvalid` throw the exception supplied by their function argument instead of returning a value:
+
+[source,java]
+----
+emailValidated.throwIfInvalid(ConstraintViolationsException::new);
+----
+
 `fold` method is convenient if you want to create an instance of the same type regardless of the success or failure of the validation.
 
 [source,java]
