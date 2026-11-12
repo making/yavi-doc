@@ -6,54 +6,54 @@ on:
   pull_request:
     branches:
     - main
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
+    - name: Checkout
+      uses: actions/checkout@v7
+      with:
+        persist-credentials: false
     - name: Set up Java
-      uses: actions/setup-java@v1
+      uses: actions/setup-java@v6
       with:
-        java-version: 11.x
-    - name: Cache Maven
-      uses: actions/cache@v1
-      with:
-        path: ~/.m2/repository
-        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-        restore-keys: |
-          ${{ runner.os }}-maven-
+        distribution: temurin
+        java-version: '11'
+        cache: maven
     - name: Generate Document
-      if: github.ref == 'refs/heads/main'
-      run: ./mvnw -V clean package
-    - name: Upload Document
-      if: github.ref == 'refs/heads/main'
+      run: ./mvnw -V -B clean package
+    - name: Checkout gh-pages
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      uses: actions/checkout@v7
+      with:
+        repository: making/yavi
+        ref: gh-pages
+        path: gh-pages
+        ssh-key: ${{ secrets.GIT_SSH_KEY }}
+    - name: Deploy Document
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      working-directory: gh-pages
       env:
-        GIT_SSH_KEY: ${{ secrets.GIT_SSH_KEY }}
         GIT_NAME: ${{ secrets.GIT_NAME }}
         GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
-        BRANCH: gh-pages
       run: |
-        mkdir -p ~/.ssh
-        cat > ~/.ssh/config <<EOF
-        StrictHostKeyChecking no
-        LogLevel quiet
-        EOF
-        cat > ~/.ssh/id_rsa <<EOF
-        ${GIT_SSH_KEY}
-        EOF
-        chmod 0600 ~/.ssh/*
-        git config --global user.email "${GIT_EMAIL}"
-        git config --global user.name "${GIT_NAME}"
-        git clone git@github.com:making/yavi.git -b ${BRANCH}
-        cd yavi
-        mv .git /tmp/
-        mv CNAME /tmp/
-        rm -rf ./*
-        mv /tmp/.git ./
-        mv /tmp/CNAME ./
-        COMMIT_MESSAGE="Update document"
-        cp -r ../docs/* ./
-        git diff
+        find . -mindepth 1 -maxdepth 1 ! -name .git ! -name CNAME -exec rm -rf {} +
+        cp -r ../docs/. .
+        git config user.name "${GIT_NAME}"
+        git config user.email "${GIT_EMAIL}"
         git add -A
-        git commit -m "${COMMIT_MESSAGE}"
-        git push origin ${BRANCH}
+        if git diff --cached --quiet; then
+          echo "No changes to deploy"
+          exit 0
+        fi
+        git commit -m "Update document"
+        git push origin gh-pages
