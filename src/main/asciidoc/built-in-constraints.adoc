@@ -1329,13 +1329,13 @@ Validator<Age> validator = ValidatorBuilder.<Age> of()
 
 ConstraintViolations violations = validator.validate(new Age(20)); // Valid
 ConstraintViolations violations = validator.validate(new Age(null)); // Valid
-ConstraintViolations violations = validator.validate(new Age(19)); // Invalid ("age" must be greater than or equal to 10)
+ConstraintViolations violations = validator.validate(new Age(19)); // Invalid ("age" must be greater than or equal to 20)
 ----
 
 |===
 |Message Key |Default Message Format |Args
 
-|`numeric.greaterThan`
+|`numeric.greaterThanOrEqual`
 |`"{0}" must be greater than or equal to {1}`
 a|
 * `{0}` ... field name
@@ -1381,18 +1381,61 @@ Validator<Age> validator = ValidatorBuilder.<Age> of()
 
 ConstraintViolations violations = validator.validate(new Age(19)); // Valid
 ConstraintViolations violations = validator.validate(new Age(null)); // Valid
-ConstraintViolations violations = validator.validate(new Age(21)); // Invalid ("age" must be less than or equal to 10)
+ConstraintViolations violations = validator.validate(new Age(21)); // Invalid ("age" must be less than or equal to 20)
 ----
 
 |===
 |Message Key |Default Message Format |Args
 
-|`numeric.lessThan`
+|`numeric.lessThanOrEqual`
 |`"{0}" must be less than or equal to {1}`
 a|
 * `{0}` ... field name
 * `{1}` ... the specified size
 * `{2}` ... the given value
+|===
+
+==== `positive()` / `positiveOrZero()` / `negative()` / `negativeOrZero()`
+
+Checks if the target value is positive, positive or zero, negative, or negative or zero, respectively.
+These constraints apply to `Byte`, `Short`, `Integer`, `Long`, `Float`, `Double`, `BigInteger` and `BigDecimal`.
+
+[source,java]
+----
+Validator<Age> validator = ValidatorBuilder.<Age> of()
+    .constraint(Age::asInt, "age", c -> c.positive())
+    .build();
+
+ConstraintViolations violations = validator.validate(new Age(1)); // Valid
+ConstraintViolations violations = validator.validate(new Age(null)); // Valid
+ConstraintViolations violations = validator.validate(new Age(0)); // Invalid ("age" must be positive)
+----
+
+`positiveOrZero`, `negative` and `negativeOrZero` are used in the same way.
+
+|===
+|Message Key |Default Message Format |Args
+
+|`numeric.positive`
+|`"{0}" must be positive`
+a|
+* `{0}` ... field name
+* `{1}` ... the given value
+|`numeric.positiveOrZero`
+|`"{0}" must be positive or zero`
+a|
+* `{0}` ... field name
+* `{1}` ... the given value
+|`numeric.negative`
+|`"{0}" must be negative`
+a|
+* `{0}` ... field name
+* `{1}` ... the given value
+|`numeric.negativeOrZero`
+|`"{0}" must be negative or zero`
+a|
+* `{0}` ... field name
+* `{1}` ... the given value
 |===
 
 === Temporal
@@ -1977,6 +2020,88 @@ a|
 * `{2}` ... the given value
 |===
 
+==== `unique()`
+
+Checks if the elements of the target value are unique.
+The violation includes the duplicated elements.
+
+[source,java]
+----
+Validator<Histories> validator = ValidatorBuilder.<Histories> of()
+    .constraint(Histories::asList, "histories", c -> c.unique())
+    .build();
+
+ConstraintViolations violations = validator.validate(new Histories(List.of(new History(1), new History(2)))); // Valid
+ConstraintViolations violations = validator.validate(new Histories(null)); // Valid
+ConstraintViolations violations = validator.validate(new Histories(List.of(new History(1), new History(1)))); // Invalid ("histories" must be unique. [History{revision=1}] is/are duplicated.)
+----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`collection.unique`
+|`"{0}" must be unique. {1} is/are duplicated.`
+a|
+* `{0}` ... field name
+* `{1}` ... the duplicated elements
+* `{2}` ... the given value
+|===
+
+==== `containsAll(Collection)`
+
+Checks if the target value contains all of the given elements.
+The violation includes the missing elements.
+A `Set` and a non-`Set` collection are handled with the same semantics.
+
+[source,java]
+----
+Validator<Histories> validator = ValidatorBuilder.<Histories> of()
+    .constraint(Histories::asList, "histories", c -> c.containsAll(List.of(new History(1), new History(2))))
+    .build();
+
+ConstraintViolations violations = validator.validate(new Histories(List.of(new History(1), new History(2), new History(3)))); // Valid
+ConstraintViolations violations = validator.validate(new Histories(null)); // Valid
+ConstraintViolations violations = validator.validate(new Histories(List.of(new History(1)))); // Invalid ("histories" must be have of all of the following values: [History{revision=1}, History{revision=2}], missing values: [History{revision=2}])
+----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`collection.containsAll`
+|`"{0}" must be have of all of the following values: {1}, missing values: {2}`
+a|
+* `{0}` ... field name
+* `{1}` ... the required elements
+* `{2}` ... the missing elements
+* `{3}` ... the given value
+|===
+
+==== `forEach(...)` / `forEachIfPresent(...)`
+
+`forEach` applies an element validator to each element of a collection property, and `forEachIfPresent` does the same but treats a `null` collection as valid.
+A `null` element inside the collection is reported with the element index in the property name, for example `histories[1]`, and the `object.notNull` message.
+
+[source,java]
+----
+Validator<Histories> validator = ValidatorBuilder.<Histories> of()
+    .forEach(Histories::asList, "histories",
+            ValidatorBuilder.<History> of()
+                .constraint(History::getRevision, "revision", c -> c.notNull())
+                .build())
+    .build();
+
+ConstraintViolations violations = validator.validate(new Histories(Arrays.asList(new History(1), null))); // Invalid ("histories[1]" must not be null)
+----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`object.notNull`
+|`"{0}" must not be null`
+a|
+* `{0}` ... the indexed field name
+|===
+
 === Map
 Apply the constraints on the `Map` as follows:
 
@@ -2344,6 +2469,74 @@ a|
 * `{1}` ... the given value
 |===
 
+==== `equalTo(Object)`
+
+Checks if the target value is equal to the specified value
+
+[source,java]
+----
+Validator<Box> validator = ValidatorBuilder.<Box> of()
+    ._object(Box::getValue, "value", c -> c.equalTo("expected"))
+    .build();
+
+ConstraintViolations violations = validator.validate(new Box("expected")); // Valid
+ConstraintViolations violations = validator.validate(new Box(null)); // Valid
+ConstraintViolations violations = validator.validate(new Box("other")); // Invalid ("value" must be equal to expected)
+----
+
+==== `oneOf(Collection)`
+
+Checks if the target value is one of the specified values
+
+[source,java]
+----
+Validator<Box> validator = ValidatorBuilder.<Box> of()
+    ._object(Box::getValue, "value", c -> c.oneOf(List.of("a", "b")))
+    .build();
+
+ConstraintViolations violations = validator.validate(new Box("a")); // Valid
+ConstraintViolations violations = validator.validate(new Box(null)); // Valid
+ConstraintViolations violations = validator.validate(new Box("c")); // Invalid ("value" must be one of the following values: [a, b])
+----
+
+==== `notOneOf(Collection)`
+
+Checks if the target value is not one of the specified values
+
+[source,java]
+----
+Validator<Box> validator = ValidatorBuilder.<Box> of()
+    ._object(Box::getValue, "value", c -> c.notOneOf(List.of("a", "b")))
+    .build();
+
+ConstraintViolations violations = validator.validate(new Box("c")); // Valid
+ConstraintViolations violations = validator.validate(new Box(null)); // Valid
+ConstraintViolations violations = validator.validate(new Box("a")); // Invalid ("value" must not be one of the following values: [a, b])
+----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`object.equalTo`
+|`"{0}" must be equal to {1}`
+a|
+* `{0}` ... field name
+* `{1}` ... the specified value
+* `{2}` ... the given value
+|`object.oneOf`
+|`"{0}" must be one of the following values: {1}`
+a|
+* `{0}` ... field name
+* `{1}` ... the allowed values
+* `{2}` ... the given value
+|`object.notOneOf`
+|`"{0}" must not be one of the following values: {1}`
+a|
+* `{0}` ... field name
+* `{1}` ... the forbidden values
+* `{2}` ... the given value
+|===
+
 ==== `password()`
 
 Check if the target value meets the specified custom password policy (e.g. Cross-field check)
@@ -2386,4 +2579,113 @@ a|
 * `{1}` ... minimum requirement
 * `{2}` ... the specified policy names
 * `{3}` ... the given value
+|===
+
+=== Enum
+
+Apply constraints on an enum as follows:
+
+[source,java]
+----
+Validator<Account> validator = ValidatorBuilder.<Account> of()
+    ._enum(Account::getStatus, "status", c -> c.oneOf(Status.ACTIVE))
+    .build();
+
+ConstraintViolations violations = validator.validate(new Account(Status.ACTIVE)); // Valid
+ConstraintViolations violations = validator.validate(new Account(null)); // Valid
+ConstraintViolations violations = validator.validate(new Account(Status.INACTIVE)); // Invalid ("status" must be one of the following values: [ACTIVE])
+----
+
+`_enum` is an alias of `constraint(ToEnum, String, Function)`.
+The same `_enum` method is available on `ArgumentsValidatorBuilder` and `YaviArguments` to validate an enum argument.
+
+`EnumConstraint#oneOf(E...)` requires the value to be one of the given enum constants.
+An empty argument list is rejected with `IllegalArgumentException`.
+A `null` value is valid unless `notNull()` is added.
+The violation uses the `object.oneOf` message key.
+
+A single enum value can be validated with `EnumValidatorBuilder` and `EnumValidator` as follows:
+
+[source,java]
+----
+EnumValidator<Status, Status> validator = EnumValidatorBuilder.<Status> of("status",
+        c -> c.oneOf(Status.ACTIVE)).build();
+
+Validated<Status> result = validator.validate(Status.INACTIVE); // Invalid ("status" must be one of the following values: [ACTIVE])
+----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`object.oneOf`
+|`"{0}" must be one of the following values: {1}`
+a|
+* `{0}` ... field name
+* `{1}` ... the allowed values
+* `{2}` ... the given value
+|===
+
+=== Array
+
+Apply the constraints on arrays as follows:
+
+[source,java]
+----
+Validator<TargetClass> validator = ValidatorBuilder.<TargetClass> of()
+    ._objectArray(/* Function from TargetClass to an object array  */, /* Field Name */, /* Constraints */)
+    .build();
+----
+
+The following constraints and builder shortcuts are available:
+
+[cols="2,2"]
+|===
+|Array type |Builder shortcut
+
+|`E[]` (`ObjectArrayConstraint`)
+|`_objectArray`
+|`boolean[]` (`BooleanArrayConstraint`)
+|`_booleanArray`
+|`byte[]` (`ByteArrayConstraint`)
+|`_byteArray`
+|`char[]` (`CharArrayConstraint`)
+|`_charArray`
+|`short[]` (`ShortArrayConstraint`)
+|`_shortArray`
+|`int[]` (`IntArrayConstraint`)
+|`_intArray`
+|`long[]` (`LongArrayConstraint`)
+|`_longArray`
+|`float[]` (`FloatArrayConstraint`)
+|`_floatArray`
+|`double[]` (`DoubleArrayConstraint`)
+|`_doubleArray`
+|===
+
+The constraints in `am.ik.yavi.constraint.array` provide `notNull`, `isNull`, `notEmpty`, `fixedSize`, `greaterThan`, `greaterThanOrEqual`, `lessThan`, `lessThanOrEqual` and `contains`.
+A `null` array is valid and the checks are skipped, except for `notEmpty()`.
+
+[source,java]
+----
+Validator<Values> validator = ValidatorBuilder.<Values> of()
+    ._intArray(Values::getNumbers, "numbers", c -> c.contains(3).fixedSize(3))
+    .build();
+
+ConstraintViolations violations = validator.validate(new Values(new int[] { 1, 2, 3 })); // Valid
+ConstraintViolations violations = validator.validate(new Values(null)); // Valid
+ConstraintViolations violations = validator.validate(new Values(new int[] { 1, 2 })); // Invalid ("numbers" must contain 3, The size of "numbers" must be 3. The given size is 2)
+----
+
+The size and null checks report the `object.notNull`, `object.isNull` and `container.*` message keys documented in the Collection section.
+`contains` reports `array.contains`.
+
+|===
+|Message Key |Default Message Format |Args
+
+|`array.contains`
+|`"{0}" must contain {1}`
+a|
+* `{0}` ... field name
+* `{1}` ... the specified value
+* `{2}` ... the given value
 |===
