@@ -32,6 +32,8 @@ Validator<TargetClass> validator = ValidatorBuilder.<TargetClass> of()
     .build();
 ----
 
+Unless stated otherwise, a `null` value is valid and the check is skipped in the following constraints.
+
 ==== `notNull()`
 
 Checks that the target value is not `null`
@@ -251,7 +253,7 @@ Validator<Country> validator = ValidatorBuilder.<Country> of()
 
 ConstraintViolations violations = validator.validate(new Country("JP")); // Valid
 ConstraintViolations violations = validator.validate(new Country(null)); // Valid
-ConstraintViolations violations = validator.validate(new Country("Japan")); // Invalid (The size of "country" must be less than or equal to to 4. The given size is 5)
+ConstraintViolations violations = validator.validate(new Country("Japan")); // Invalid (The size of "country" must be less than or equal to 4. The given size is 5)
 ----
 
 |===
@@ -292,6 +294,58 @@ a|
 * `{2}` ... the given value
 |===
 
+==== `startsWith(CharSequence)`
+
+Checks if the target value starts with the specified prefix
+
+[source,java]
+----
+Validator<Code> validator = ValidatorBuilder.<Code> of()
+    .constraint(Code::asString, "code", c -> c.startsWith("JP-"))
+    .build();
+
+ConstraintViolations violations = validator.validate(new Code("JP-1234")); // Valid
+ConstraintViolations violations = validator.validate(new Code(null)); // Valid
+ConstraintViolations violations = validator.validate(new Code("US-1234")); // Invalid ("code" must start with "JP-")
+----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`charSequence.startsWith`
+|`"{0}" must start with "{1}"`
+a|
+* `{0}` ... field name
+* `{1}` ... the specified prefix
+* `{2}` ... the given value
+|===
+
+==== `endsWith(CharSequence)`
+
+Checks if the target value ends with the specified suffix
+
+[source,java]
+----
+Validator<Domain> validator = ValidatorBuilder.<Domain> of()
+    .constraint(Domain::asString, "domain", c -> c.endsWith(".example.com"))
+    .build();
+
+ConstraintViolations violations = validator.validate(new Domain("www.example.com")); // Valid
+ConstraintViolations violations = validator.validate(new Domain(null)); // Valid
+ConstraintViolations violations = validator.validate(new Domain("example.com")); // Invalid ("domain" must end with ".example.com")
+----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`charSequence.endsWith`
+|`"{0}" must end with "{1}"`
+a|
+* `{0}` ... field name
+* `{1}` ... the specified suffix
+* `{2}` ... the given value
+|===
+
 ==== `pattern(String)`
 
 Checks if the target value matches the specified regular expression
@@ -300,6 +354,38 @@ Checks if the target value matches the specified regular expression
 ----
 Validator<ZipCode> validator = ValidatorBuilder.<ZipCode> of()
     .constraint(ZipCode::asString, "zipCode", c -> c.pattern("[0-9]{3}-[0-9]{4}"))
+    .build();
+
+ConstraintViolations violations = validator.validate(new ZipCode("123-4567")); // Valid
+ConstraintViolations violations = validator.validate(new ZipCode(null)); // Valid
+ConstraintViolations violations = validator.validate(new ZipCode("1234567")); // Invalid ("zipCode" must match [0-9]{3}-[0-9]{4})
+----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`charSequence.pattern`
+|`"{0}" must match {1}`
+a|
+* `{0}` ... field name
+* `{1}` ... the specified regular expression
+* `{2}` ... the given value
+|===
+
+==== `pattern(Pattern)` / `pattern(Supplier<Pattern>)`
+
+Checks if the target value matches the specified regular expression, in the same way as `pattern(String)`.
+The `Supplier<Pattern>` overload invokes the supplier for every validation, which is intended for regular expressions that are built dynamically at validation time.
+
+[source,java]
+----
+Pattern zipCode = Pattern.compile("[0-9]{3}-[0-9]{4}");
+Validator<ZipCode> validator = ValidatorBuilder.<ZipCode> of()
+    .constraint(ZipCode::asString, "zipCode", c -> c.pattern(zipCode))
+    .build();
+
+Validator<ZipCode> dynamicValidator = ValidatorBuilder.<ZipCode> of()
+    .constraint(ZipCode::asString, "zipCode", c -> c.pattern(() -> Pattern.compile("[0-9]{3}-[0-9]{4}")))
     .build();
 
 ConstraintViolations violations = validator.validate(new ZipCode("123-4567")); // Valid
@@ -330,7 +416,7 @@ Validator<Email> validator = ValidatorBuilder.<Email> of()
 
 ConstraintViolations violations = validator.validate(new Email("yavi@example.com")); // Valid
 ConstraintViolations violations = validator.validate(new Email(null)); // Valid
-ConstraintViolations violations = validator.validate(new Email("example.com")); // Invalid ("email" must not be a valid email address)
+ConstraintViolations violations = validator.validate(new Email("example.com")); // Invalid ("email" must be a valid email address)
 ----
 
 |===
@@ -338,6 +424,32 @@ ConstraintViolations violations = validator.validate(new Email("example.com")); 
 
 |`charSequence.email`
 |`"{0}" must be a valid email address`
+a|
+* `{0}` ... field name
+* `{1}` ... the given value
+|===
+
+==== `uuid()`
+
+Checks if the target value is a valid UUID in the 8-4-4-4-12 hexadecimal format. The version and the variant are not checked, and an empty value is valid.
+
+[source,java]
+----
+Validator<User> validator = ValidatorBuilder.<User> of()
+    .constraint(User::getId, "id", c -> c.uuid())
+    .build();
+
+ConstraintViolations violations = validator.validate(new User("123e4567-e89b-12d3-a456-426614174000")); // Valid
+ConstraintViolations violations = validator.validate(new User(null)); // Valid
+ConstraintViolations violations = validator.validate(new User("")); // Valid
+ConstraintViolations violations = validator.validate(new User("1234")); // Invalid ("id" must be a valid UUID)
+----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`charSequence.uuid`
+|`"{0}" must be a valid UUID`
 a|
 * `{0}` ... field name
 * `{1}` ... the given value
@@ -441,7 +553,7 @@ Validator<IpAddress> validator = ValidatorBuilder.<IpAddress> of()
 
 ConstraintViolations violations = validator.validate(new IpAddress("192.0.2.1")); // Valid
 ConstraintViolations violations = validator.validate(new IpAddress(null)); // Valid
-ConstraintViolations violations = validator.validate(new IpAddress("example.com")); // Invalid ("ipAddress" must not be a valid IPv4)
+ConstraintViolations violations = validator.validate(new IpAddress("example.com")); // Invalid ("ipAddress" must be a valid IPv4)
 ----
 
 |===
@@ -466,7 +578,7 @@ Validator<IpAddress> validator = ValidatorBuilder.<IpAddress> of()
 
 ConstraintViolations violations = validator.validate(new IpAddress("2001:0db8:bd05:01d2:288a:1fc0:0001:10ee")); // Valid
 ConstraintViolations violations = validator.validate(new IpAddress(null)); // Valid
-ConstraintViolations violations = validator.validate(new IpAddress("192.0.2.1")); // Invalid ("ipAddress" must not be a valid IPv6)
+ConstraintViolations violations = validator.validate(new IpAddress("192.0.2.1")); // Invalid ("ipAddress" must be a valid IPv6)
 ----
 
 |===
@@ -481,7 +593,9 @@ a|
 
 ==== `url()`
 
-Check if the target value is a valid URL
+Check if the target value is a valid URL. An empty value is valid.
+
+NOTE: Since 0.17.0 the value is parsed as a `java.net.URI` instead of the deprecated `URL(String)` constructor, which silently strips leading and trailing characters. Values that only passed because of that trimming, values that contain unencoded characters, and values with an empty authority are now rejected.
 
 [source,java]
 ----
@@ -492,6 +606,9 @@ Validator<Url> validator = ValidatorBuilder.<Url> of()
 ConstraintViolations violations = validator.validate(new Url("https://yavi.ik.am")); // Valid
 ConstraintViolations violations = validator.validate(new Url(null)); // Valid
 ConstraintViolations violations = validator.validate(new Url("yavi.ik.am")); // Invalid ("url" must be a valid URL)
+ConstraintViolations violations = validator.validate(new Url(" https://yavi.ik.am ")); // Invalid ("url" must be a valid URL)
+ConstraintViolations violations = validator.validate(new Url("https://yavi.ik.am/path with space")); // Invalid ("url" must be a valid URL)
+ConstraintViolations violations = validator.validate(new Url("https://")); // Invalid ("url" must be a valid URL)
 ----
 
 |===
@@ -502,6 +619,61 @@ ConstraintViolations violations = validator.validate(new Url("yavi.ik.am")); // 
 a|
 * `{0}` ... field name
 * `{1}` ... the given value
+|===
+
+==== `url(...)`
+
+Check if the target value is a valid URL and restrict its protocol, host and/or port.
+The value is first required to be a valid URL, and an unexpected attribute is reported in addition to any URL violation.
+This is the equivalent of Bean Validation's `@URL(protocol = "https", host = "example.com", port = 8443)`.
+An empty value is valid.
+
+Hosts are compared case-insensitively but matched as written, so `host("example.com")` does not accept `https://www.example.com`.
+A URL without an explicit port is matched against the default port of its protocol, so `port(443)` accepts `https://example.com`.
+If the value cannot be parsed as a URL, only `charSequence.url` is reported.
+
+[source,java]
+----
+Validator<Url> validator = ValidatorBuilder.<Url> of()
+    .constraint(Url::asString, "url", c -> c.url(url -> url
+            .protocol("https")
+            .host("example.com")
+            .port(8443)
+            .build()))
+    .build();
+
+ConstraintViolations violations = validator.validate(new Url("https://example.com:8443/app")); // Valid
+ConstraintViolations violations = validator.validate(new Url("http://example.com:8443/app")); // Invalid (The protocol of "url" must be one of the following values: [https])
+ConstraintViolations violations = validator.validate(new Url("https://other.example.com:8443/app")); // Invalid (The host of "url" must be one of the following values: [example.com])
+ConstraintViolations violations = validator.validate(new Url("https://example.com:9999/app")); // Invalid (The port of "url" must be one of the following values: [8443])
+----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`charSequence.url`
+|`"{0}" must be a valid URL`
+a|
+* `{0}` ... field name
+* `{1}` ... the given value
+|`charSequence.url.protocol`
+|`The protocol of "{0}" must be one of the following values: {1}`
+a|
+* `{0}` ... field name
+* `{1}` ... the specified protocols
+* `{2}` ... the given value
+|`charSequence.url.host`
+|`The host of "{0}" must be one of the following values: {1}`
+a|
+* `{0}` ... field name
+* `{1}` ... the specified hosts
+* `{2}` ... the given value
+|`charSequence.url.port`
+|`The port of "{0}" must be one of the following values: {1}`
+a|
+* `{0}` ... field name
+* `{1}` ... the specified ports
+* `{2}` ... the given value
 |===
 
 ==== `luhn()`
@@ -697,7 +869,7 @@ ConstraintViolations violations = validator.validate(UserId.valueOf("a")); // In
 |===
 |Message Key |Default Message Format |Args
 
-|`charSequence.bigInteger`
+|`charSequence.biginteger`
 |`"{0}" must be a valid representation of a big integer`
 a|
 * `{0}` ... field name
@@ -722,11 +894,44 @@ ConstraintViolations violations = validator.validate(Money.valueOf("a")); // Inv
 |===
 |Message Key |Default Message Format |Args
 
-|`charSequence.bigDecimal`
+|`charSequence.bigdecimal`
 |`"{0}" must be a valid representation of a big decimal`
 a|
 * `{0}` ... field name
 * `{1}` ... the given value
+|===
+
+==== `isoLocalDate()` / `localDate(String pattern)`
+
+Checks if the target value is a valid local date in the given pattern, resolved with `ResolverStyle.STRICT`.
+`isoLocalDate()` uses the pattern `uuuu-MM-dd`.
+The formatter is created each time a value is validated.
+An empty value is valid.
+
+[source,java]
+----
+Validator<BirthDate> validator = ValidatorBuilder.<BirthDate> of()
+    .constraint(BirthDate::asString, "birthDate", c -> c.isoLocalDate())
+    .build();
+Validator<BirthDate> customValidator = ValidatorBuilder.<BirthDate> of()
+    .constraint(BirthDate::asString, "birthDate", c -> c.localDate("dd/MM/uuuu"))
+    .build();
+
+ConstraintViolations violations = validator.validate(new BirthDate("2024-12-31")); // Valid
+ConstraintViolations violations = validator.validate(new BirthDate(null)); // Valid
+ConstraintViolations violations = validator.validate(new BirthDate("2024-02-30")); // Invalid ("birthDate" must be a valid representation of a local date using the pattern: uuuu-MM-dd. The give value is: 2024-02-30)
+ConstraintViolations violations = customValidator.validate(new BirthDate("31/12/2024")); // Valid
+----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`charSequence.localdate`
+|`"{0}" must be a valid representation of a local date using the pattern: {1}. The give value is: {2}`
+a|
+* `{0}` ... field name
+* `{1}` ... the specified date pattern
+* `{2}` ... the given value
 |===
 
 ==== `codePoints(...)`
@@ -807,6 +1012,7 @@ The following is a set of built-in code points.
 
 You can also represent the union of multiple code point sets with `am.ik.yavi.constraint.charsequence.codepoints.CompositeCodePoints` class.
 
+[[advanced-character-length-check]]
 ==== Advanced character length check
 
 YAVI counts the input characters as the number of characters as it looks in the constraints on the number of characters. Recently, as a result of defining various characters on Unicode, the visual size and the return value of `String#length` method are quite different.
@@ -940,6 +1146,24 @@ ConstraintViolations = validator.validate(new Message("️👨‍👨‍👧‍�
 ConstraintViolations = validator.validate(new Message("🏴󠁧󠁢󠁥󠁮󠁧󠁿")); // Valid
 ----
 
+
+==== `variant(...)`
+
+Returns a constraint that removes the selected variation selectors before the size is measured.
+This does not change the value itself; it only affects how the size is counted.
+See <<advanced-character-length-check>> for the details of IVS, SVS and FVS.
+
+[source,java]
+----
+Validator<Message> validator = ValidatorBuilder.<Message> of()
+    .constraint(Message::getText, "text", c -> c.variant(opts -> opts.fvs(MongolianFreeVariationSelector.IGNORE))
+            .fixedSize(1))
+    .build();
+
+ConstraintViolations violations = validator.validate(new Message("ᠠ᠋")); // Valid
+----
+
+`variant(...)` is not a constraint itself and has no message of its own; the message of the size constraint applied to its result is reported.
 
 ==== `asByteArray()`
 
