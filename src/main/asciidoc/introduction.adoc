@@ -17,10 +17,11 @@ YAVI has the following features:
 * Type-safe constraints, unsupported constraints cannot be applied to the wrong type
 * Fluent and intuitive API
 * Constraints on any object. Java Beans, https://openjdk.java.net/jeps/395[Records], https://developers.google.com/protocol-buffers[Protocol Buffers], https://immutables.github.io/[Immutables] and anything else.
-* Lots of powerful built-in constraints
+* Lots of powerful built-in constraints, including temporal and enum constraints
 * Easy custom constraints
-* Validation for groups, conditional validation
-* Validation for arguments before creating an object
+* Validation for constraint groups and contexts, conditional validation, and conflict strategy
+* Validation for arguments before creating an object, and the "Always Valid model" that makes invalid objects impossible to create
+* Kotlin integration, including coroutine extensions
 * Support for API and combination of validation results and validators that incorporate the concept of functional programming
 
 For the migration from Bean Validation, refer https://github.com/making/yavi/blob/develop/docs/FromBeanValidationToYAVI.md[the guide].

@@ -4,6 +4,29 @@
 YAVI provides Annotation Processor to generates classes which defines meta classes
 that implement `am.ik.yavi.meta.ConstraintMeta` for each target which is annotated with `am.ik.yavi.meta.ConstraintTarget` or `am.ik.yavi.meta.ConstraintArguments`.
 
+=== Enabling the annotation processor
+
+The annotation processor is packaged in the `yavi` artifact.
+With JDK 21 and earlier, `mvn clean compile` discovers it on the compile classpath automatically.
+JDK 23 and later no longer run annotation processors found on the classpath implicitly, so declare the processor explicitly in `pom.xml`:
+
+[source,xml]
+----
+<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-compiler-plugin</artifactId>
+    <configuration>
+        <annotationProcessorPaths>
+            <path>
+                <groupId>am.ik.yavi</groupId>
+                <artifactId>yavi</artifactId>
+                <version>0.17.3</version>
+            </path>
+        </annotationProcessorPaths>
+    </configuration>
+</plugin>
+----
+
 When you have a class as following, run `mvn clean compile`:
 
 [source,java]
@@ -69,8 +92,8 @@ You'll see `target/generated-sources/annotations/com/example/_UserFormMeta.java`
 [source,java]
 ----
 Validator<UserForm> validator = ValidatorBuilder.<UserForm> of()
-    .constraint(_UserFormMeta.NAME, c -> c.notEmpty())
-    .constraint(_UserFormMeta.EMAIL, c -> c.notEmpty().email())
+    .constraint(_UserFormMeta.NAME, c -> c.notBlank())
+    .constraint(_UserFormMeta.EMAIL, c -> c.notBlank().email())
     .constraint(_UserFormMeta.AGE, c -> c.greaterThan(0))
     .build();
 ----
@@ -132,7 +155,7 @@ will generate
 ----
 package com.example;
 
-// Generated at 2020-02-11T17:37:47.866300+09:00
+// Generated at 2026-11-12T12:52:16.335171+09:00
 public class _UserFormMeta {
 
     public static final am.ik.yavi.meta.StringConstraintMeta<com.example.UserForm> NAME = new am.ik.yavi.meta.StringConstraintMeta<com.example.UserForm>() {
@@ -223,7 +246,7 @@ will generate
 ----
 package com.example;
 
-// Generated at 2020-02-11T17:59:03.892823+09:00
+// Generated at 2026-11-12T12:52:16.335171+09:00
 public class _UserFormMeta {
 
     public static final am.ik.yavi.meta.StringConstraintMeta<com.example.UserForm> NAME = new am.ik.yavi.meta.StringConstraintMeta<com.example.UserForm>() {
@@ -317,7 +340,7 @@ will generate
 ----
 package com.example;
 
-// Generated at 2020-02-11T18:00:37.868495+09:00
+// Generated at 2026-11-12T12:52:16.333598+09:00
 public class _UserFormMeta {
 
     public static final am.ik.yavi.meta.StringConstraintMeta<com.example.UserForm> NAME = new am.ik.yavi.meta.StringConstraintMeta<com.example.UserForm>() {
@@ -395,7 +418,7 @@ will generate
 ----
 package com.example;
 
-// Generated at 2020-02-11T18:02:47.124191+09:00
+// Generated at 2026-11-12T12:52:16.331344+09:00
 public class _UserFormMeta {
 
     public static final am.ik.yavi.meta.StringConstraintMeta<com.example.UserForm> NAME = new am.ik.yavi.meta.StringConstraintMeta<com.example.UserForm>() {
@@ -444,9 +467,9 @@ public class _UserFormMeta {
 `@ConstraintArguments` is used to generate meta classes that can be used with `ArgumentsValidatorBuilder`.
 + It can be annotated on constructors or methods.
 
-The constructor of `Xyz` class that is annotated with `@ConstraintTarget` will generate `_XyzArgumentsMeta`.
+The constructor of `Xyz` class that is annotated with `@ConstraintArguments` will generate `_XyzArgumentsMeta`.
 
-`doSomething` method of `Xyz` class that is annotated with `@ConstraintTarget` will generate `_XyzDoSomethingArgumentsMeta`.
+`doSomething` method of `Xyz` class that is annotated with `@ConstraintArguments` will generate `_XyzDoSomethingArgumentsMeta`.
 
 ==== Validating Constructor Arguments
 
@@ -479,7 +502,7 @@ will generate
 ----
 package com.example;
 
-// Generated at 2020-02-11T18:22:15.164882+09:00
+// Generated at 2026-11-12T12:52:16.325765+09:00
 public class _UserArgumentsMeta {
 
     public static final am.ik.yavi.meta.StringConstraintMeta<am.ik.yavi.arguments.Arguments3<java.lang.String, java.lang.String, java.lang.Integer>> NAME = new am.ik.yavi.meta.StringConstraintMeta<am.ik.yavi.arguments.Arguments3<java.lang.String, java.lang.String, java.lang.Integer>>() {
@@ -491,7 +514,7 @@ public class _UserArgumentsMeta {
 
         @Override
         public java.util.function.Function<am.ik.yavi.arguments.Arguments3<java.lang.String, java.lang.String, java.lang.Integer>, java.lang.String> toValue() {
-            return am.ik.yavi.arguments.Arguments1::arg1;
+            return am.ik.yavi.arguments.Arguments3::arg1;
         }
     };
 
@@ -504,7 +527,7 @@ public class _UserArgumentsMeta {
 
         @Override
         public java.util.function.Function<am.ik.yavi.arguments.Arguments3<java.lang.String, java.lang.String, java.lang.Integer>, java.lang.String> toValue() {
-            return am.ik.yavi.arguments.Arguments2::arg2;
+            return am.ik.yavi.arguments.Arguments3::arg2;
         }
     };
 
@@ -530,8 +553,8 @@ public class _UserArgumentsMeta {
 Arguments3Validator<String, String, Integer, User> validator = ArgumentsValidatorBuilder
     .of(User::new)
     .builder(b -> b
-        .constraint(_UserArgumentsMeta.NAME, c -> c.notEmpty())
-        .constraint(_UserArgumentsMeta.EMAIL, c -> c.notEmpty().email())
+        .constraint(_UserArgumentsMeta.NAME, c -> c.notBlank())
+        .constraint(_UserArgumentsMeta.EMAIL, c -> c.notBlank().email())
         .constraint(_UserArgumentsMeta.AGE, c -> c.greaterThan(0))
     )
     .build();
@@ -560,7 +583,7 @@ will generate
 ----
 package com.example;
 
-// Generated at 2020-02-11T18:40:53.554587+09:00
+// Generated at 2026-11-12T12:52:16.329116+09:00
 public class _UserServiceCreateUserArgumentsMeta {
 
     public static final am.ik.yavi.meta.ObjectConstraintMeta<am.ik.yavi.arguments.Arguments4<com.example.UserService, java.lang.String, java.lang.String, java.lang.Integer>, com.example.UserService> USERSERVICE = new am.ik.yavi.meta.ObjectConstraintMeta<am.ik.yavi.arguments.Arguments4<com.example.UserService, java.lang.String, java.lang.String, java.lang.Integer>, com.example.UserService>() {
@@ -572,7 +595,7 @@ public class _UserServiceCreateUserArgumentsMeta {
 
         @Override
         public java.util.function.Function<am.ik.yavi.arguments.Arguments4<com.example.UserService, java.lang.String, java.lang.String, java.lang.Integer>, com.example.UserService> toValue() {
-            return am.ik.yavi.arguments.Arguments1::arg1;
+            return am.ik.yavi.arguments.Arguments4::arg1;
         }
     };
 
@@ -585,7 +608,7 @@ public class _UserServiceCreateUserArgumentsMeta {
 
         @Override
         public java.util.function.Function<am.ik.yavi.arguments.Arguments4<com.example.UserService, java.lang.String, java.lang.String, java.lang.Integer>, java.lang.String> toValue() {
-            return am.ik.yavi.arguments.Arguments2::arg2;
+            return am.ik.yavi.arguments.Arguments4::arg2;
         }
     };
 
@@ -598,7 +621,7 @@ public class _UserServiceCreateUserArgumentsMeta {
 
         @Override
         public java.util.function.Function<am.ik.yavi.arguments.Arguments4<com.example.UserService, java.lang.String, java.lang.String, java.lang.Integer>, java.lang.String> toValue() {
-            return am.ik.yavi.arguments.Arguments3::arg3;
+            return am.ik.yavi.arguments.Arguments4::arg3;
         }
     };
 
@@ -625,9 +648,22 @@ Arguments4Validator<UserService, String, String, Integer, User> validator = Argu
     .of(UserService::createUser)
     .builder(b -> b
         .constraint(_UserServiceCreateUserArgumentsMeta.USERSERVICE, c -> c.notNull())
-        .constraint(_UserServiceCreateUserArgumentsMeta.NAME, c -> c.notEmpty())
-        .constraint(_UserServiceCreateUserArgumentsMeta.EMAIL, c -> c.notEmpty().email())
+        .constraint(_UserServiceCreateUserArgumentsMeta.NAME, c -> c.notBlank())
+        .constraint(_UserServiceCreateUserArgumentsMeta.EMAIL, c -> c.notBlank().email())
         .constraint(_UserServiceCreateUserArgumentsMeta.AGE, c -> c.greaterThan(0))
     )
     .build();
 ----
+
+=== Supported meta types
+
+The processor generates a meta for the declared type of the annotated target.
+The following meta types are available in `am.ik.yavi.meta`:
+
+* `StringConstraintMeta`
+* `BooleanConstraintMeta`, `CharacterConstraintMeta`, `ByteConstraintMeta`, `ShortConstraintMeta`, `IntegerConstraintMeta`, `LongConstraintMeta`, `FloatConstraintMeta`, `DoubleConstraintMeta`
+* `BigIntegerConstraintMeta`, `BigDecimalConstraintMeta`
+* `ObjectConstraintMeta`
+* `LocalDateConstraintMeta`, `LocalTimeConstraintMeta`, `LocalDateTimeConstraintMeta`, `OffsetDateTimeConstraintMeta`, `InstantConstraintMeta`, `YearConstraintMeta`, `YearMonthConstraintMeta`, `ZonedDateTimeConstraintMeta`
+
+There is no dedicated meta type for enums; an enum target uses `ObjectConstraintMeta`.
