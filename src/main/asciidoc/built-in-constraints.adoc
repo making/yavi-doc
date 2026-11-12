@@ -32,6 +32,8 @@ Validator<TargetClass> validator = ValidatorBuilder.<TargetClass> of()
     .build();
 ----
 
+Unless stated otherwise, a `null` value is valid and the check is skipped in the following constraints.
+
 ==== `notNull()`
 
 Checks that the target value is not `null`
@@ -251,7 +253,7 @@ Validator<Country> validator = ValidatorBuilder.<Country> of()
 
 ConstraintViolations violations = validator.validate(new Country("JP")); // Valid
 ConstraintViolations violations = validator.validate(new Country(null)); // Valid
-ConstraintViolations violations = validator.validate(new Country("Japan")); // Invalid (The size of "country" must be less than or equal to to 4. The given size is 5)
+ConstraintViolations violations = validator.validate(new Country("Japan")); // Invalid (The size of "country" must be less than or equal to 4. The given size is 5)
 ----
 
 |===
@@ -292,6 +294,58 @@ a|
 * `{2}` ... the given value
 |===
 
+==== `startsWith(CharSequence)`
+
+Checks if the target value starts with the specified prefix
+
+[source,java]
+----
+Validator<Code> validator = ValidatorBuilder.<Code> of()
+    .constraint(Code::asString, "code", c -> c.startsWith("JP-"))
+    .build();
+
+ConstraintViolations violations = validator.validate(new Code("JP-1234")); // Valid
+ConstraintViolations violations = validator.validate(new Code(null)); // Valid
+ConstraintViolations violations = validator.validate(new Code("US-1234")); // Invalid ("code" must start with "JP-")
+----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`charSequence.startsWith`
+|`"{0}" must start with "{1}"`
+a|
+* `{0}` ... field name
+* `{1}` ... the specified prefix
+* `{2}` ... the given value
+|===
+
+==== `endsWith(CharSequence)`
+
+Checks if the target value ends with the specified suffix
+
+[source,java]
+----
+Validator<Domain> validator = ValidatorBuilder.<Domain> of()
+    .constraint(Domain::asString, "domain", c -> c.endsWith(".example.com"))
+    .build();
+
+ConstraintViolations violations = validator.validate(new Domain("www.example.com")); // Valid
+ConstraintViolations violations = validator.validate(new Domain(null)); // Valid
+ConstraintViolations violations = validator.validate(new Domain("example.com")); // Invalid ("domain" must end with ".example.com")
+----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`charSequence.endsWith`
+|`"{0}" must end with "{1}"`
+a|
+* `{0}` ... field name
+* `{1}` ... the specified suffix
+* `{2}` ... the given value
+|===
+
 ==== `pattern(String)`
 
 Checks if the target value matches the specified regular expression
@@ -300,6 +354,38 @@ Checks if the target value matches the specified regular expression
 ----
 Validator<ZipCode> validator = ValidatorBuilder.<ZipCode> of()
     .constraint(ZipCode::asString, "zipCode", c -> c.pattern("[0-9]{3}-[0-9]{4}"))
+    .build();
+
+ConstraintViolations violations = validator.validate(new ZipCode("123-4567")); // Valid
+ConstraintViolations violations = validator.validate(new ZipCode(null)); // Valid
+ConstraintViolations violations = validator.validate(new ZipCode("1234567")); // Invalid ("zipCode" must match [0-9]{3}-[0-9]{4})
+----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`charSequence.pattern`
+|`"{0}" must match {1}`
+a|
+* `{0}` ... field name
+* `{1}` ... the specified regular expression
+* `{2}` ... the given value
+|===
+
+==== `pattern(Pattern)` / `pattern(Supplier<Pattern>)`
+
+Checks if the target value matches the specified regular expression, in the same way as `pattern(String)`.
+The `Supplier<Pattern>` overload invokes the supplier for every validation, which is intended for regular expressions that are built dynamically at validation time.
+
+[source,java]
+----
+Pattern zipCode = Pattern.compile("[0-9]{3}-[0-9]{4}");
+Validator<ZipCode> validator = ValidatorBuilder.<ZipCode> of()
+    .constraint(ZipCode::asString, "zipCode", c -> c.pattern(zipCode))
+    .build();
+
+Validator<ZipCode> dynamicValidator = ValidatorBuilder.<ZipCode> of()
+    .constraint(ZipCode::asString, "zipCode", c -> c.pattern(() -> Pattern.compile("[0-9]{3}-[0-9]{4}")))
     .build();
 
 ConstraintViolations violations = validator.validate(new ZipCode("123-4567")); // Valid
@@ -330,7 +416,7 @@ Validator<Email> validator = ValidatorBuilder.<Email> of()
 
 ConstraintViolations violations = validator.validate(new Email("yavi@example.com")); // Valid
 ConstraintViolations violations = validator.validate(new Email(null)); // Valid
-ConstraintViolations violations = validator.validate(new Email("example.com")); // Invalid ("email" must not be a valid email address)
+ConstraintViolations violations = validator.validate(new Email("example.com")); // Invalid ("email" must be a valid email address)
 ----
 
 |===
@@ -338,6 +424,32 @@ ConstraintViolations violations = validator.validate(new Email("example.com")); 
 
 |`charSequence.email`
 |`"{0}" must be a valid email address`
+a|
+* `{0}` ... field name
+* `{1}` ... the given value
+|===
+
+==== `uuid()`
+
+Checks if the target value is a valid UUID in the 8-4-4-4-12 hexadecimal format. The version and the variant are not checked, and an empty value is valid.
+
+[source,java]
+----
+Validator<User> validator = ValidatorBuilder.<User> of()
+    .constraint(User::getId, "id", c -> c.uuid())
+    .build();
+
+ConstraintViolations violations = validator.validate(new User("123e4567-e89b-12d3-a456-426614174000")); // Valid
+ConstraintViolations violations = validator.validate(new User(null)); // Valid
+ConstraintViolations violations = validator.validate(new User("")); // Valid
+ConstraintViolations violations = validator.validate(new User("1234")); // Invalid ("id" must be a valid UUID)
+----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`charSequence.uuid`
+|`"{0}" must be a valid UUID`
 a|
 * `{0}` ... field name
 * `{1}` ... the given value
@@ -441,7 +553,7 @@ Validator<IpAddress> validator = ValidatorBuilder.<IpAddress> of()
 
 ConstraintViolations violations = validator.validate(new IpAddress("192.0.2.1")); // Valid
 ConstraintViolations violations = validator.validate(new IpAddress(null)); // Valid
-ConstraintViolations violations = validator.validate(new IpAddress("example.com")); // Invalid ("ipAddress" must not be a valid IPv4)
+ConstraintViolations violations = validator.validate(new IpAddress("example.com")); // Invalid ("ipAddress" must be a valid IPv4)
 ----
 
 |===
@@ -466,7 +578,7 @@ Validator<IpAddress> validator = ValidatorBuilder.<IpAddress> of()
 
 ConstraintViolations violations = validator.validate(new IpAddress("2001:0db8:bd05:01d2:288a:1fc0:0001:10ee")); // Valid
 ConstraintViolations violations = validator.validate(new IpAddress(null)); // Valid
-ConstraintViolations violations = validator.validate(new IpAddress("192.0.2.1")); // Invalid ("ipAddress" must not be a valid IPv6)
+ConstraintViolations violations = validator.validate(new IpAddress("192.0.2.1")); // Invalid ("ipAddress" must be a valid IPv6)
 ----
 
 |===
@@ -481,7 +593,9 @@ a|
 
 ==== `url()`
 
-Check if the target value is a valid URL
+Check if the target value is a valid URL. An empty value is valid.
+
+NOTE: Since 0.17.0 the value is parsed as a `java.net.URI` instead of the deprecated `URL(String)` constructor, which silently strips leading and trailing characters. Values that only passed because of that trimming, values that contain unencoded characters, and values with an empty authority are now rejected.
 
 [source,java]
 ----
@@ -492,6 +606,9 @@ Validator<Url> validator = ValidatorBuilder.<Url> of()
 ConstraintViolations violations = validator.validate(new Url("https://yavi.ik.am")); // Valid
 ConstraintViolations violations = validator.validate(new Url(null)); // Valid
 ConstraintViolations violations = validator.validate(new Url("yavi.ik.am")); // Invalid ("url" must be a valid URL)
+ConstraintViolations violations = validator.validate(new Url(" https://yavi.ik.am ")); // Invalid ("url" must be a valid URL)
+ConstraintViolations violations = validator.validate(new Url("https://yavi.ik.am/path with space")); // Invalid ("url" must be a valid URL)
+ConstraintViolations violations = validator.validate(new Url("https://")); // Invalid ("url" must be a valid URL)
 ----
 
 |===
@@ -502,6 +619,61 @@ ConstraintViolations violations = validator.validate(new Url("yavi.ik.am")); // 
 a|
 * `{0}` ... field name
 * `{1}` ... the given value
+|===
+
+==== `url(...)`
+
+Check if the target value is a valid URL and restrict its protocol, host and/or port.
+The value is first required to be a valid URL, and an unexpected attribute is reported in addition to any URL violation.
+This is the equivalent of Bean Validation's `@URL(protocol = "https", host = "example.com", port = 8443)`.
+An empty value is valid.
+
+Hosts are compared case-insensitively but matched as written, so `host("example.com")` does not accept `https://www.example.com`.
+A URL without an explicit port is matched against the default port of its protocol, so `port(443)` accepts `https://example.com`.
+If the value cannot be parsed as a URL, only `charSequence.url` is reported.
+
+[source,java]
+----
+Validator<Url> validator = ValidatorBuilder.<Url> of()
+    .constraint(Url::asString, "url", c -> c.url(url -> url
+            .protocol("https")
+            .host("example.com")
+            .port(8443)
+            .build()))
+    .build();
+
+ConstraintViolations violations = validator.validate(new Url("https://example.com:8443/app")); // Valid
+ConstraintViolations violations = validator.validate(new Url("http://example.com:8443/app")); // Invalid (The protocol of "url" must be one of the following values: [https])
+ConstraintViolations violations = validator.validate(new Url("https://other.example.com:8443/app")); // Invalid (The host of "url" must be one of the following values: [example.com])
+ConstraintViolations violations = validator.validate(new Url("https://example.com:9999/app")); // Invalid (The port of "url" must be one of the following values: [8443])
+----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`charSequence.url`
+|`"{0}" must be a valid URL`
+a|
+* `{0}` ... field name
+* `{1}` ... the given value
+|`charSequence.url.protocol`
+|`The protocol of "{0}" must be one of the following values: {1}`
+a|
+* `{0}` ... field name
+* `{1}` ... the specified protocols
+* `{2}` ... the given value
+|`charSequence.url.host`
+|`The host of "{0}" must be one of the following values: {1}`
+a|
+* `{0}` ... field name
+* `{1}` ... the specified hosts
+* `{2}` ... the given value
+|`charSequence.url.port`
+|`The port of "{0}" must be one of the following values: {1}`
+a|
+* `{0}` ... field name
+* `{1}` ... the specified ports
+* `{2}` ... the given value
 |===
 
 ==== `luhn()`
@@ -697,7 +869,7 @@ ConstraintViolations violations = validator.validate(UserId.valueOf("a")); // In
 |===
 |Message Key |Default Message Format |Args
 
-|`charSequence.bigInteger`
+|`charSequence.biginteger`
 |`"{0}" must be a valid representation of a big integer`
 a|
 * `{0}` ... field name
@@ -722,11 +894,44 @@ ConstraintViolations violations = validator.validate(Money.valueOf("a")); // Inv
 |===
 |Message Key |Default Message Format |Args
 
-|`charSequence.bigDecimal`
+|`charSequence.bigdecimal`
 |`"{0}" must be a valid representation of a big decimal`
 a|
 * `{0}` ... field name
 * `{1}` ... the given value
+|===
+
+==== `isoLocalDate()` / `localDate(String pattern)`
+
+Checks if the target value is a valid local date in the given pattern, resolved with `ResolverStyle.STRICT`.
+`isoLocalDate()` uses the pattern `uuuu-MM-dd`.
+The formatter is created each time a value is validated.
+An empty value is valid.
+
+[source,java]
+----
+Validator<BirthDate> validator = ValidatorBuilder.<BirthDate> of()
+    .constraint(BirthDate::asString, "birthDate", c -> c.isoLocalDate())
+    .build();
+Validator<BirthDate> customValidator = ValidatorBuilder.<BirthDate> of()
+    .constraint(BirthDate::asString, "birthDate", c -> c.localDate("dd/MM/uuuu"))
+    .build();
+
+ConstraintViolations violations = validator.validate(new BirthDate("2024-12-31")); // Valid
+ConstraintViolations violations = validator.validate(new BirthDate(null)); // Valid
+ConstraintViolations violations = validator.validate(new BirthDate("2024-02-30")); // Invalid ("birthDate" must be a valid representation of a local date using the pattern: uuuu-MM-dd. The give value is: 2024-02-30)
+ConstraintViolations violations = customValidator.validate(new BirthDate("31/12/2024")); // Valid
+----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`charSequence.localdate`
+|`"{0}" must be a valid representation of a local date using the pattern: {1}. The give value is: {2}`
+a|
+* `{0}` ... field name
+* `{1}` ... the specified date pattern
+* `{2}` ... the given value
 |===
 
 ==== `codePoints(...)`
@@ -807,6 +1012,7 @@ The following is a set of built-in code points.
 
 You can also represent the union of multiple code point sets with `am.ik.yavi.constraint.charsequence.codepoints.CompositeCodePoints` class.
 
+[[advanced-character-length-check]]
 ==== Advanced character length check
 
 YAVI counts the input characters as the number of characters as it looks in the constraints on the number of characters. Recently, as a result of defining various characters on Unicode, the visual size and the return value of `String#length` method are quite different.
@@ -940,6 +1146,24 @@ ConstraintViolations = validator.validate(new Message("️👨‍👨‍👧‍�
 ConstraintViolations = validator.validate(new Message("🏴󠁧󠁢󠁥󠁮󠁧󠁿")); // Valid
 ----
 
+
+==== `variant(...)`
+
+Returns a constraint that removes the selected variation selectors before the size is measured.
+This does not change the value itself; it only affects how the size is counted.
+See <<advanced-character-length-check>> for the details of IVS, SVS and FVS.
+
+[source,java]
+----
+Validator<Message> validator = ValidatorBuilder.<Message> of()
+    .constraint(Message::getText, "text", c -> c.variant(opts -> opts.fvs(MongolianFreeVariationSelector.IGNORE))
+            .fixedSize(1))
+    .build();
+
+ConstraintViolations violations = validator.validate(new Message("ᠠ᠋")); // Valid
+----
+
+`variant(...)` is not a constraint itself and has no message of its own; the message of the size constraint applied to its result is reported.
 
 ==== `asByteArray()`
 
@@ -1105,13 +1329,13 @@ Validator<Age> validator = ValidatorBuilder.<Age> of()
 
 ConstraintViolations violations = validator.validate(new Age(20)); // Valid
 ConstraintViolations violations = validator.validate(new Age(null)); // Valid
-ConstraintViolations violations = validator.validate(new Age(19)); // Invalid ("age" must be greater than or equal to 10)
+ConstraintViolations violations = validator.validate(new Age(19)); // Invalid ("age" must be greater than or equal to 20)
 ----
 
 |===
 |Message Key |Default Message Format |Args
 
-|`numeric.greaterThan`
+|`numeric.greaterThanOrEqual`
 |`"{0}" must be greater than or equal to {1}`
 a|
 * `{0}` ... field name
@@ -1157,17 +1381,270 @@ Validator<Age> validator = ValidatorBuilder.<Age> of()
 
 ConstraintViolations violations = validator.validate(new Age(19)); // Valid
 ConstraintViolations violations = validator.validate(new Age(null)); // Valid
-ConstraintViolations violations = validator.validate(new Age(21)); // Invalid ("age" must be less than or equal to 10)
+ConstraintViolations violations = validator.validate(new Age(21)); // Invalid ("age" must be less than or equal to 20)
 ----
 
 |===
 |Message Key |Default Message Format |Args
 
-|`numeric.lessThan`
+|`numeric.lessThanOrEqual`
 |`"{0}" must be less than or equal to {1}`
 a|
 * `{0}` ... field name
 * `{1}` ... the specified size
+* `{2}` ... the given value
+|===
+
+==== `positive()` / `positiveOrZero()` / `negative()` / `negativeOrZero()`
+
+Checks if the target value is positive, positive or zero, negative, or negative or zero, respectively.
+These constraints apply to `Byte`, `Short`, `Integer`, `Long`, `Float`, `Double`, `BigInteger` and `BigDecimal`.
+
+[source,java]
+----
+Validator<Age> validator = ValidatorBuilder.<Age> of()
+    .constraint(Age::asInt, "age", c -> c.positive())
+    .build();
+
+ConstraintViolations violations = validator.validate(new Age(1)); // Valid
+ConstraintViolations violations = validator.validate(new Age(null)); // Valid
+ConstraintViolations violations = validator.validate(new Age(0)); // Invalid ("age" must be positive)
+----
+
+`positiveOrZero`, `negative` and `negativeOrZero` are used in the same way.
+
+|===
+|Message Key |Default Message Format |Args
+
+|`numeric.positive`
+|`"{0}" must be positive`
+a|
+* `{0}` ... field name
+* `{1}` ... the given value
+|`numeric.positiveOrZero`
+|`"{0}" must be positive or zero`
+a|
+* `{0}` ... field name
+* `{1}` ... the given value
+|`numeric.negative`
+|`"{0}" must be negative`
+a|
+* `{0}` ... field name
+* `{1}` ... the given value
+|`numeric.negativeOrZero`
+|`"{0}" must be negative or zero`
+a|
+* `{0}` ... field name
+* `{1}` ... the given value
+|===
+
+=== Temporal
+
+YAVI provides temporal constraints for the following types, with the corresponding builder shortcuts:
+
+[cols="1,1,1"]
+|===
+|Type |Constraint |Builder shortcut
+
+|`LocalDate`
+|`am.ik.yavi.constraint.LocalDateConstraint`
+|`_localDate`
+|`LocalTime`
+|`am.ik.yavi.constraint.LocalTimeConstraint`
+|`_localTime`
+|`LocalDateTime`
+|`am.ik.yavi.constraint.LocalDateTimeConstraint`
+|`_localDateTime`
+|`OffsetDateTime`
+|`am.ik.yavi.constraint.OffsetDateTimeConstraint`
+|`_offsetDateTime`
+|`Instant`
+|`am.ik.yavi.constraint.InstantConstraint`
+|`_instant`
+|`Year`
+|`am.ik.yavi.constraint.YearConstraint`
+|`_year`
+|`YearMonth`
+|`am.ik.yavi.constraint.YearMonthConstraint`
+|`_yearMonth`
+|`ZonedDateTime`
+|`am.ik.yavi.constraint.ZonedDateTimeConstraint`
+|`_zonedDateTime`
+|===
+
+Custom `TemporalAccessor` types can be supported by extending `TemporalConstraintBase` through `ChronoLocalDateConstraintBase`, `ChronoLocalDateTimeConstraintBase` or `ChronoZonedDateTimeConstraintBase`.
+The Kotlin DSL provides matching property overloads (see the Kotlin Support section).
+
+The following constraints apply to every type above:
+
+[source,java]
+----
+Validator<Event> validator = ValidatorBuilder.<Event> of()
+    ._localDate(Event::getDate, "date", c -> c.past())
+    .build();
+----
+
+A `null` value is valid and skips all temporal checks.
+
+`before` and `after` reject a value that is equal to the boundary; use `beforeOrEqual` and `afterOrEqual` for inclusive checks.
+The arguments are always suppliers.
+
+`before`, `beforeOrEqual`, `after`, `afterOrEqual` and `between` have an overload that takes a `boolean memoize` argument.
+When `memoize` is `true`, which is the default, the supplier is called at most once and the same value is used for both the comparison and the violation message.
+When it is `false`, the supplier is called on every use, so a supplier that returns a different value on each call may compare against one value and report another in the message.
+Use `false` for suppliers that must be evaluated at validation time.
+
+The `past`, `pastOrPresent`, `future` and `futureOrPresent` methods also have overloads that take a `java.time.Clock`.
+These overloads exist for deterministic tests and for validating against a time source other than the system default zone.
+
+==== `past()` / `pastOrPresent()` / `future()` / `futureOrPresent()`
+
+Checks if the target value is in the past, in the past or present, in the future, or in the present or future, respectively.
+The overloads take a `Clock` used as the current time.
+
+[source,java]
+----
+Clock clock = Clock.fixed(Instant.parse("2024-01-01T00:00:00Z"), ZoneId.of("UTC"));
+Validator<Event> validator = ValidatorBuilder.<Event> of()
+    ._localDate(Event::getDate, "date", c -> c.past(clock))
+    .build();
+
+ConstraintViolations violations = validator.validate(new Event(LocalDate.of(2023, 12, 31))); // Valid
+ConstraintViolations violations = validator.validate(new Event(null)); // Valid
+ConstraintViolations violations = validator.validate(new Event(LocalDate.of(2024, 1, 1))); // Invalid ("date" must be a past date)
+ConstraintViolations violations = validator.validate(new Event(LocalDate.of(2024, 1, 2))); // Invalid ("date" must be a past date)
+----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`temporal.past`
+|`"{0}" must be a past date`
+a|
+* `{0}` ... field name
+* `{1}` ... the current date used for the comparison
+* `{2}` ... the given value
+|`temporal.pastOrPresent`
+|`"{0}" must be a date in the past or in the present`
+a|
+* `{0}` ... field name
+* `{1}` ... the current date used for the comparison
+* `{2}` ... the given value
+|`temporal.future`
+|`"{0}" must be a future date`
+a|
+* `{0}` ... field name
+* `{1}` ... the current date used for the comparison
+* `{2}` ... the given value
+|`temporal.futureOrPresent`
+|`"{0}" must be a date in the present or in the future`
+a|
+* `{0}` ... field name
+* `{1}` ... the current date used for the comparison
+* `{2}` ... the given value
+|===
+
+==== `before(...)` / `beforeOrEqual(...)` / `after(...)` / `afterOrEqual(...)`
+
+Checks if the target value is before, before or equal to, after, or after or equal to the temporal supplied by the given supplier.
+
+[source,java]
+----
+Validator<Event> validator = ValidatorBuilder.<Event> of()
+    ._localDate(Event::getDate, "date", c -> c.before(() -> LocalDate.of(2024, 6, 1)))
+    .build();
+
+ConstraintViolations violations = validator.validate(new Event(LocalDate.of(2024, 5, 31))); // Valid
+ConstraintViolations violations = validator.validate(new Event(null)); // Valid
+ConstraintViolations violations = validator.validate(new Event(LocalDate.of(2024, 6, 1))); // Invalid ("date" has to be before 2024-06-01)
+ConstraintViolations violations = validator.validate(new Event(LocalDate.of(2024, 6, 2))); // Invalid ("date" has to be before 2024-06-01)
+----
+
+The `beforeOrEqual`, `after` and `afterOrEqual` variants are used in the same way.
+
+|===
+|Message Key |Default Message Format |Args
+
+|`temporal.before`
+|`"{0}" has to be before {1}`
+a|
+* `{0}` ... field name
+* `{1}` ... the supplied boundary value
+* `{2}` ... the given value
+|`temporal.beforeOrEqual`
+|`"{0}" has to be before or equals to {1}`
+a|
+* `{0}` ... field name
+* `{1}` ... the supplied boundary value
+* `{2}` ... the given value
+|`temporal.after`
+|`"{0}" has to be after {1}`
+a|
+* `{0}` ... field name
+* `{1}` ... the supplied boundary value
+* `{2}` ... the given value
+|`temporal.afterOrEqual`
+|`"{0}" has to be after or equals to {1}`
+a|
+* `{0}` ... field name
+* `{1}` ... the supplied boundary value
+* `{2}` ... the given value
+|===
+
+==== `between(...)`
+
+Checks if the target value is between the temporals supplied by the given suppliers.
+The range is exclusive on both ends: a value equal to either bound is invalid.
+`IllegalArgumentException` is thrown at validation time if `rangeFrom` is after `rangeTo`.
+
+[source,java]
+----
+Validator<Event> validator = ValidatorBuilder.<Event> of()
+    ._localDate(Event::getDate, "date", c -> c.between(
+            () -> LocalDate.of(2024, 1, 1), () -> LocalDate.of(2024, 12, 31)))
+    .build();
+
+ConstraintViolations violations = validator.validate(new Event(LocalDate.of(2024, 6, 1))); // Valid
+ConstraintViolations violations = validator.validate(new Event(null)); // Valid
+ConstraintViolations violations = validator.validate(new Event(LocalDate.of(2024, 1, 1))); // Invalid ("date" has to be between 2024-01-01 and 2024-12-31)
+ConstraintViolations violations = validator.validate(new Event(LocalDate.of(2025, 1, 1))); // Invalid ("date" has to be between 2024-01-01 and 2024-12-31)
+----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`temporal.between`
+|`"{0}" has to be between {1} and {2}`
+a|
+* `{0}` ... field name
+* `{1}` ... the supplied start of the range
+* `{2}` ... the supplied end of the range
+* `{3}` ... the given value
+|===
+
+==== `fieldPredicate(...)`
+
+Checks if the given predicate accepts the value of the given `java.time.temporal.TemporalField`.
+
+[source,java]
+----
+Validator<Event> validator = ValidatorBuilder.<Event> of()
+    ._localDate(Event::getDate, "date", c -> c.fieldPredicate(ChronoField.DAY_OF_WEEK, d -> d >= 1 && d <= 5))
+    .build();
+
+ConstraintViolations violations = validator.validate(new Event(LocalDate.of(2024, 6, 3))); // Valid
+ConstraintViolations violations = validator.validate(new Event(null)); // Valid
+ConstraintViolations violations = validator.validate(new Event(LocalDate.of(2024, 6, 1))); // Invalid (The DayOfWeek of "date" is invalid)
+----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`temporal.field`
+|`The {1} of "{0}" is invalid`
+a|
+* `{0}` ... field name
+* `{1}` ... the temporal field
 * `{2}` ... the given value
 |===
 
@@ -1543,6 +2020,88 @@ a|
 * `{2}` ... the given value
 |===
 
+==== `unique()`
+
+Checks if the elements of the target value are unique.
+The violation includes the duplicated elements.
+
+[source,java]
+----
+Validator<Histories> validator = ValidatorBuilder.<Histories> of()
+    .constraint(Histories::asList, "histories", c -> c.unique())
+    .build();
+
+ConstraintViolations violations = validator.validate(new Histories(List.of(new History(1), new History(2)))); // Valid
+ConstraintViolations violations = validator.validate(new Histories(null)); // Valid
+ConstraintViolations violations = validator.validate(new Histories(List.of(new History(1), new History(1)))); // Invalid ("histories" must be unique. [History{revision=1}] is/are duplicated.)
+----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`collection.unique`
+|`"{0}" must be unique. {1} is/are duplicated.`
+a|
+* `{0}` ... field name
+* `{1}` ... the duplicated elements
+* `{2}` ... the given value
+|===
+
+==== `containsAll(Collection)`
+
+Checks if the target value contains all of the given elements.
+The violation includes the missing elements.
+A `Set` and a non-`Set` collection are handled with the same semantics.
+
+[source,java]
+----
+Validator<Histories> validator = ValidatorBuilder.<Histories> of()
+    .constraint(Histories::asList, "histories", c -> c.containsAll(List.of(new History(1), new History(2))))
+    .build();
+
+ConstraintViolations violations = validator.validate(new Histories(List.of(new History(1), new History(2), new History(3)))); // Valid
+ConstraintViolations violations = validator.validate(new Histories(null)); // Valid
+ConstraintViolations violations = validator.validate(new Histories(List.of(new History(1)))); // Invalid ("histories" must be have of all of the following values: [History{revision=1}, History{revision=2}], missing values: [History{revision=2}])
+----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`collection.containsAll`
+|`"{0}" must be have of all of the following values: {1}, missing values: {2}`
+a|
+* `{0}` ... field name
+* `{1}` ... the required elements
+* `{2}` ... the missing elements
+* `{3}` ... the given value
+|===
+
+==== `forEach(...)` / `forEachIfPresent(...)`
+
+`forEach` applies an element validator to each element of a collection property, and `forEachIfPresent` does the same but treats a `null` collection as valid.
+A `null` element inside the collection is reported with the element index in the property name, for example `histories[1]`, and the `object.notNull` message.
+
+[source,java]
+----
+Validator<Histories> validator = ValidatorBuilder.<Histories> of()
+    .forEach(Histories::asList, "histories",
+            ValidatorBuilder.<History> of()
+                .constraint(History::getRevision, "revision", c -> c.notNull())
+                .build())
+    .build();
+
+ConstraintViolations violations = validator.validate(new Histories(Arrays.asList(new History(1), null))); // Invalid ("histories[1]" must not be null)
+----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`object.notNull`
+|`"{0}" must not be null`
+a|
+* `{0}` ... the indexed field name
+|===
+
 === Map
 Apply the constraints on the `Map` as follows:
 
@@ -1910,6 +2469,74 @@ a|
 * `{1}` ... the given value
 |===
 
+==== `equalTo(Object)`
+
+Checks if the target value is equal to the specified value
+
+[source,java]
+----
+Validator<Box> validator = ValidatorBuilder.<Box> of()
+    ._object(Box::getValue, "value", c -> c.equalTo("expected"))
+    .build();
+
+ConstraintViolations violations = validator.validate(new Box("expected")); // Valid
+ConstraintViolations violations = validator.validate(new Box(null)); // Valid
+ConstraintViolations violations = validator.validate(new Box("other")); // Invalid ("value" must be equal to expected)
+----
+
+==== `oneOf(Collection)`
+
+Checks if the target value is one of the specified values
+
+[source,java]
+----
+Validator<Box> validator = ValidatorBuilder.<Box> of()
+    ._object(Box::getValue, "value", c -> c.oneOf(List.of("a", "b")))
+    .build();
+
+ConstraintViolations violations = validator.validate(new Box("a")); // Valid
+ConstraintViolations violations = validator.validate(new Box(null)); // Valid
+ConstraintViolations violations = validator.validate(new Box("c")); // Invalid ("value" must be one of the following values: [a, b])
+----
+
+==== `notOneOf(Collection)`
+
+Checks if the target value is not one of the specified values
+
+[source,java]
+----
+Validator<Box> validator = ValidatorBuilder.<Box> of()
+    ._object(Box::getValue, "value", c -> c.notOneOf(List.of("a", "b")))
+    .build();
+
+ConstraintViolations violations = validator.validate(new Box("c")); // Valid
+ConstraintViolations violations = validator.validate(new Box(null)); // Valid
+ConstraintViolations violations = validator.validate(new Box("a")); // Invalid ("value" must not be one of the following values: [a, b])
+----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`object.equalTo`
+|`"{0}" must be equal to {1}`
+a|
+* `{0}` ... field name
+* `{1}` ... the specified value
+* `{2}` ... the given value
+|`object.oneOf`
+|`"{0}" must be one of the following values: {1}`
+a|
+* `{0}` ... field name
+* `{1}` ... the allowed values
+* `{2}` ... the given value
+|`object.notOneOf`
+|`"{0}" must not be one of the following values: {1}`
+a|
+* `{0}` ... field name
+* `{1}` ... the forbidden values
+* `{2}` ... the given value
+|===
+
 ==== `password()`
 
 Check if the target value meets the specified custom password policy (e.g. Cross-field check)
@@ -1952,4 +2579,113 @@ a|
 * `{1}` ... minimum requirement
 * `{2}` ... the specified policy names
 * `{3}` ... the given value
+|===
+
+=== Enum
+
+Apply constraints on an enum as follows:
+
+[source,java]
+----
+Validator<Account> validator = ValidatorBuilder.<Account> of()
+    ._enum(Account::getStatus, "status", c -> c.oneOf(Status.ACTIVE))
+    .build();
+
+ConstraintViolations violations = validator.validate(new Account(Status.ACTIVE)); // Valid
+ConstraintViolations violations = validator.validate(new Account(null)); // Valid
+ConstraintViolations violations = validator.validate(new Account(Status.INACTIVE)); // Invalid ("status" must be one of the following values: [ACTIVE])
+----
+
+`_enum` is an alias of `constraint(ToEnum, String, Function)`.
+The same `_enum` method is available on `ArgumentsValidatorBuilder` and `YaviArguments` to validate an enum argument.
+
+`EnumConstraint#oneOf(E...)` requires the value to be one of the given enum constants.
+An empty argument list is rejected with `IllegalArgumentException`.
+A `null` value is valid unless `notNull()` is added.
+The violation uses the `object.oneOf` message key.
+
+A single enum value can be validated with `EnumValidatorBuilder` and `EnumValidator` as follows:
+
+[source,java]
+----
+EnumValidator<Status, Status> validator = EnumValidatorBuilder.<Status> of("status",
+        c -> c.oneOf(Status.ACTIVE)).build();
+
+Validated<Status> result = validator.validate(Status.INACTIVE); // Invalid ("status" must be one of the following values: [ACTIVE])
+----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`object.oneOf`
+|`"{0}" must be one of the following values: {1}`
+a|
+* `{0}` ... field name
+* `{1}` ... the allowed values
+* `{2}` ... the given value
+|===
+
+=== Array
+
+Apply the constraints on arrays as follows:
+
+[source,java]
+----
+Validator<TargetClass> validator = ValidatorBuilder.<TargetClass> of()
+    ._objectArray(/* Function from TargetClass to an object array  */, /* Field Name */, /* Constraints */)
+    .build();
+----
+
+The following constraints and builder shortcuts are available:
+
+[cols="2,2"]
+|===
+|Array type |Builder shortcut
+
+|`E[]` (`ObjectArrayConstraint`)
+|`_objectArray`
+|`boolean[]` (`BooleanArrayConstraint`)
+|`_booleanArray`
+|`byte[]` (`ByteArrayConstraint`)
+|`_byteArray`
+|`char[]` (`CharArrayConstraint`)
+|`_charArray`
+|`short[]` (`ShortArrayConstraint`)
+|`_shortArray`
+|`int[]` (`IntArrayConstraint`)
+|`_intArray`
+|`long[]` (`LongArrayConstraint`)
+|`_longArray`
+|`float[]` (`FloatArrayConstraint`)
+|`_floatArray`
+|`double[]` (`DoubleArrayConstraint`)
+|`_doubleArray`
+|===
+
+The constraints in `am.ik.yavi.constraint.array` provide `notNull`, `isNull`, `notEmpty`, `fixedSize`, `greaterThan`, `greaterThanOrEqual`, `lessThan`, `lessThanOrEqual` and `contains`.
+A `null` array is valid and the checks are skipped, except for `notEmpty()`.
+
+[source,java]
+----
+Validator<Values> validator = ValidatorBuilder.<Values> of()
+    ._intArray(Values::getNumbers, "numbers", c -> c.contains(3).fixedSize(3))
+    .build();
+
+ConstraintViolations violations = validator.validate(new Values(new int[] { 1, 2, 3 })); // Valid
+ConstraintViolations violations = validator.validate(new Values(null)); // Valid
+ConstraintViolations violations = validator.validate(new Values(new int[] { 1, 2 })); // Invalid ("numbers" must contain 3, The size of "numbers" must be 3. The given size is 2)
+----
+
+The size and null checks report the `object.notNull`, `object.isNull` and `container.*` message keys documented in the Collection section.
+`contains` reports `array.contains`.
+
+|===
+|Message Key |Default Message Format |Args
+
+|`array.contains`
+|`"{0}" must contain {1}`
+a|
+* `{0}` ... field name
+* `{1}` ... the specified value
+* `{2}` ... the given value
 |===
