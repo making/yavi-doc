@@ -32,7 +32,7 @@ jobs:
     - name: Generate Document
       run: ./mvnw -V -B clean package
     - name: Checkout gh-pages
-      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
       uses: actions/checkout@v7
       with:
         repository: making/yavi
@@ -40,7 +40,7 @@ jobs:
         path: gh-pages
         ssh-key: ${{ secrets.GIT_SSH_KEY }}
     - name: Deploy Document
-      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
       working-directory: gh-pages
       env:
         GIT_NAME: ${{ secrets.GIT_NAME }}
