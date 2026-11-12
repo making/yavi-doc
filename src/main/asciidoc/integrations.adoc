@@ -168,52 +168,63 @@ public class OrderController {
 }
 ----
 
-=== Obtaining a `BiValidator`
+=== Obtaining a `BiConsumer`
 
-`am.ik.yavi.core.BiValidator<T, E>` is a `BiConsumer<T, E>`.
-`T` is the type of target object as usual and `E` is the type of errors object.
+Since 0.16.0, a validator is exposed as a `java.util.function.BiConsumer<T, E>` instead of a dedicated type, where `T` is the type of the target object and `E` is the type of the errors object.
 
-This class is helpful for libraries or apps to adapt both YAVI and other validation framework that accepts these two arguments like Spring Framework's `org.springframework.validation.Validator#validate(Object, Errors)`.
+This is helpful for libraries or apps to adapt both YAVI and other validation frameworks that accept these two arguments, like Spring Framework's `org.springframework.validation.Validator#validate(Object, Errors)`.
 
-`BiValidator` can be obtained as below:
-
-[source,java]
-----
-BiValidator<CartItem, Errors> validator = ValidatorBuilder.<CartItem> of()
-    .constraint(...)
-    .build(Errors::rejectValue);
-----
-
-There is a factory for `BiValidator` as well
+`Validatable#toBiConsumer` and `ValueValidator#toBiConsumer` take an `am.ik.yavi.core.ErrorHandler<E>`:
 
 [source,java]
 ----
-@Bean
-public BiValidatorFactory<Errors> biValidatorFactory() {
-    return new BiValidatorFactory<>(Errors::rejectValues);
+public interface ErrorHandler<E> {
+    void handleError(E errors, String name, String messageKey, Object[] args, String defaultMessage);
 }
 ----
 
-or, if you want to customize the builder
+For Spring Framework's `Errors`, the handler can record the violation with `Errors#rejectValue`:
+
+[source,java]
+----
+Validator<CartItem> cartItemValidator = ...;
+BiConsumer<CartItem, Errors> validator = cartItemValidator
+    .toBiConsumer((errors, name, messageKey, args, defaultMessage) ->
+        errors.rejectValue(name, messageKey, args, defaultMessage));
+// or
+BiConsumer<CartItem, Errors> validator = cartItemValidator.toBiConsumer(Errors::rejectValue);
+----
+
+There is a factory for `BiConsumer` as well:
 
 [source,java]
 ----
 @Bean
-public BiValidatorFactory<Errors> biValidatorFactory(MessageSource messageSource) {
+public BiConsumerFactory<Errors> biConsumerFactory() {
+    return new BiConsumerFactory<>(Errors::rejectValue);
+}
+----
+
+or, if you want to customize the message configuration
+
+[source,java]
+----
+@Bean
+public BiConsumerFactory<Errors> biConsumerFactory(MessageSource messageSource) {
     MessageFormatter messageFormatter = new MessageSourceMessageFormatter(messageSource::getMessage);
-    return new BiValidatorFactory<>("." /* Message Key Separator */, messageFormatter, Errors::rejectValues);
+    return new BiConsumerFactory<>("." /* Message Key Separator */, messageFormatter, Errors::rejectValue);
 }
 ----
 
-The usage of a `BiValidator` would look like following:
+The usage of a `BiConsumer` would look like following:
 
 [source,java]
 ----
 @RestController
 public class OrderController {
-    private final BiValidator<CartItem, Errors> validator;
+    private final BiConsumer<CartItem, Errors> validator;
 
-    public OrderController(BiValidatorFactory<Errors> factory) {
+    public OrderController(BiConsumerFactory<Errors> factory) {
         this.validator = factory.validator(builder -> builder.constraint(...));
     }
 }

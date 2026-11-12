@@ -621,7 +621,8 @@ ConflictStrategy keepFirst = new ConflictStrategy() {
 
 === Kotlin Support
 
-If you are using Kotlin, you can define a `Validator` with DSL as follows:
+If you are using Kotlin, you can define a `Validator` with DSL as follows.
+The DSL obtains property names with Kotlin reflection, so `kotlin-reflect` must be on the runtime classpath.
 
 [source,kotlin]
 ----
@@ -702,4 +703,77 @@ val validator = validator<DemoNested> {
 val validator = validator<DemoNested> {
     DemoNested::x nest demoStringValidator
 }
+----
+
+`nestIfPresent` and `forEachIfPresent` validate nullable nested objects, collections, maps and arrays only when they are present:
+
+[source,kotlin]
+----
+val validator = validator<Order> {
+    Order::customer nestIfPresent {
+        Customer::name {
+            notBlank()
+        }
+    }
+    Order::items forEachIfPresent {
+        OrderItem::name {
+            notBlank()
+        }
+    }
+}
+----
+
+Temporal and enum properties have their own overloads.
+For example, `LocalDate`, `LocalTime`, `LocalDateTime`, `ZonedDateTime`, `OffsetDateTime`, `Instant`, `Year` and `YearMonth` properties can use the date and time constraints, and enum properties can use `oneOf`.
+See "<<built-in-constraints>>" for the available constraints:
+
+[source,kotlin]
+----
+enum class Status { ACTIVE, INACTIVE }
+
+val validator = validator<Account> {
+    Account::createdAt {
+        notNull()
+        past()
+    }
+    Account::status {
+        notNull()
+        oneOf(Status.ACTIVE)
+    }
+}
+----
+
+`onCondition` and `onGroup` add conditional and group-specific constraints, and `unwrap` gives access to the underlying `ValidatorBuilder`:
+
+[source,kotlin]
+----
+val validator = validator<User> {
+    onCondition({ _, context -> "IT".equals(context.attribute("country").value()) }) {
+        User::taxId {
+            notNull()
+        }
+    }
+    onGroup(ConstraintGroup.of("CREATE")) {
+        User::id {
+            isNull()
+        }
+    }
+    unwrap().failFast(true)
+}
+----
+
+==== Coroutines support
+
+The extensions in `am.ik.yavi.fn.ValidationExtensions` suspend the validation result handling.
+`awaitFold`, `awaitBimap`, `awaitMap`, `awaitMapErrors` and `awaitMapError` correspond to `fold`, `bimap`, `map`, `mapErrors` and `mapError`.
+They require `kotlinx-coroutines-core`:
+
+[source,kotlin]
+----
+import am.ik.yavi.fn.awaitFold
+
+suspend fun createUser(validated: Validated<User>): HttpStatus = validated.awaitFold(
+    errorsMapper = { violations -> HttpStatus.BAD_REQUEST },
+    mapper = { user -> HttpStatus.OK },
+)
 ----
