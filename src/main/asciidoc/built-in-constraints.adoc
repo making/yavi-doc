@@ -1395,6 +1395,216 @@ a|
 * `{2}` ... the given value
 |===
 
+=== Temporal
+
+YAVI provides temporal constraints for the following types, with the corresponding builder shortcuts:
+
+[cols="1,1,1"]
+|===
+|Type |Constraint |Builder shortcut
+
+|`LocalDate`
+|`am.ik.yavi.constraint.LocalDateConstraint`
+|`_localDate`
+|`LocalTime`
+|`am.ik.yavi.constraint.LocalTimeConstraint`
+|`_localTime`
+|`LocalDateTime`
+|`am.ik.yavi.constraint.LocalDateTimeConstraint`
+|`_localDateTime`
+|`OffsetDateTime`
+|`am.ik.yavi.constraint.OffsetDateTimeConstraint`
+|`_offsetDateTime`
+|`Instant`
+|`am.ik.yavi.constraint.InstantConstraint`
+|`_instant`
+|`Year`
+|`am.ik.yavi.constraint.YearConstraint`
+|`_year`
+|`YearMonth`
+|`am.ik.yavi.constraint.YearMonthConstraint`
+|`_yearMonth`
+|`ZonedDateTime`
+|`am.ik.yavi.constraint.ZonedDateTimeConstraint`
+|`_zonedDateTime`
+|===
+
+Custom `TemporalAccessor` types can be supported by extending `TemporalConstraintBase` through `ChronoLocalDateConstraintBase`, `ChronoLocalDateTimeConstraintBase` or `ChronoZonedDateTimeConstraintBase`.
+The Kotlin DSL provides matching property overloads (see the Kotlin Support section).
+
+The following constraints apply to every type above:
+
+[source,java]
+----
+Validator<Event> validator = ValidatorBuilder.<Event> of()
+    ._localDate(Event::getDate, "date", c -> c.past())
+    .build();
+----
+
+A `null` value is valid and skips all temporal checks.
+
+`before` and `after` reject a value that is equal to the boundary; use `beforeOrEqual` and `afterOrEqual` for inclusive checks.
+The arguments are always suppliers.
+
+`before`, `beforeOrEqual`, `after`, `afterOrEqual` and `between` have an overload that takes a `boolean memoize` argument.
+When `memoize` is `true`, which is the default, the supplier is called at most once and the same value is used for both the comparison and the violation message.
+When it is `false`, the supplier is called on every use, so a supplier that returns a different value on each call may compare against one value and report another in the message.
+Use `false` for suppliers that must be evaluated at validation time.
+
+The `past`, `pastOrPresent`, `future` and `futureOrPresent` methods also have overloads that take a `java.time.Clock`.
+These overloads exist for deterministic tests and for validating against a time source other than the system default zone.
+
+==== `past()` / `pastOrPresent()` / `future()` / `futureOrPresent()`
+
+Checks if the target value is in the past, in the past or present, in the future, or in the present or future, respectively.
+The overloads take a `Clock` used as the current time.
+
+[source,java]
+----
+Clock clock = Clock.fixed(Instant.parse("2024-01-01T00:00:00Z"), ZoneId.of("UTC"));
+Validator<Event> validator = ValidatorBuilder.<Event> of()
+    ._localDate(Event::getDate, "date", c -> c.past(clock))
+    .build();
+
+ConstraintViolations violations = validator.validate(new Event(LocalDate.of(2023, 12, 31))); // Valid
+ConstraintViolations violations = validator.validate(new Event(null)); // Valid
+ConstraintViolations violations = validator.validate(new Event(LocalDate.of(2024, 1, 1))); // Invalid ("date" must be a past date)
+ConstraintViolations violations = validator.validate(new Event(LocalDate.of(2024, 1, 2))); // Invalid ("date" must be a past date)
+----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`temporal.past`
+|`"{0}" must be a past date`
+a|
+* `{0}` ... field name
+* `{1}` ... the current date used for the comparison
+* `{2}` ... the given value
+|`temporal.pastOrPresent`
+|`"{0}" must be a date in the past or in the present`
+a|
+* `{0}` ... field name
+* `{1}` ... the current date used for the comparison
+* `{2}` ... the given value
+|`temporal.future`
+|`"{0}" must be a future date`
+a|
+* `{0}` ... field name
+* `{1}` ... the current date used for the comparison
+* `{2}` ... the given value
+|`temporal.futureOrPresent`
+|`"{0}" must be a date in the present or in the future`
+a|
+* `{0}` ... field name
+* `{1}` ... the current date used for the comparison
+* `{2}` ... the given value
+|===
+
+==== `before(...)` / `beforeOrEqual(...)` / `after(...)` / `afterOrEqual(...)`
+
+Checks if the target value is before, before or equal to, after, or after or equal to the temporal supplied by the given supplier.
+
+[source,java]
+----
+Validator<Event> validator = ValidatorBuilder.<Event> of()
+    ._localDate(Event::getDate, "date", c -> c.before(() -> LocalDate.of(2024, 6, 1)))
+    .build();
+
+ConstraintViolations violations = validator.validate(new Event(LocalDate.of(2024, 5, 31))); // Valid
+ConstraintViolations violations = validator.validate(new Event(null)); // Valid
+ConstraintViolations violations = validator.validate(new Event(LocalDate.of(2024, 6, 1))); // Invalid ("date" has to be before 2024-06-01)
+ConstraintViolations violations = validator.validate(new Event(LocalDate.of(2024, 6, 2))); // Invalid ("date" has to be before 2024-06-01)
+----
+
+The `beforeOrEqual`, `after` and `afterOrEqual` variants are used in the same way.
+
+|===
+|Message Key |Default Message Format |Args
+
+|`temporal.before`
+|`"{0}" has to be before {1}`
+a|
+* `{0}` ... field name
+* `{1}` ... the supplied boundary value
+* `{2}` ... the given value
+|`temporal.beforeOrEqual`
+|`"{0}" has to be before or equals to {1}`
+a|
+* `{0}` ... field name
+* `{1}` ... the supplied boundary value
+* `{2}` ... the given value
+|`temporal.after`
+|`"{0}" has to be after {1}`
+a|
+* `{0}` ... field name
+* `{1}` ... the supplied boundary value
+* `{2}` ... the given value
+|`temporal.afterOrEqual`
+|`"{0}" has to be after or equals to {1}`
+a|
+* `{0}` ... field name
+* `{1}` ... the supplied boundary value
+* `{2}` ... the given value
+|===
+
+==== `between(...)`
+
+Checks if the target value is between the temporals supplied by the given suppliers.
+The range is exclusive on both ends: a value equal to either bound is invalid.
+`IllegalArgumentException` is thrown at validation time if `rangeFrom` is after `rangeTo`.
+
+[source,java]
+----
+Validator<Event> validator = ValidatorBuilder.<Event> of()
+    ._localDate(Event::getDate, "date", c -> c.between(
+            () -> LocalDate.of(2024, 1, 1), () -> LocalDate.of(2024, 12, 31)))
+    .build();
+
+ConstraintViolations violations = validator.validate(new Event(LocalDate.of(2024, 6, 1))); // Valid
+ConstraintViolations violations = validator.validate(new Event(null)); // Valid
+ConstraintViolations violations = validator.validate(new Event(LocalDate.of(2024, 1, 1))); // Invalid ("date" has to be between 2024-01-01 and 2024-12-31)
+ConstraintViolations violations = validator.validate(new Event(LocalDate.of(2025, 1, 1))); // Invalid ("date" has to be between 2024-01-01 and 2024-12-31)
+----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`temporal.between`
+|`"{0}" has to be between {1} and {2}`
+a|
+* `{0}` ... field name
+* `{1}` ... the supplied start of the range
+* `{2}` ... the supplied end of the range
+* `{3}` ... the given value
+|===
+
+==== `fieldPredicate(...)`
+
+Checks if the given predicate accepts the value of the given `java.time.temporal.TemporalField`.
+
+[source,java]
+----
+Validator<Event> validator = ValidatorBuilder.<Event> of()
+    ._localDate(Event::getDate, "date", c -> c.fieldPredicate(ChronoField.DAY_OF_WEEK, d -> d >= 1 && d <= 5))
+    .build();
+
+ConstraintViolations violations = validator.validate(new Event(LocalDate.of(2024, 6, 3))); // Valid
+ConstraintViolations violations = validator.validate(new Event(null)); // Valid
+ConstraintViolations violations = validator.validate(new Event(LocalDate.of(2024, 6, 1))); // Invalid (The DayOfWeek of "date" is invalid)
+----
+
+|===
+|Message Key |Default Message Format |Args
+
+|`temporal.field`
+|`The {1} of "{0}" is invalid`
+a|
+* `{0}` ... field name
+* `{1}` ... the temporal field
+* `{2}` ... the given value
+|===
+
 === Boolean
 
 Apply the constraints on the `Boolean` as follows:
