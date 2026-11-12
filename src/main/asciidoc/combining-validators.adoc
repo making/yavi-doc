@@ -8,6 +8,9 @@
 
 Multiple `ValueValidator` s can be combined to validate a larger object.
 
+`ArgumentsValidators#split` and `ArgumentsValidators#combine` support up to 16 arguments since 0.10.0.
+The `apply` method consumes `Function1` to `Function16` accordingly.
+
 === Splitting a validator for an object into small pieces
 
 You can use `split` method to split a validator for the arguments of a constructor or a factory method for creating a large object into small validators and combine them.
@@ -86,6 +89,38 @@ Arguments2Validator<Email, PhoneNumber, ContactInfo> contactInfoValidator = Argu
 Validated<ContactInfo> contactInfoValidated = contactInfoValidator.validate(new Email("yavi@example.com"), new PhoneNumber("090-123-4567"));
 ----
 
+=== Chaining and mapping value validators
+
+`ValueValidator#andThen(ValueValidator)` applies the value produced by one validator to the next validator.
+`ValueValidator#map(Function)` maps the validated value without applying further validation.
+`andThen(Function)` is deprecated since 0.17.0 and is equivalent to `map(Function)`.
+
+[source,java]
+----
+Arguments1Validator<String, Email> emailValidator = /* see examples above */;
+ValueValidator<String, String> emailValue = emailValidator.map(Email::value);
+ValueValidator<String, String> checked = emailValidator
+    .andThen(ValueValidator.<Email> passThrough().map(Email::value));
+----
+
+=== Validating every element of an iterable
+
+`ArgumentsValidators#sequenceN` applies every given validator to the same arguments and collects the validated values into a `List`.
+`ArgumentsValidators#traverseN` builds a validator from an iterable of values and a function that produces a validator for each value.
+Both are available for 1 to 16 arguments since 0.10.0.
+
+[source,java]
+----
+Arguments1Validator<String, Email> emailValidator = /* see examples above */;
+Arguments1Validator<String, Email> adminEmailValidator = /* see examples above */;
+Arguments1Validator<String, List<Email>> emailsValidator = ArgumentsValidators
+    .sequence1(List.of(emailValidator, adminEmailValidator));
+
+Validated<List<Email>> emails = emailsValidator.validate("yavi@example.com");
+----
+
+See <<validating-arguments>> for constructing arguments validators.
+
 === Validating the source object before creating the target object
 
 In a web application, you often get values from a `Map`, Form Object, or `HttpServletRequest` to create a Domain Object.
@@ -96,11 +131,11 @@ For example, in the case where `name`, `email` and `age` are obtained from `Http
 
 [source,java]
 ----
-Argument1Validator<HttpServletRequest, Name> requestNameValidator = nameValidator
+Arguments1Validator<HttpServletRequest, Name> requestNameValidator = nameValidator
     .compose(req -> req.getParameter("name"));
-Argument1Validator<HttpServletRequest, Email> requestEmailValidator = emailValidator
+Arguments1Validator<HttpServletRequest, Email> requestEmailValidator = emailValidator
     .compose(req -> req.getParameter("email"));
-Argument1Validator<HttpServletRequest, Age> requestAgeValidator = ageValidator
+Arguments1Validator<HttpServletRequest, Age> requestAgeValidator = ageValidator
     .compose(req -> Integer.valueOf(req.getParameter("age")));
 
 HttpServletRequest request = ...;
